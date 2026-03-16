@@ -1,3 +1,4 @@
+using NGAME;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,7 @@ using UnityEngine.UIElements;
 public class SceneReadingTest : EditorWindow
 {
     [SerializeField] private int m_SelectedIndex = -1;
-    private VisualElement m_Root;
+    private VisualElement m_RootScrollElement;
     private VisualElement m_GraphPanel;
     private VisualElement m_ScenesRightPane;
 
@@ -36,6 +37,8 @@ public class SceneReadingTest : EditorWindow
     }
     public void CreateGUI()
     {
+        m_RootScrollElement = new ScrollView(ScrollViewMode.VerticalAndHorizontal);
+        rootVisualElement.Add(m_RootScrollElement);
         CreateGeneralSettingsPanel();
         CreateScenesPanel();
     }
@@ -44,6 +47,7 @@ public class SceneReadingTest : EditorWindow
     {
         VisualElement panel = new VisualElement();
         panel.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI Toolkit/Styles/Editor/NGAMESettingsWindow.uss"));
+        m_RootScrollElement.Add(panel);
 
         Label title = new Label();
         title.text = "NGAME Settings";
@@ -55,11 +59,28 @@ public class SceneReadingTest : EditorWindow
         subtitle.AddToClassList("subtitle1");
         panel.Add(subtitle);
 
-        rootVisualElement.Add(panel);
+        Label header = new Label();
+        header.text = "General Settings";
+        header.AddToClassList("header1");
+        panel.Add(header);
+
+        TextElement tempSetting = new TextElement();
+        tempSetting.text = "This is where settings about what classes to look for in scenes will go. Current Default is to look for Door and Spawner interfaces.";
+        panel.Add(tempSetting);
     }
 
     private void CreateScenesPanel()
     {
+
+        VisualElement panel = new VisualElement();
+        panel.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI Toolkit/Styles/Editor/NGAMESettingsWindow.uss"));
+        m_RootScrollElement.Add(panel);
+
+        Label header = new Label();
+        header.text = "Scene Selection";
+        header.AddToClassList("header1");
+        panel.Add(header);
+
         // Get a list of all sprites in the project.
         List<SceneData> allSceneData = FindSceneData();
 
@@ -67,7 +88,8 @@ public class SceneReadingTest : EditorWindow
         var splitView = new TwoPaneSplitView(0, 250, TwoPaneSplitViewOrientation.Horizontal);
 
         // Add the panel to the visual tree by adding it as a child to the root element.
-        rootVisualElement.Add(splitView);
+        panel.Add(splitView);
+
 
         // A TwoPaneSplitView always needs two child elements.
         var leftPane = new ListView();
@@ -115,7 +137,7 @@ public class SceneReadingTest : EditorWindow
 
         Label title = new Label();
         title.text = sceneData.Name;
-        title.AddToClassList("header1");
+        title.AddToClassList("header2");
         settingsPane.Add(title);
 
         // toggle inclusion in graph tool
@@ -177,19 +199,19 @@ public class SceneReadingTest : EditorWindow
 
             foreach (GameObject obj in rootObjects)
             {
-                DataCollectionTest[] components = obj.GetComponentsInChildren<DataCollectionTest>();
+                IEncounterRegionConnector[] components = obj.GetComponentsInChildren<IEncounterRegionConnector>();
 
                 if (components.Length > 0)
                 {
                     bComponentsFound = true;
-                    foreach (DataCollectionTest component in components)
+                    foreach (IEncounterRegionConnector component in components)
                     {
-                        description.Append("Found a Data collection test component \n");
-                        description.Append("Name: " + component.GetName() + "\n");
-                        description.Append("Number: " + component.GetNumber() + "\n");
+                        description.Append("Found an IEncounterRegionConnector component \n");
+                        RegionConnectionData data = component.GetRegionConnectionData();
+                        description.Append("Connection Type: " + data.ConnectionType.ToString() + "\n");
+                        description.Append("Is Lockable: " + data.IsLockable.ToString() + "\n");
 
-                        Vector3 position = component.transform.position;
-                        description.Append("Position: " + position.ToString() + "\n");
+                        description.Append("Position: " + data.Position.ToString() + "\n");
                         description.Append("-------------\n");
                     }
                 }

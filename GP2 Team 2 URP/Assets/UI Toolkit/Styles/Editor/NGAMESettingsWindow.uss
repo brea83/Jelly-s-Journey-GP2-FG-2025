@@ -7,7 +7,7 @@ GridBackground {
 
 .title1 {
     color: rgb(255, 255, 255);
-    background-color: rgb(37, 37, 37);
+    background-color: rgb(27, 27, 27);
     width: 100%;
     font-size: 32;
     margin-top: 0;
@@ -15,7 +15,7 @@ GridBackground {
 
 .subtitle1 {
     color: rgb(255, 255, 255);
-    background-color: rgb(37, 37, 37);
+    background-color: rgb(27, 27, 27);
     width: 100%;
     font-size: 12;
     margin-top: 0;
@@ -24,6 +24,14 @@ GridBackground {
 .header1 {
     color: rgb(255, 255, 255);
     background-color: rgb(37, 37, 37);
+    width: 100%;
+    font-size: 18;
+    margin-top: 0;
+}
+
+.header2 {
+    color: rgb(255, 255, 255);
+    background-color: rgb(47, 47, 47);
     width: 100%;
     font-size: 18;
     margin-top: 0;
