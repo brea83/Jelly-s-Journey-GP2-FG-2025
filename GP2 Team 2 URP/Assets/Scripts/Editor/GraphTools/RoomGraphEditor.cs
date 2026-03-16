@@ -9,7 +9,7 @@ namespace GraphViewTools {
         private RoomGraph _graph;
         private RoomGraphView _graphView;
         private InspectorView _inspectorView;
-        [SerializeField]
+        //[SerializeField]
         //private VisualTreeAsset _VisualTreeAsset = default;
 
         
