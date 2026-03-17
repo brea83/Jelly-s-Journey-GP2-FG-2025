@@ -3,9 +3,7 @@
     "rootNamespace": "NGAME",
     "references": [],
     "includePlatforms": [],
-    "excludePlatforms": [
-        "WindowsStandalone64"
-    ],
+    "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],

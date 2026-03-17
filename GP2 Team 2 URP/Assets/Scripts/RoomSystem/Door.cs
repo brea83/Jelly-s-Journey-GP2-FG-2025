@@ -5,13 +5,14 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using static Unity.Cinemachine.CinemachineSplineRoll;
+using NGAME;
 namespace RoomSystem
 {
     public enum RoomConnectionDirection { North, East, South, West }
     public enum ConnectionType { Entrance, Exit, ExitAndEntrance }
     
 
-    public class Door : MonoBehaviour
+    public class Door : MonoBehaviour, IEncounterRegionConnector
     {
         public UnityEvent DoorUnlocked;
         public UnityEvent DoorLocked;
@@ -218,10 +219,20 @@ namespace RoomSystem
                 Debug.Log("tried to remove listeners but myUpdateState == null");
             }
         }
+
+        public RegionConnectionData GetRegionConnectionData() 
+        {
+            RegionConnectionData data = new RegionConnectionData();
+            data.TypeName = "JellysJourney.Door";
+            data.ConnectionType = _data.Type;
+            data.IsLockable = true;
+            data.Position = transform.position;
+            return data;
+        }
     }
         
     [Serializable]
-    public class DoorData
+    public class DoorData 
     {
         [HideInInspector] public string Name;
         public RoomConnectionDirection Direction;
@@ -231,7 +242,8 @@ namespace RoomSystem
         [HideInInspector] public bool UsedOnce = false;
         public bool Locked = false;
         public bool UseRealDirectionFlow = true;
-        public ConnectionType Type;
+        //public ConnectionType Type;
+        public RegionConnectionType Type;
         [HideInInspector] public Vector3 ExitPosition;
         [HideInInspector] public Vector3 EntrancePosition;
         [HideInInspector] public Quaternion EntranceRotation;
@@ -259,9 +271,9 @@ namespace RoomSystem
         public bool IsArrivalFlowValid(Door arrivalDoor)
         {
             DoorData exitDoor = this;
-            ConnectionType arrivalType = arrivalDoor.Data.Type;
-            if ((exitDoor.Type == ConnectionType.ExitAndEntrance || exitDoor.Type == ConnectionType.Exit)
-                && (arrivalType == ConnectionType.ExitAndEntrance || arrivalType == ConnectionType.Entrance))
+            RegionConnectionType arrivalType = arrivalDoor.Data.Type;
+            if ((exitDoor.Type == RegionConnectionType.ExitAndEntrance || exitDoor.Type == RegionConnectionType.ExitOnly)
+                && (arrivalType == RegionConnectionType.ExitAndEntrance || arrivalType == RegionConnectionType.EntranceOnly))
             {
                 if (UseRealDirectionFlow)// || arrivalDoor.Data.UseRealDirectionFlow)
                 {
