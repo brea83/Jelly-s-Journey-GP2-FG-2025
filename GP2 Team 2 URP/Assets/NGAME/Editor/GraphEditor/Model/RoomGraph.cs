@@ -36,20 +36,21 @@ namespace NGAME.Editor
 
         public void AddEdge(RoomNode parent, RoomNode child, Edge edge)
         {
-            EdgeData newEdgeData = new EdgeData(edge.output.portName, child.Guid, edge.input.portName);
-            parent.OutgoingEdges.Add(newEdgeData);
+            //EdgeData newEdgeData = new EdgeData(edge.output.portName, child.Guid, edge.input.portName);
+            //parent.OutgoingEdges.Add(newEdgeData);
+            parent.AddEdge(child, edge);
         }
 
         public void RemoveEdge(RoomNode parent, RoomNode child, Edge edge)
         {
-            foreach(EdgeData edgeData in parent.OutgoingEdges)
-            {
-                if(edgeData.sourcePortName == edge.output.portName && edgeData.destinationGuid == child.Guid && edgeData.destinationPortName == edge.input.portName)
-                {
-                    parent.OutgoingEdges.Remove(edgeData);
-                }
-            }
-
+            //foreach(EdgeData edgeData in parent.OutgoingEdges)
+            //{
+            //    if(edgeData.sourcePortName == edge.output.portName && edgeData.destinationGuid == child.Guid && edgeData.destinationPortName == edge.input.portName)
+            //    {
+            //        parent.OutgoingEdges.Remove(edgeData);
+            //    }
+            //}
+            parent.RemoveEdge(child, edge);
         }
 
         public List<EdgeData> GetOutgoingEdges(RoomNode parent)

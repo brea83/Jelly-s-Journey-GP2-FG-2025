@@ -7,12 +7,13 @@ namespace NGAME.Editor
     public abstract class RoomGraphNode : ScriptableObject
     {
         [HideInInspector] public Vector2 Position;
+        public abstract List<EdgeData> GetOutgoingEdges();
     }
     [System.Serializable]
-    public class RoomNode : RoomGraphNode
+    public class RoomNode : RoomGraphNode, IMapNode
     {
         [HideInInspector] public string Guid;
-        public NGAME.SceneConnectionsData Room = null;
+        public SceneConnectionsData Room = null;
         [HideInInspector] public int LastDropdownIndex;
         [HideInInspector] public List<EdgeData> OutgoingEdges = new List<EdgeData>();
         private bool _isStartNode = false;
@@ -20,6 +21,35 @@ namespace NGAME.Editor
         private int _entranceCount;
         public int ExitCount { get {return _exitCount; } }
         public int EntranceCount { get { return _entranceCount; } }
+
+        public void AddEdge(RoomNode otherNode, Edge edge)
+        {
+            EdgeData newEdgeData = new EdgeData(edge.output.portName, otherNode.Guid, edge.input.portName);
+            OutgoingEdges.Add(newEdgeData);
+        }
+
+        public override List<EdgeData> GetOutgoingEdges() { return OutgoingEdges; }
+
+        public void RemoveEdge(RoomNode otherNode, Edge edge)
+        {
+            List<int> indexesToRemove = new List<int>();
+
+            for (int i = 0; i < OutgoingEdges.Count; i++)
+            {
+                EdgeData edgeData = OutgoingEdges[i];
+
+                if (edgeData.sourcePortName == edge.output.portName && edgeData.destinationGuid == otherNode.Guid && edgeData.destinationPortName == edge.input.portName)
+                {
+                    indexesToRemove.Add(i);
+                    //OutgoingEdges.Remove(edgeData);
+                }
+            }
+
+            foreach (int index in indexesToRemove)
+            {
+                OutgoingEdges.RemoveAt(index);
+            }
+        }
 
         public void SetAsStartRoom(bool isStartNode)
         {

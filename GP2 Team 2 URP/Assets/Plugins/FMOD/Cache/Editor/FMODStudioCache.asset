@@ -342,7 +342,7 @@ MonoBehaviour:
   Path: FMOD Assets/Desktop/Main.assets.bank
   Name: Main.assets
   StudioPath: bank:/Main.assets
-  lastModified: 639092517482426130
+  lastModified: 639092770572629706
   FileSizes:
   - Name: Desktop
     Value: 4517056
@@ -389,7 +389,7 @@ MonoBehaviour:
   Path: FMOD Assets/Desktop/Dialogue.bank
   Name: Dialogue
   StudioPath: bank:/Dialogue
-  lastModified: 639092517482271637
+  lastModified: 639092770572519273
   FileSizes:
   - Name: Desktop
     Value: 23200
@@ -436,7 +436,7 @@ MonoBehaviour:
   Path: FMOD Assets/Desktop/Main.strings.bank
   Name: Main.strings
   StudioPath: bank:/Main.strings
-  lastModified: 639092517482446121
+  lastModified: 639092770572640121
   FileSizes:
   - Name: Desktop
     Value: 3096
@@ -512,7 +512,7 @@ MonoBehaviour:
   Path: FMOD Assets/Desktop/Main.bank
   Name: Main
   StudioPath: bank:/Main
-  lastModified: 639092517482436121
+  lastModified: 639092770572640121
   FileSizes:
   - Name: Desktop
     Value: 49070
@@ -638,7 +638,7 @@ MonoBehaviour:
   Path: FMOD Assets/Desktop/Dialogue.assets.bank
   Name: Dialogue.assets
   StudioPath: bank:/Dialogue.assets
-  lastModified: 639092517482271637
+  lastModified: 639092770572519273
   FileSizes:
   - Name: Desktop
     Value: 422784
@@ -734,7 +734,7 @@ MonoBehaviour:
   - {fileID: -2471640425458064479}
   StringsBanks:
   - {fileID: -2934728500922321401}
-  cacheTime: 639092517482574551
+  cacheTime: 639092770572725538
   cacheVersion: 131622
 --- !u!114 &615012335457612167
 MonoBehaviour:
@@ -751,7 +751,7 @@ MonoBehaviour:
   Path: FMOD Assets/Desktop/Music.assets.bank
   Name: Music.assets
   StudioPath: bank:/Music.assets
-  lastModified: 639092517482560805
+  lastModified: 639092770572725538
   FileSizes:
   - Name: Desktop
     Value: 1619424
@@ -1181,7 +1181,7 @@ MonoBehaviour:
   Path: FMOD Assets/Desktop/Music.bank
   Name: Music
   StudioPath: bank:/Music
-  lastModified: 639092517482574551
+  lastModified: 639092770572725538
   FileSizes:
   - Name: Desktop
     Value: 6376

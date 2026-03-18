@@ -25,8 +25,8 @@ namespace NGAME
     {
         public string SceneName;
         public string SceneGuid;
-        public List<NGAME.RegionConnectionData> Entrances;
-        public List<NGAME.RegionConnectionData> Exits;
+        public List<RegionConnectionData> Entrances;
+        public List<RegionConnectionData> Exits;
         //public List<string> SpawnPositions;
         public Vector2 MinPoint = Vector3.zero;
         public Vector2 MaxPoint = Vector3.zero;
