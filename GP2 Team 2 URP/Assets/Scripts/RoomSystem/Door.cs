@@ -224,6 +224,7 @@ namespace RoomSystem
         {
             RegionConnectionData data = new RegionConnectionData();
             data.TypeName = "JellysJourney.Door";
+            data.Name = name;
             data.ConnectionType = _data.Type;
             data.IsLockable = true;
             data.Position = transform.position;

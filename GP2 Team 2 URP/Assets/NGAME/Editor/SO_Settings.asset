@@ -70,7 +70,7 @@ MonoBehaviour:
   - Name: SampleScene 2
     Guid: f2f2e1e0a80c29c49b3c899b1eb9478a
     FilePath: Assets/Scenes/Final/FINAL TEST/SampleScene 2.unity
-    IncludeInGraphTool: 0
+    IncludeInGraphTool: 1
     Description: 
     IsMarkedForDelete: 0
   - Name: SampleScene 3
@@ -82,7 +82,7 @@ MonoBehaviour:
   - Name: SampleScene
     Guid: 99c9720ab356a0642a771bea13969a05
     FilePath: Assets/Scenes/Final/FINAL TEST/SampleScene.unity
-    IncludeInGraphTool: 0
+    IncludeInGraphTool: 1
     Description: 
     IsMarkedForDelete: 0
   - Name: FMOD

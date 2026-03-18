@@ -1,0 +1,17 @@
+GridBackground {
+    --grid-background-color: rgb(40, 40, 40);
+    --line-color: rgba(193, 196, 192, 0.1);
+    --thick-line-color: rgba(193, 196, 192, 0.1);
+    --spacing: 15;
+}
+
+.header1 {
+    color: rgb(255, 255, 255);
+    background-color: rgb(37, 37, 37);
+    width: 100%;
+    margin-top: 0;
+}
+
+.InspectorPanel {
+    background-color: rgb(56, 56, 56);
+}

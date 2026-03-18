@@ -26,14 +26,16 @@ namespace NGAME.Editor
 
         private Dictionary<string, SceneData> m_GuidToSceneData;
 
+        private StyleSheet m_Styles;
+
         //private bool m_SettingsAreLoaded = false;
 
-        [MenuItem("NGAME/SceneReadingTest")]
+        [MenuItem("NGAME/Settings")]
         public static void ShowMyEditor()
         {
             // This method is called when the user selects the menu item in the Editor.
             NGAMESettings wnd = GetWindow<NGAMESettings>();
-            wnd.titleContent = new GUIContent("Scene Reading Test");
+            wnd.titleContent = new GUIContent("NGAME Settings");
 
             // Limit size of the window.
             wnd.minSize = new Vector2(450, 200);
@@ -92,7 +94,14 @@ namespace NGAME.Editor
             Debug.Log("NGAME SETTINGS . CreateGUI() called");
             m_RootScrollElement = new ScrollView(ScrollViewMode.VerticalAndHorizontal);
             rootVisualElement.Add(m_RootScrollElement);
-            CreateGeneralSettingsPanel();
+
+            string[] guids = AssetDatabase.FindAssets("NGAMESettingsStyle  t:StyleSheet");
+            if (guids.Length > 0)
+            {
+                m_Styles = AssetDatabase.LoadAssetAtPath<StyleSheet>(AssetDatabase.GUIDToAssetPath(guids[0]));
+            }
+
+                CreateGeneralSettingsPanel();
             CreateScenesPanel();
         }
 
@@ -184,7 +193,13 @@ namespace NGAME.Editor
         private void CreateGeneralSettingsPanel()
         {
             VisualElement panel = new VisualElement();
-            panel.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI Toolkit/Styles/Editor/NGAMESettingsWindow.uss"));
+            // Find all Texture2Ds that have 'co' in their filename, that are labelled with 'architecture' and are placed in 'MyAwesomeProps' folder
+            
+            if(m_Styles != null)
+            {
+                panel.styleSheets.Add(m_Styles);
+            }
+            //panel.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>("../UIElements/Styles/NGAMESettingsWindow.uss"));
             m_RootScrollElement.Add(panel);
 
             Label title = new Label();
@@ -214,7 +229,11 @@ namespace NGAME.Editor
         {
 
             VisualElement panel = new VisualElement();
-            panel.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI Toolkit/Styles/Editor/NGAMESettingsWindow.uss"));
+            if (m_Styles != null)
+            {
+                panel.styleSheets.Add(m_Styles);
+            }
+            //panel.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI Toolkit/Styles/Editor/NGAMESettingsWindow.uss"));
             m_RootScrollElement.Add(panel);
 
             Label header = new Label();
@@ -303,7 +322,11 @@ namespace NGAME.Editor
         {
 
             VisualElement settingsPane = new VisualElement();
-            settingsPane.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI Toolkit/Styles/Editor/NGAMESettingsWindow.uss"));
+            if (m_Styles != null)
+            {
+                settingsPane.styleSheets.Add(m_Styles);
+            }
+            //settingsPane.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI Toolkit/Styles/Editor/NGAMESettingsWindow.uss"));
 
             // toggle inclusion in graph tool
             Toggle toggleIncludeInGraph = new Toggle();
