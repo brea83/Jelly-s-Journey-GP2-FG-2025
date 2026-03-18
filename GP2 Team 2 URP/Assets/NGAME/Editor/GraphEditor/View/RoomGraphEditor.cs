@@ -17,6 +17,7 @@ namespace NGAME.Editor
         //[SerializeField]
         //private VisualTreeAsset _VisualTreeAsset = default;
 
+        private StyleSheet m_Style;
 
 
         [MenuItem("NGAME/Editor")]
@@ -50,6 +51,7 @@ namespace NGAME.Editor
             {
                 styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(AssetDatabase.GUIDToAssetPath(guids[0]));
                 root.styleSheets.Add(styleSheet);
+                m_Style = styleSheet;
             }
             //StyleSheet styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI Toolkit/Styles/Editor/RoomGraphEditor.uss");
 
@@ -59,6 +61,12 @@ namespace NGAME.Editor
 
             _graphView.OnNodeSelected = OnNodeSelectionChanged;
             OnSelectionChange();
+
+            if(m_Style != null)
+            {
+                _graphView.styleSheets.Add(m_Style);
+                _inspectorView.styleSheets.Add(m_Style);
+            }
 
             _newGraphButton = root.Q<Button>("NewGraphButton");
             _newGraphButton.clicked += OnNewGraphClicked;

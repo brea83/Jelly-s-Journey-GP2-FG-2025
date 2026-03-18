@@ -1,0 +1,124 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18896188af12d0a41a178d67d66c5b78, type: 3}
+  m_Name: Graph2
+  m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.RoomGraph
+  rootNode: {fileID: 0}
+  nodes:
+  - {fileID: 5529799894810670294}
+  - {fileID: 3925803280056713855}
+--- !u!114 &3925803280056713855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
+  m_Name: RoomNode
+  m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.RoomNode
+  Position: {x: 119.06667, y: 252.21333}
+  Guid: 7bbf48dac0e3ce1418f3d1b7640806b4
+  Room:
+    SceneName: SampleScene 1
+    SceneGuid: 7a3963fe7029e1540abdb3d88a000b52
+    Entrances:
+    - TypeName: JellysJourney.Door
+      Name: Door South
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -8.25, y: 0, z: -20.5}
+    - TypeName: JellysJourney.Door
+      Name: Door West
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -25.239712, y: 0, z: -1.75}
+    - TypeName: JellysJourney.Door
+      Name: Door East
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: 16.203, y: 0, z: 7.54}
+    Exits:
+    - TypeName: JellysJourney.Door
+      Name: Door South
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -8.25, y: 0, z: -20.5}
+    - TypeName: JellysJourney.Door
+      Name: Door West
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -25.239712, y: 0, z: -1.75}
+    - TypeName: JellysJourney.Door
+      Name: Door East
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: 16.203, y: 0, z: 7.54}
+    MinPoint: {x: -0.7762233, y: -0.630458}
+    MaxPoint: {x: 0.9066414, y: 0.4219019}
+  LastDropdownIndex: 1
+  OutgoingEdges: []
+--- !u!114 &5529799894810670294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
+  m_Name: RoomNode
+  m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.RoomNode
+  Position: {x: 0, y: 0}
+  Guid: 66e5cce788e44ab44bd53e911953d44b
+  Room:
+    SceneName: BDsTestGameplay 1
+    SceneGuid: 6c41715dd7b505745bcb543fe978aa78
+    Entrances:
+    - TypeName: JellysJourney.Door
+      Name: Door East
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: 22.7, y: -0.2140007, z: 3.9}
+    - TypeName: JellysJourney.Door
+      Name: Door South
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -0.9611873, y: -0.2140007, z: -23.9}
+    - TypeName: JellysJourney.Door
+      Name: Door West
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -18.491539, y: -0.2140007, z: -5.1657524}
+    Exits:
+    - TypeName: JellysJourney.Door
+      Name: Door East
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: 22.7, y: -0.2140007, z: 3.9}
+    - TypeName: JellysJourney.Door
+      Name: Door South
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -0.9611873, y: -0.2140007, z: -23.9}
+    - TypeName: JellysJourney.Door
+      Name: Door West
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -18.491539, y: -0.2140007, z: -5.1657524}
+    MinPoint: {x: -0.6119313, y: -0.79091084}
+    MaxPoint: {x: 0.9855602, y: 0.16932532}
+  LastDropdownIndex: 5
+  OutgoingEdges: []

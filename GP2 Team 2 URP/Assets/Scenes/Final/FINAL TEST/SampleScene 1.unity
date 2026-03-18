@@ -5772,30 +5772,8 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1118150892074528535, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
-      insertIndex: 1
-      addedObject: {fileID: 452848670}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
---- !u!1 &452848669 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1118150892074528535, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
-  m_PrefabInstance: {fileID: 452848668}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &452848670
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 452848669}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9cb6cd0c9d14248478d900674aea64c3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DataCollectionTest
-  _Name: test on child object (player)
-  _TestNumber: 2
 --- !u!1 &486451102
 GameObject:
   m_ObjectHideFlags: 0

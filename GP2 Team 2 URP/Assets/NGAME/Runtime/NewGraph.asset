@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
   m_Name: RoomNode
   m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.RoomNode
-  Position: {x: 0, y: 0}
+  Position: {x: 116.66665, y: 28.666656}
   Guid: a19af990594070341a52f5feba278b38
   Room:
     SceneName: SampleScene
@@ -42,6 +42,32 @@ MonoBehaviour:
     MinPoint: {x: -1, y: 0}
     MaxPoint: {x: 0.32680926, y: 0.94509035}
   LastDropdownIndex: 4
+  OutgoingEdges:
+  - sourcePortName: Door North
+    destinationGuid: 57874530c78ffed4081084be88092af1
+    destinationPortName: Door South
+--- !u!114 &-4142464248750731641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
+  m_Name: RoomNode
+  m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.RoomNode
+  Position: {x: 0, y: 0}
+  Guid: ad409a3a0d5013d468c73c818ebc7773
+  Room:
+    SceneName: 
+    SceneGuid: 
+    Entrances: []
+    Exits: []
+    MinPoint: {x: 0, y: 0}
+    MaxPoint: {x: 0, y: 0}
+  LastDropdownIndex: 0
   OutgoingEdges: []
 --- !u!114 &-1952200328960939937
 MonoBehaviour:
@@ -55,7 +81,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
   m_Name: RoomNode
   m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.RoomNode
-  Position: {x: 307.83997, y: 75.33334}
+  Position: {x: 473.3333, y: -3.3333282}
   Guid: 57874530c78ffed4081084be88092af1
   Room:
     SceneName: SampleScene 1
@@ -112,3 +138,4 @@ MonoBehaviour:
   nodes:
   - {fileID: -7914241744302684951}
   - {fileID: -1952200328960939937}
+  - {fileID: -4142464248750731641}

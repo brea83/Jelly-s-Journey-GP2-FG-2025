@@ -17,6 +17,7 @@ namespace NGAME.Editor
         public Action<NodeView> OnNodeSelected;
         public List<NGAME.Editor.SceneData> IncludedScenes = new List<NGAME.Editor.SceneData>();
         public List<NGAME.SceneConnectionsData> ValidScenes = new List<NGAME.SceneConnectionsData>();
+        //public StyleSheet Style;
         
         private RoomGraph _graph;
 
@@ -31,8 +32,8 @@ namespace NGAME.Editor
 
             GetRoomDataObjects();
 
-            var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI Toolkit/Styles/Editor/RoomGraphEditor.uss");
-            styleSheets.Add(styleSheet);
+            //var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI Toolkit/Styles/Editor/RoomGraphEditor.uss");
+            //styleSheets.Add(styleSheet);
         }
 
         internal void PopulateView(RoomGraph roomGraph)
