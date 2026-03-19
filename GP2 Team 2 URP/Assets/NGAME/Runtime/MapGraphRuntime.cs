@@ -6,6 +6,6 @@ namespace NGAME
     public class MapGraphRuntime : ScriptableObject
     {
         [SerializeReference]
-        public List<RuntimeRoomNode> Nodes = new();
+        public List<RoomRuntimeNode> Nodes = new();
     }
 }

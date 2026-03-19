@@ -38,7 +38,7 @@ namespace NGAME.Editor
             {
                 EdgeData edgeData = OutgoingEdges[i];
 
-                if (edgeData.sourcePortName == edge.output.portName && edgeData.destinationGuid == otherNode.Guid && edgeData.destinationPortName == edge.input.portName)
+                if (edgeData.SourcePortName == edge.output.portName && edgeData.DestinationNodeGuid == otherNode.Guid && edgeData.DestinationPortName == edge.input.portName)
                 {
                     indexesToRemove.Add(i);
                     //OutgoingEdges.Remove(edgeData);
@@ -68,15 +68,15 @@ namespace NGAME.Editor
     [System.Serializable]
     public class EdgeData
     {
-        public string sourcePortName;
-        public string destinationGuid;
-        public string destinationPortName;
+        public string SourcePortName;
+        public string DestinationNodeGuid;
+        public string DestinationPortName;
 
-        public EdgeData(string sourcePortName, string destinationGuid, string destinationPortName)
+        public EdgeData(string sourcePortName, string destinationNodeGuid, string destinationPortName)
         {
-            this.sourcePortName = sourcePortName;
-            this.destinationGuid = destinationGuid;
-            this.destinationPortName = destinationPortName;
+            SourcePortName = sourcePortName;
+            DestinationNodeGuid = destinationNodeGuid;
+            DestinationPortName = destinationPortName;
         }
     }
 

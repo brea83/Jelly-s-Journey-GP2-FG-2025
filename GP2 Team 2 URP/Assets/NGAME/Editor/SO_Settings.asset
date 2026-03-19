@@ -94,7 +94,7 @@ MonoBehaviour:
   - Name: Combat_Room1
     Guid: 285481fc08fbd4e45b73894565697832
     FilePath: Assets/Scenes/Levels/Combat_Room1.unity
-    IncludeInGraphTool: 1
+    IncludeInGraphTool: 0
     Description: 
     IsMarkedForDelete: 0
   - Name: Combat_Room2
@@ -124,7 +124,7 @@ MonoBehaviour:
   - Name: BDsTestGameplay 1
     Guid: 6c41715dd7b505745bcb543fe978aa78
     FilePath: Assets/Scenes/WIP/BDsTests/BDsTestGameplay 1.unity
-    IncludeInGraphTool: 1
+    IncludeInGraphTool: 0
     Description: 
     IsMarkedForDelete: 0
   - Name: BDsTestGameplay 2

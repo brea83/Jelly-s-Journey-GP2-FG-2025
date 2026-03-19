@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7914241744302684951
+--- !u!114 &-5764638185899930856
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -12,40 +12,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
   m_Name: RoomNode
   m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.RoomNode
-  Position: {x: 116.66665, y: 28.666656}
-  Guid: a19af990594070341a52f5feba278b38
+  Position: {x: 0, y: 0}
+  Guid: a72cc3e182c14b14c9749378ff4efa48
   Room:
-    SceneName: SampleScene
-    SceneGuid: 99c9720ab356a0642a771bea13969a05
+    SceneName: SampleScene 3
+    SceneGuid: 7cb8c6b0027761a46b600f3b69174403
     Entrances:
     - TypeName: JellysJourney.Door
-      Name: Door North
+      Name: Door South
       ConnectionType: 2
       IsLockable: 1
-      Position: {x: -28.000906, y: 0, z: 26.98}
-    - TypeName: JellysJourney.Door
-      Name: Entrance Only
-      ConnectionType: 0
-      IsLockable: 1
-      Position: {x: 9.329598, y: 0, z: 12.48}
+      Position: {x: 0.22, y: 0, z: -12.46}
     Exits:
-    - TypeName: DoorMarkerTest
-      Name: Object Name
+    - TypeName: JellysJourney.Door
+      Name: Door South
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: 0.22, y: 0, z: -12.46}
+    - TypeName: JellysJourney.Door
+      Name: Temp Final Door
       ConnectionType: 1
       IsLockable: 1
-      Position: {x: -28.000906, y: 0, z: 26.98}
-    - TypeName: JellysJourney.Door
-      Name: Door North
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -28.000906, y: 0, z: 26.98}
-    MinPoint: {x: -1, y: 0}
-    MaxPoint: {x: 0.32680926, y: 0.94509035}
-  LastDropdownIndex: 4
-  OutgoingEdges:
-  - sourcePortName: Door North
-    destinationGuid: 57874530c78ffed4081084be88092af1
-    destinationPortName: Door South
+      Position: {x: 1.2985873, y: 0, z: 24.947142}
+    MinPoint: {x: 0.01765375, y: -0.9998442}
+    MaxPoint: {x: 0.051983174, y: 0.9986479}
+  LastDropdownIndex: 3
+  OutgoingEdges: []
 --- !u!114 &-4142464248750731641
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -58,7 +50,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
   m_Name: RoomNode
   m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.RoomNode
-  Position: {x: 9.000015, y: 261.3067}
+  Position: {x: 44.72, y: 52.679993}
   Guid: ad409a3a0d5013d468c73c818ebc7773
   Room:
     SceneName: BDsTestGameplay 1
@@ -99,59 +91,6 @@ MonoBehaviour:
     MaxPoint: {x: 0.9855602, y: 0.16932532}
   LastDropdownIndex: 5
   OutgoingEdges: []
---- !u!114 &-1952200328960939937
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
-  m_Name: RoomNode
-  m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.RoomNode
-  Position: {x: 473.3333, y: -3.3333282}
-  Guid: 57874530c78ffed4081084be88092af1
-  Room:
-    SceneName: SampleScene 1
-    SceneGuid: 7a3963fe7029e1540abdb3d88a000b52
-    Entrances:
-    - TypeName: JellysJourney.Door
-      Name: Door South
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -8.25, y: 0, z: -20.5}
-    - TypeName: JellysJourney.Door
-      Name: Door West
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -25.239712, y: 0, z: -1.75}
-    - TypeName: JellysJourney.Door
-      Name: Door East
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: 16.203, y: 0, z: 7.54}
-    Exits:
-    - TypeName: JellysJourney.Door
-      Name: Door South
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -8.25, y: 0, z: -20.5}
-    - TypeName: JellysJourney.Door
-      Name: Door West
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -25.239712, y: 0, z: -1.75}
-    - TypeName: JellysJourney.Door
-      Name: Door East
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: 16.203, y: 0, z: 7.54}
-    MinPoint: {x: -0.7762233, y: -0.630458}
-    MaxPoint: {x: 0.9066414, y: 0.4219019}
-  LastDropdownIndex: 1
-  OutgoingEdges: []
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,6 +105,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.RoomGraph
   rootNode: {fileID: 0}
   nodes:
-  - {fileID: -7914241744302684951}
-  - {fileID: -1952200328960939937}
   - {fileID: -4142464248750731641}
+  - {fileID: -5764638185899930856}

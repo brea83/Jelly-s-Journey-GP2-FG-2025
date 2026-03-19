@@ -1,3 +1,13 @@
+.Error1 > * #title{
+     
+     background-color: red;
+}
+
+.Error1 {
+     
+     color: red;
+}
+
 GridBackground {
     --grid-background-color: rgb(40, 40, 40);
     --line-color: rgba(193, 196, 192, 0.1);
@@ -15,3 +25,4 @@ GridBackground {
 .InspectorPanel {
     background-color: rgb(56, 56, 56);
 }
+

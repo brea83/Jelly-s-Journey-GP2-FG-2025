@@ -36,6 +36,28 @@ namespace NGAME.Editor
             //styleSheets.Add(styleSheet);
         }
 
+        public void ValidateNode(RoomNode node, NodeView view, List<NGAME.SceneConnectionsData> mostRecentlyFetchedSceneData)
+        {
+           
+
+            NGAME.SceneConnectionsData matchingScene = mostRecentlyFetchedSceneData.FirstOrDefault((NGAME.SceneConnectionsData e) => e.SceneGuid == node.Room.SceneGuid);
+            if (matchingScene == null)
+            {
+                StringBuilder sb = new();
+                sb.Append("Map Graph has a node not included in the valid scenes. ");
+                sb.Append("If you wish to remove these nodes use menu option Remove Missing Rooms (NOT IMPLEMENTED).\n");
+                sb.Append("Possible reasons for this include: \n");
+                sb.Append("You may have unselected the scene in the NGAME settings window \n");
+                sb.Append("Or the scene no longer includes NGAME compatible interfaces (Logs for filtering based on that to be added soon).\n");
+                Debug.LogWarning(sb.ToString());
+                view.titleContainer.AddToClassList("Error1");
+                view.AddToClassList("Error1");
+                return;
+            }
+
+
+        }
+
         internal void PopulateView(RoomGraph roomGraph)
         {
             this._graph = roomGraph;
@@ -51,18 +73,41 @@ namespace NGAME.Editor
 
             foreach(RoomNode node in _graph.nodes)
             {
-                NodeView parentView = FindNodeView(node);
+                NodeView currentView = FindNodeView(node);
+
+                ValidateNode(node, currentView, ValidScenes);
+
                 List<EdgeData> outgoingEdges = _graph.GetOutgoingEdges(node);
-                foreach(EdgeData edge in outgoingEdges)
+
+                List<int> indexOfInvalidEdges = new();
+
+                for (int i = 0; i < outgoingEdges.Count; i++)
                 {
-                    NodeView childView = GetNodeByGuid(edge.destinationGuid) as NodeView;
-                    Port sourcePort = parentView.GetPortByName(edge.sourcePortName, parentView.OutputPorts);
-                    Port destinationPort = childView.GetPortByName(edge.destinationPortName, childView.InputPorts);
+                    EdgeData edge = outgoingEdges[i];
+                    Port sourcePort = currentView.GetPortByName(edge.SourcePortName, currentView.OutputPorts);
+                   
+                    NodeView destinationView = GetNodeByGuid(edge.DestinationNodeGuid) as NodeView;
+                    if (destinationView == null)
+                    {
+                        sourcePort.AddToClassList("Error1");
+                        Debug.LogWarning("Node " + node.name + ", initialized with connection to a missing node with guid: " + edge.DestinationNodeGuid + ". Removing edge from node.");
+                        indexOfInvalidEdges.Add(i);
+                        continue;
+                    }
+                    
+                    Port destinationPort = destinationView.GetPortByName(edge.DestinationPortName, destinationView.InputPorts);
                     if (sourcePort != null && destinationPort != null)
                     {
                         Edge newEdge = sourcePort.ConnectTo(destinationPort);
                         AddElement(newEdge);
                     }
+                }
+
+                foreach( int index  in indexOfInvalidEdges)
+                {
+                    outgoingEdges.RemoveAt(index);
+                    EditorUtility.SetDirty(node);
+                    EditorUtility.SetDirty(_graph);
                 }
             }
         }
