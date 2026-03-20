@@ -16,6 +16,7 @@ MonoBehaviour:
   nodes:
   - {fileID: 5529799894810670294}
   - {fileID: 3925803280056713855}
+  - {fileID: 6630925781949843865}
 --- !u!114 &3925803280056713855
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28,7 +29,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
   m_Name: RoomNode
   m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.RoomNode
-  Position: {x: 119.06667, y: 252.21333}
+  Position: {x: 221.33334, y: 160.00002}
   Guid: 7bbf48dac0e3ce1418f3d1b7640806b4
   Room:
     SceneName: SampleScene 1
@@ -81,7 +82,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
   m_Name: RoomNode
   m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.RoomNode
-  Position: {x: -288.08002, y: 252}
+  Position: {x: -158.77335, y: 197.3333}
   Guid: 66e5cce788e44ab44bd53e911953d44b
   Room:
     SceneName: SampleScene 1
@@ -122,9 +123,59 @@ MonoBehaviour:
     MaxPoint: {x: 16.203, y: 7.54}
   LastDropdownIndex: 1
   OutgoingEdges:
-  - SourcePortName: Door West
-    DestinationNodeGuid: 7bbf48dac0e3ce1418f3d1b7640806b4
-    DestinationPortName: Door East
   - SourcePortName: Door South
     DestinationNodeGuid: 7bbf48dac0e3ce1418f3d1b7640806b4
-    DestinationPortName: Door West
+    DestinationPortName: Door East
+--- !u!114 &6630925781949843865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
+  m_Name: RoomNode
+  m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.RoomNode
+  Position: {x: 0, y: 0}
+  Guid: ea27a9536c0b3d643ba9a33204ae2c48
+  Room:
+    SceneName: SampleScene 1
+    SceneGuid: 7a3963fe7029e1540abdb3d88a000b52
+    Entrances:
+    - TypeName: JellysJourney.Door
+      Name: Door South
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -8.25, y: 0, z: -20.5}
+    - TypeName: JellysJourney.Door
+      Name: Door West
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -25.239712, y: 0, z: -1.75}
+    - TypeName: JellysJourney.Door
+      Name: Door East
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: 16.203, y: 0, z: 7.54}
+    Exits:
+    - TypeName: JellysJourney.Door
+      Name: Door South
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -8.25, y: 0, z: -20.5}
+    - TypeName: JellysJourney.Door
+      Name: Door West
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -25.239712, y: 0, z: -1.75}
+    - TypeName: JellysJourney.Door
+      Name: Door East
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: 16.203, y: 0, z: 7.54}
+    MinPoint: {x: -25.239712, y: -20.5}
+    MaxPoint: {x: 16.203, y: 7.54}
+  LastDropdownIndex: 1
+  OutgoingEdges: []

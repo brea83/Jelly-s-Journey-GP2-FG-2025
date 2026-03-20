@@ -12,46 +12,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
   m_Name: RoomNode
   m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.RoomNode
-  Position: {x: -64.33334, y: -135.67998}
+  Position: {x: -6, y: -80}
   Guid: fb0dd4aad1e8e03418f645005f7e4ffc
   Room:
-    SceneName: SampleScene 1
-    SceneGuid: 7a3963fe7029e1540abdb3d88a000b52
+    SceneName: SampleScene 3
+    SceneGuid: 7cb8c6b0027761a46b600f3b69174403
     Entrances:
     - TypeName: JellysJourney.Door
       Name: Door South
       ConnectionType: 2
       IsLockable: 1
-      Position: {x: -8.25, y: 0, z: -20.5}
-    - TypeName: JellysJourney.Door
-      Name: Door West
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -25.239712, y: 0, z: -1.75}
-    - TypeName: JellysJourney.Door
-      Name: Door East
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: 16.203, y: 0, z: 7.54}
+      Position: {x: 0.22, y: 0, z: -12.46}
     Exits:
     - TypeName: JellysJourney.Door
       Name: Door South
       ConnectionType: 2
       IsLockable: 1
-      Position: {x: -8.25, y: 0, z: -20.5}
+      Position: {x: 0.22, y: 0, z: -12.46}
     - TypeName: JellysJourney.Door
-      Name: Door West
-      ConnectionType: 2
+      Name: Temp Final Door
+      ConnectionType: 1
       IsLockable: 1
-      Position: {x: -25.239712, y: 0, z: -1.75}
-    - TypeName: JellysJourney.Door
-      Name: Door East
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: 16.203, y: 0, z: 7.54}
-    MinPoint: {x: -25.239712, y: -20.5}
-    MaxPoint: {x: 16.203, y: 7.54}
-  LastDropdownIndex: 1
+      Position: {x: 1.2985873, y: 0, z: 24.947142}
+    MinPoint: {x: 0.22, y: -12.46}
+    MaxPoint: {x: 1.2985873, y: 24.947142}
+  LastDropdownIndex: 3
   OutgoingEdges: []
 --- !u!114 &-5764638185899930856
 MonoBehaviour:
@@ -94,6 +79,12 @@ MonoBehaviour:
   - SourcePortName: Door South
     DestinationNodeGuid: fb0dd4aad1e8e03418f645005f7e4ffc
     DestinationPortName: Door East
+  - SourcePortName: Door South
+    DestinationNodeGuid: ad409a3a0d5013d468c73c818ebc7773
+    DestinationPortName: Door South
+  - SourcePortName: Door South
+    DestinationNodeGuid: ad409a3a0d5013d468c73c818ebc7773
+    DestinationPortName: Door West
 --- !u!114 &-4142464248750731641
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -109,43 +100,33 @@ MonoBehaviour:
   Position: {x: 44.72, y: 52.679993}
   Guid: ad409a3a0d5013d468c73c818ebc7773
   Room:
-    SceneName: BDsTestGameplay 1
-    SceneGuid: 6c41715dd7b505745bcb543fe978aa78
+    SceneName: SampleScene 2
+    SceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
     Entrances:
     - TypeName: JellysJourney.Door
-      Name: Door East
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: 22.7, y: -0.2140007, z: 3.9}
-    - TypeName: JellysJourney.Door
-      Name: Door South
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -0.9611873, y: -0.2140007, z: -23.9}
-    - TypeName: JellysJourney.Door
       Name: Door West
       ConnectionType: 2
       IsLockable: 1
-      Position: {x: -18.491539, y: -0.2140007, z: -5.1657524}
+      Position: {x: -9.32, y: 0.5000038, z: -49.78}
+    - TypeName: JellysJourney.Door
+      Name: Door East
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: 29.93, y: 0.5000038, z: -16.44}
     Exits:
     - TypeName: JellysJourney.Door
-      Name: Door East
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: 22.7, y: -0.2140007, z: 3.9}
-    - TypeName: JellysJourney.Door
-      Name: Door South
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -0.9611873, y: -0.2140007, z: -23.9}
-    - TypeName: JellysJourney.Door
       Name: Door West
       ConnectionType: 2
       IsLockable: 1
-      Position: {x: -18.491539, y: -0.2140007, z: -5.1657524}
-    MinPoint: {x: -0.6119313, y: -0.79091084}
-    MaxPoint: {x: 0.9855602, y: 0.16932532}
-  LastDropdownIndex: 5
+      Position: {x: -9.32, y: 0.5000038, z: -49.78}
+    - TypeName: JellysJourney.Door
+      Name: Door East
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: 29.93, y: 0.5000038, z: -16.44}
+    MinPoint: {x: -9.32, y: -49.78}
+    MaxPoint: {x: 29.93, y: 0}
+  LastDropdownIndex: 2
   OutgoingEdges: []
 --- !u!114 &11400000
 MonoBehaviour:

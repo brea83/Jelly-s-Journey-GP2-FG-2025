@@ -1,11 +1,11 @@
-.Error1 > * #title{
+.Error2 > * #title{
      
      background-color: red;
 }
 
 .Error1 {
-     
-     color: red;
+    
+    background-color: red;
 }
 
 GridBackground {

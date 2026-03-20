@@ -46,9 +46,10 @@ namespace NGAME.Editor
                 }
             }
 
-            foreach (int index in indexesToRemove)
+            indexesToRemove.Sort();
+            for (int i = indexesToRemove.Count -1; i >= 0; i--)
             {
-                OutgoingEdges.RemoveAt(index);
+                OutgoingEdges.RemoveAt(indexesToRemove[i]);
             }
             EditorUtility.SetDirty(this);
         }
@@ -60,8 +61,16 @@ namespace NGAME.Editor
         public void UpdateRoomData(NGAME.SceneConnectionsData room)
         {
             Room = room;
-            _exitCount = Room.Exits.Count;
-            _entranceCount = Room.Entrances.Count;
+            if (Room == null)
+            {
+                _exitCount = 0;
+                _entranceCount = 0;
+            }
+            else
+            {
+                _exitCount = Room.Exits.Count;
+                _entranceCount = Room.Entrances.Count;
+            }
             EditorUtility.SetDirty(this);
         }
 

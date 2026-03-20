@@ -36,28 +36,6 @@ namespace NGAME.Editor
             //styleSheets.Add(styleSheet);
         }
 
-        public void ValidateNode(RoomNode node, NodeView view, List<NGAME.SceneConnectionsData> mostRecentlyFetchedSceneData)
-        {
-           
-
-            NGAME.SceneConnectionsData matchingScene = mostRecentlyFetchedSceneData.FirstOrDefault((NGAME.SceneConnectionsData e) => e.SceneGuid == node.Room.SceneGuid);
-            if (matchingScene == null)
-            {
-                StringBuilder sb = new();
-                sb.Append("Map Graph has a node not included in the valid scenes. ");
-                sb.Append("If you wish to remove these nodes use menu option Remove Missing Rooms (NOT IMPLEMENTED).\n");
-                sb.Append("Possible reasons for this include: \n");
-                sb.Append("You may have unselected the scene in the NGAME settings window \n");
-                sb.Append("Or the scene no longer includes NGAME compatible interfaces (Logs for filtering based on that to be added soon).\n");
-                Debug.LogWarning(sb.ToString());
-                view.titleContainer.AddToClassList("Error1");
-                view.AddToClassList("Error1");
-                return;
-            }
-
-
-        }
-
         internal void PopulateView(RoomGraph roomGraph)
         {
             this._graph = roomGraph;
@@ -75,40 +53,7 @@ namespace NGAME.Editor
             {
                 NodeView currentView = FindNodeView(node);
 
-                ValidateNode(node, currentView, ValidScenes);
-
-                List<EdgeData> outgoingEdges = _graph.GetOutgoingEdges(node);
-
-                List<int> indexOfInvalidEdges = new();
-
-                for (int i = 0; i < outgoingEdges.Count; i++)
-                {
-                    EdgeData edge = outgoingEdges[i];
-                    Port sourcePort = currentView.GetPortByName(edge.SourcePortName, currentView.OutputPorts);
-                   
-                    NodeView destinationView = GetNodeByGuid(edge.DestinationNodeGuid) as NodeView;
-                    if (destinationView == null)
-                    {
-                        sourcePort.AddToClassList("Error1");
-                        Debug.LogWarning("Node " + node.name + ", initialized with connection to a missing node with guid: " + edge.DestinationNodeGuid + ". Removing edge from node.");
-                        indexOfInvalidEdges.Add(i);
-                        continue;
-                    }
-                    
-                    Port destinationPort = destinationView.GetPortByName(edge.DestinationPortName, destinationView.InputPorts);
-                    if (sourcePort != null && destinationPort != null)
-                    {
-                        Edge newEdge = sourcePort.ConnectTo(destinationPort);
-                        AddElement(newEdge);
-                    }
-                }
-
-                foreach( int index  in indexOfInvalidEdges)
-                {
-                    outgoingEdges.RemoveAt(index);
-                    EditorUtility.SetDirty(node);
-                    EditorUtility.SetDirty(_graph);
-                }
+                currentView.ValidateNode(ValidScenes);
             }
         }
 
@@ -132,9 +77,10 @@ namespace NGAME.Editor
                     Edge edge = element as Edge;
                     if(edge != null)
                     {
-                        NodeView parentView = edge.output.node as NodeView;
-                        NodeView childView = edge.input.node as NodeView;
-                        _graph.RemoveEdge(parentView.Node, childView.Node, edge);
+                        NodeView sourceNode = edge.output.node as NodeView;
+                        NodeView destinationNode = edge.input.node as NodeView;
+                        NodeView.RemoveEdge(edge);
+                        _graph.RemoveEdge(sourceNode.Node, destinationNode.Node, edge);
                     }
                 }
             }
@@ -143,9 +89,24 @@ namespace NGAME.Editor
             {
                 foreach(Edge edge in viewChange.edgesToCreate)
                 {
-                    NodeView parentView = edge.output.node as NodeView;
-                    NodeView childView = edge.input.node as NodeView;
-                    _graph.AddEdge(parentView.Node, childView.Node, edge);
+                    NodeView sourceNode = edge.output.node as NodeView;
+                    NodeView destinationNode = edge.input.node as NodeView;
+                    NodeView.AddEdge(edge);
+                    _graph.AddEdge(sourceNode.Node, destinationNode.Node, edge);
+                    Debug.Log("Edge created between " + edge.input.portName + ", and " + edge.output.portName);
+                }
+            }
+
+            if(viewChange.movedElements != null)
+            {
+                foreach (GraphElement element in viewChange.movedElements)
+                {
+                    Edge edge = element as Edge;
+                    if( edge != null )
+                    {
+                        Debug.Log("Edge between " + edge.input.portName + ", and " + edge.output.portName + ". MOVED");
+
+                    }
                 }
             }
             return viewChange;
@@ -167,7 +128,7 @@ namespace NGAME.Editor
         }
         void CreateNodeView(RoomNode roomNode)
         {
-            NodeView nodeView = new NodeView(roomNode, ValidScenes);
+            NodeView nodeView = new NodeView(this, roomNode, ValidScenes);
             nodeView.OnNodeSelected = OnNodeSelected;
             AddElement(nodeView);
         }

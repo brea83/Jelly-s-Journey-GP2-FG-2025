@@ -1,25 +1,31 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityEditor.Experimental.GraphView;
 namespace NGAME.Editor
 {
     public class NodeView : UnityEditor.Experimental.GraphView.Node
     {
+        public RoomGraphView m_RoomGraphView;
         public Action<NodeView> OnNodeSelected;
         public RoomNode Node;
         public List<Port> InputPorts = new List<Port>();
         public List<Port> OutputPorts = new List<Port>();
 
+        public List<Edge> OldEdges = new List<Edge>();
+
 
         private DropdownField _roomSelect;
         private List<NGAME.SceneConnectionsData> _roomDataObjects;
+        private Color m_ValidPortColor = new();
         
-        
-        public NodeView(RoomNode node, List<NGAME.SceneConnectionsData> roomDataObjects = null) 
+        public NodeView(RoomGraphView graph, RoomNode node, List<NGAME.SceneConnectionsData> roomDataObjects = null) 
         {
+            this.m_RoomGraphView = graph;
             this.Node = node;
             this.title = node.name;
             this.viewDataKey = node.Guid;
@@ -78,25 +84,75 @@ namespace NGAME.Editor
             }
             Node.UpdateRoomData( newData );
             UpdatePorts();
+            MarkMissingSceneError("", false);
         }
 
         private void UpdatePorts()
-        { 
-            if(Node.Room == null)
+        {
+
+            List<string> EntranceNames;
+            List<string> ExitNames;  
+            if (Node.Room == null)
             {
-                InputPorts.Clear();
-                OutputPorts.Clear();
-                return;
+                EntranceNames = new();
+                ExitNames = new();
             }
-            List<string> EntranceNames = Node.Room.Entrances.ConvertAll(entrance => entrance.Name);
-            List<string> ExitNames = Node.Room.Exits.ConvertAll(entrance => entrance.Name);
+            else
+            {
+                EntranceNames = Node.Room.Entrances.ConvertAll(entrance => entrance.Name);
+                ExitNames = Node.Room.Exits.ConvertAll(entrance => entrance.Name);
+            }
+            
 
             RemoveExcessPorts(InputPorts, inputContainer, EntranceNames);
             AddMissingPorts(InputPorts, inputContainer, EntranceNames);
 
             RemoveExcessPorts(OutputPorts, outputContainer, ExitNames);
             AddMissingPorts(OutputPorts, outputContainer, ExitNames, false);
+
+            TryReconnectOldEdges();
         }
+
+        private void TryReconnectOldEdges()
+        {
+            List<int> indexesToRemove = new();
+
+            for (int i = 0; i < OldEdges.Count; i++)
+            {
+                Edge edge = OldEdges[i];
+                Port newInput = GetPortByName(edge.input.portName, InputPorts);
+                if(newInput != null)
+                {
+                    //Port newOutput = edge.output;
+                    //newOutput.DisconnectAll();
+                    //newInput.DisconnectAll();
+                    //newOutput.ConnectTo(newInput);
+
+                    //newInput.RemoveFromClassList("Error1");
+                    //newOutput.RemoveFromClassList("Error1");
+
+                    //edge.input = newInput;
+                    //newInput.ConnectTo(edge.output);
+                    Port oldOutput = edge.output;
+                    //oldOutput.DisconnectAll();
+                    RemoveEdge(edge);
+                    m_RoomGraphView.RemoveElement(edge);
+
+                    Edge newEdge = newInput.ConnectTo(oldOutput);
+                    m_RoomGraphView.AddElement(newEdge);
+
+                    indexesToRemove.Add(i);
+                }
+            }
+
+            indexesToRemove.Sort();
+
+            for (int i = indexesToRemove.Count -1; i >= 0; i--)
+            {
+                OldEdges.RemoveAt(indexesToRemove[i]);
+            }
+        }
+
 
         private void AddMissingPorts(List<Port> oldPorts, VisualElement portContainer, List<string> newPortNames, bool isInputPort = true)
         {
@@ -122,6 +178,7 @@ namespace NGAME.Editor
             {
                 if (oldPorts.Contains(port))
                 {
+                    OnPortRemoved(port);
                     oldPorts.Remove(port);
                 }
                 port.RemoveFromHierarchy();
@@ -200,11 +257,218 @@ namespace NGAME.Editor
             Port newPort = InstantiatePort(orientation, flowDirection, portCapacity, passedDataType);
             if (newPort != null)
             {
+                //newPort.conn
+                m_ValidPortColor = newPort.portColor;
                 newPort.portName = portName;
                 portList.Add(newPort);
                 portContainer.Add(newPort);
             }
             return newPort;
+        }
+
+        public override Port InstantiatePort(Orientation orientation, Direction direction, Port.Capacity capacity, Type type)
+        {
+            //Debug.Log("InstantiatePort called");
+            return Port.Create<Edge>(orientation, direction, capacity, type);
+        }
+
+        protected override void OnPortRemoved(Port port)
+        {
+            base.OnPortRemoved(port);
+            Debug.Log("On Port removed called for port: " + port.portName);
+            if (port.connected)
+            {
+                List<Edge> edges = port.connections.ToList();
+                foreach (Edge edge in edges)
+                {
+                    Port otherPort = port.direction == Direction.Input ? edge.output : edge.input;
+                    string errorTooltip = "Missing connection to port named " + port.portName;
+                    MarkPortConnectionError(otherPort, edge, errorTooltip);
+                    //Debug.LogWarning("Port " + otherPort.portName + ", is connected to a port that is being removed");
+
+                    OldEdges.Add(edge);
+                }
+            }
+        }
+
+        private void OnPortConnected(Port port)
+        {
+            string sceneName = Node.Room != null ? Node.Room.SceneName : "NULL";
+            //Debug.Log("port connected event on port " + port.portName + ", in room node with scene " + sceneName);
+            if(port != null)
+            {
+                port.RemoveFromClassList("Error1");
+                port.contentContainer.tooltip = "";
+            }
+        }
+
+        private void OnPortDisconnected(Port port, Edge edge)
+        {
+            if(port != null)
+            {
+                port.RemoveFromClassList("Error1");
+                port.contentContainer.tooltip = "";
+            }
+
+            if (OldEdges.Contains(edge))
+            {
+                OldEdges.Remove(edge);
+            }
+        }
+
+        public static void RemoveEdge(Edge edge)
+        {
+            NodeView sourceNode = edge.output.node as NodeView;
+            if(sourceNode != null)
+            {
+                sourceNode.OnPortDisconnected(edge.output, edge);
+            }
+
+            NodeView destinationNode = edge.input.node as NodeView;
+            if(destinationNode != null)
+            {
+                destinationNode.OnPortDisconnected(edge.input, edge);
+            }
+        }
+
+        public static void AddEdge(Edge edge)
+        {
+            NodeView sourceNode = edge.output.node as NodeView;
+            sourceNode.OnPortConnected(edge.output);
+
+            NodeView destinationNode = edge.input.node as NodeView;
+            destinationNode.OnPortConnected(edge.input);
+        }
+
+        private void MarkPortConnectionError(Port port, Edge edge, string tooltip = "", bool bShowError = true)
+        {
+            if (bShowError)
+            {
+                if (port != null)
+                {
+                    port.AddToClassList("Error1");
+                    port.tooltip = tooltip;
+                    //port.portColor = Color.green;
+                }
+
+                if (edge != null)
+                {
+                    edge.AddToClassList("Error1");
+                    edge.tooltip = tooltip;
+                }
+            }
+            else
+            {
+                if (port != null)
+                {
+                    port.RemoveFromClassList("Error1");
+                    port.tooltip = tooltip;
+                    port.portColor = m_ValidPortColor;
+                }
+
+                if (edge != null)
+                {
+                    edge.RemoveFromClassList("Error1");
+                    edge.tooltip = tooltip;
+                }
+            }
+            
+        }
+
+        private void MarkMissingSceneError(string errorTooltip = "", bool bShowError = true)
+        {
+            if (bShowError)
+            {
+                AddToClassList("Error2");
+                titleContainer.AddToClassList("Error1");
+                titleContainer.tooltip = errorTooltip;
+            }
+            else
+            {
+                RemoveFromClassList("Error2");
+                titleContainer.RemoveFromClassList("Error1");
+                titleContainer.tooltip = "";
+            }
+        }
+
+        public void ValidateNode(List<NGAME.SceneConnectionsData> mostRecentlyFetchedSceneData)
+        {
+            ValidateNodeScene(mostRecentlyFetchedSceneData);
+            ValidateOutputEdges(mostRecentlyFetchedSceneData);
+        }
+
+        internal void ValidateNodeScene(List<NGAME.SceneConnectionsData> mostRecentlyFetchedSceneData)
+        {
+
+            //if(Node.Room == null)
+            //{
+            //    return;
+            //}
+            SceneConnectionsData matchingScene = mostRecentlyFetchedSceneData.FirstOrDefault((SceneConnectionsData e) => e.SceneGuid == Node.Room.SceneGuid);
+            if (matchingScene == null)
+            {
+                StringBuilder sb = new();
+                sb.Append("Map Graph has a node not included in the valid scenes. ");
+                sb.Append("If you wish to remove these nodes use menu option Remove Missing Rooms (NOT IMPLEMENTED).\n");
+                sb.Append("Possible reasons for this include: \n");
+                sb.Append("You may have unselected the scene in the NGAME settings window \n");
+                sb.Append("Or the scene no longer includes NGAME compatible interfaces (Logs for filtering based on that to be added soon).\n");
+                Debug.LogWarning(sb.ToString());
+
+                MarkMissingSceneError("Scene named " + Node.Room.SceneName + ", not valid.");
+                return;
+            }
+
+
+        }
+
+        internal void ValidateOutputEdges(List<NGAME.SceneConnectionsData> mostRecentlyFetchedSceneData, bool bDeleteInvalidEdges = true)
+        {
+            List<int> indexOfInvalidEdges = new();
+
+            for (int i = 0; i < Node.OutgoingEdges.Count; i++)
+            {
+                EdgeData edge = Node.OutgoingEdges[i];
+                Port sourcePort = GetPortByName(edge.SourcePortName, OutputPorts);
+
+                NodeView destinationView = m_RoomGraphView.GetNodeByGuid(edge.DestinationNodeGuid) as NodeView;
+                if (destinationView == null)
+                {
+                    sourcePort.AddToClassList("Error1");
+                    string errorTooltip = "Connected to missing node guid: " + edge.DestinationNodeGuid;
+                    //Debug.LogWarning("Node " + Node.Room.SceneName + ", has a connection to a missing node with guid: " + edge.DestinationNodeGuid + ". Removing edge from node.");
+                    MarkPortConnectionError(sourcePort, null, errorTooltip);
+
+                    indexOfInvalidEdges.Add(i);
+                    continue;
+                }
+
+                Port destinationPort = destinationView.GetPortByName(edge.DestinationPortName, destinationView.InputPorts);
+                if (sourcePort != null)
+                {
+                    if (destinationPort != null)
+                    {
+                        Edge newEdge = sourcePort.ConnectTo(destinationPort);
+                        m_RoomGraphView.AddElement(newEdge);
+
+                    }
+                    else
+                    {
+                        string errorTooltip = "Missing connection to port named " + edge.DestinationPortName;
+                        MarkPortConnectionError(sourcePort, null, errorTooltip);
+                        //Debug.LogWarning("Node " + node.Room.SceneName + ", has a connection to a missing port named " + edge.DestinationPortName + ", this is probably because the node this port was connected to had its scene changed.");
+                    }
+                }
+            }
+
+            foreach (int index in indexOfInvalidEdges)
+            {
+                if (bDeleteInvalidEdges)
+                {
+                    Node.OutgoingEdges.RemoveAt(index);
+                }
+                EditorUtility.SetDirty(this.Node);
+            }
         }
 
         public override void SetPosition(Rect newPos)
@@ -217,9 +481,7 @@ namespace NGAME.Editor
 
         public Port GetPortByName(string name, List<Port> portCollection)
         {
-            return portCollection.Where(port =>
-            port.portName == name
-            ).First();
+            return portCollection.FirstOrDefault((Port e) => e.portName == name);
         }
 
         public override void OnSelected()

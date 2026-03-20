@@ -36,14 +36,14 @@ namespace NGAME.Editor
             AssetDatabase.SaveAssetIfDirty(this);
         }
 
-        public void AddEdge(RoomNode parent, RoomNode child, Edge edge)
+        public void AddEdge(RoomNode sourceNode, RoomNode destinationNode, Edge edge)
         {
             //EdgeData newEdgeData = new EdgeData(edge.output.portName, child.Guid, edge.input.portName);
             //parent.OutgoingEdges.Add(newEdgeData);
-            parent.AddEdge(child, edge);
+            sourceNode.AddEdge(destinationNode, edge);
         }
 
-        public void RemoveEdge(RoomNode parent, RoomNode child, Edge edge)
+        public void RemoveEdge(RoomNode sourceNode, RoomNode destinationNode, Edge edge)
         {
             //foreach(EdgeData edgeData in parent.OutgoingEdges)
             //{
@@ -52,7 +52,7 @@ namespace NGAME.Editor
             //        parent.OutgoingEdges.Remove(edgeData);
             //    }
             //}
-            parent.RemoveEdge(child, edge);
+            sourceNode.RemoveEdge(destinationNode, edge);
         }
 
         public List<EdgeData> GetOutgoingEdges(RoomNode parent)
