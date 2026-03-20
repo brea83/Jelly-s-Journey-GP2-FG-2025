@@ -26,6 +26,7 @@ namespace NGAME.Editor
         {
             EdgeData newEdgeData = new EdgeData(edge.output.portName, otherNode.Guid, edge.input.portName);
             OutgoingEdges.Add(newEdgeData);
+            EditorUtility.SetDirty(this);
         }
 
         public override List<EdgeData> GetOutgoingEdges() { return OutgoingEdges; }
@@ -49,6 +50,7 @@ namespace NGAME.Editor
             {
                 OutgoingEdges.RemoveAt(index);
             }
+            EditorUtility.SetDirty(this);
         }
 
         public void SetAsStartRoom(bool isStartNode)
@@ -61,7 +63,6 @@ namespace NGAME.Editor
             _exitCount = Room.Exits.Count;
             _entranceCount = Room.Entrances.Count;
             EditorUtility.SetDirty(this);
-            AssetDatabase.SaveAssetIfDirty(this);
         }
 
     }

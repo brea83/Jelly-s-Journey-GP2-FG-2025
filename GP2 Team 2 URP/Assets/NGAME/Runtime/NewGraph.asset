@@ -1,5 +1,58 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7350264546805624140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
+  m_Name: RoomNode
+  m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.RoomNode
+  Position: {x: -64.33334, y: -135.67998}
+  Guid: fb0dd4aad1e8e03418f645005f7e4ffc
+  Room:
+    SceneName: SampleScene 1
+    SceneGuid: 7a3963fe7029e1540abdb3d88a000b52
+    Entrances:
+    - TypeName: JellysJourney.Door
+      Name: Door South
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -8.25, y: 0, z: -20.5}
+    - TypeName: JellysJourney.Door
+      Name: Door West
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -25.239712, y: 0, z: -1.75}
+    - TypeName: JellysJourney.Door
+      Name: Door East
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: 16.203, y: 0, z: 7.54}
+    Exits:
+    - TypeName: JellysJourney.Door
+      Name: Door South
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -8.25, y: 0, z: -20.5}
+    - TypeName: JellysJourney.Door
+      Name: Door West
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -25.239712, y: 0, z: -1.75}
+    - TypeName: JellysJourney.Door
+      Name: Door East
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: 16.203, y: 0, z: 7.54}
+    MinPoint: {x: -25.239712, y: -20.5}
+    MaxPoint: {x: 16.203, y: 7.54}
+  LastDropdownIndex: 1
+  OutgoingEdges: []
 --- !u!114 &-5764638185899930856
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12,7 +65,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
   m_Name: RoomNode
   m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.RoomNode
-  Position: {x: 0, y: 0}
+  Position: {x: -327.91208, y: -9.333324}
   Guid: a72cc3e182c14b14c9749378ff4efa48
   Room:
     SceneName: SampleScene 3
@@ -37,7 +90,10 @@ MonoBehaviour:
     MinPoint: {x: 0.01765375, y: -0.9998442}
     MaxPoint: {x: 0.051983174, y: 0.9986479}
   LastDropdownIndex: 3
-  OutgoingEdges: []
+  OutgoingEdges:
+  - SourcePortName: Door South
+    DestinationNodeGuid: fb0dd4aad1e8e03418f645005f7e4ffc
+    DestinationPortName: Door East
 --- !u!114 &-4142464248750731641
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -107,3 +163,4 @@ MonoBehaviour:
   nodes:
   - {fileID: -4142464248750731641}
   - {fileID: -5764638185899930856}
+  - {fileID: -7350264546805624140}

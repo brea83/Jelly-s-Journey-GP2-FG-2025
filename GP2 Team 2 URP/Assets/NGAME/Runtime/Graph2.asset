@@ -65,8 +65,8 @@ MonoBehaviour:
       ConnectionType: 2
       IsLockable: 1
       Position: {x: 16.203, y: 0, z: 7.54}
-    MinPoint: {x: -0.7762233, y: -0.630458}
-    MaxPoint: {x: 0.9066414, y: 0.4219019}
+    MinPoint: {x: -25.239712, y: -20.5}
+    MaxPoint: {x: 16.203, y: 7.54}
   LastDropdownIndex: 1
   OutgoingEdges: []
 --- !u!114 &5529799894810670294
@@ -81,34 +81,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
   m_Name: RoomNode
   m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.RoomNode
-  Position: {x: -123.05003, y: 175}
+  Position: {x: -288.08002, y: 252}
   Guid: 66e5cce788e44ab44bd53e911953d44b
   Room:
-    SceneName: SampleScene 2
-    SceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
+    SceneName: SampleScene 1
+    SceneGuid: 7a3963fe7029e1540abdb3d88a000b52
     Entrances:
     - TypeName: JellysJourney.Door
+      Name: Door South
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -8.25, y: 0, z: -20.5}
+    - TypeName: JellysJourney.Door
       Name: Door West
       ConnectionType: 2
       IsLockable: 1
-      Position: {x: -9.32, y: 0.5000038, z: -49.78}
+      Position: {x: -25.239712, y: 0, z: -1.75}
     - TypeName: JellysJourney.Door
       Name: Door East
       ConnectionType: 2
       IsLockable: 1
-      Position: {x: 29.93, y: 0.5000038, z: -16.44}
+      Position: {x: 16.203, y: 0, z: 7.54}
     Exits:
     - TypeName: JellysJourney.Door
+      Name: Door South
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -8.25, y: 0, z: -20.5}
+    - TypeName: JellysJourney.Door
       Name: Door West
       ConnectionType: 2
       IsLockable: 1
-      Position: {x: -9.32, y: 0.5000038, z: -49.78}
+      Position: {x: -25.239712, y: 0, z: -1.75}
     - TypeName: JellysJourney.Door
       Name: Door East
       ConnectionType: 2
       IsLockable: 1
-      Position: {x: 29.93, y: 0.5000038, z: -16.44}
-    MinPoint: {x: -0.18402626, y: -0.9829213}
-    MaxPoint: {x: 1, y: 0}
-  LastDropdownIndex: 2
-  OutgoingEdges: []
+      Position: {x: 16.203, y: 0, z: 7.54}
+    MinPoint: {x: -25.239712, y: -20.5}
+    MaxPoint: {x: 16.203, y: 7.54}
+  LastDropdownIndex: 1
+  OutgoingEdges:
+  - SourcePortName: Door West
+    DestinationNodeGuid: 7bbf48dac0e3ce1418f3d1b7640806b4
+    DestinationPortName: Door East
+  - SourcePortName: Door South
+    DestinationNodeGuid: 7bbf48dac0e3ce1418f3d1b7640806b4
+    DestinationPortName: Door West
