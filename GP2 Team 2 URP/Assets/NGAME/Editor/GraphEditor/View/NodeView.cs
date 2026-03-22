@@ -15,9 +15,7 @@ namespace NGAME.Editor
         public RoomNode Node;
         public List<Port> InputPorts = new List<Port>();
         public List<Port> OutputPorts = new List<Port>();
-
-        public List<Edge> OldEdges = new List<Edge>();
-
+        public List<Port> OldConnectedPorts = new List<Port>();
 
         private DropdownField _roomSelect;
         private List<NGAME.SceneConnectionsData> _roomDataObjects;
@@ -103,6 +101,7 @@ namespace NGAME.Editor
                 ExitNames = Node.Room.Exits.ConvertAll(entrance => entrance.Name);
             }
             
+            TryReconnectOldEdges(EntranceNames);
 
             RemoveExcessPorts(InputPorts, inputContainer, EntranceNames);
             AddMissingPorts(InputPorts, inputContainer, EntranceNames);
@@ -110,37 +109,25 @@ namespace NGAME.Editor
             RemoveExcessPorts(OutputPorts, outputContainer, ExitNames);
             AddMissingPorts(OutputPorts, outputContainer, ExitNames, false);
 
-            TryReconnectOldEdges();
         }
 
-        private void TryReconnectOldEdges()
+        private void TryReconnectOldEdges(List<string> newPortNames)
         {
             List<int> indexesToRemove = new();
 
-            for (int i = 0; i < OldEdges.Count; i++)
+            for (int i = 0; i < OldConnectedPorts.Count; i++)
             {
-                Edge edge = OldEdges[i];
-                Port newInput = GetPortByName(edge.input.portName, InputPorts);
-                if(newInput != null)
+                Port oldPort = OldConnectedPorts[i];
+                if (newPortNames.Contains(oldPort.portName))
                 {
-                    //Port newOutput = edge.output;
-                    //newOutput.DisconnectAll();
-                    //newInput.DisconnectAll();
-                    //newOutput.ConnectTo(newInput);
-
-                    //newInput.RemoveFromClassList("Error1");
-                    //newOutput.RemoveFromClassList("Error1");
-
-                    //edge.input = newInput;
-                    //newInput.ConnectTo(edge.output);
-                    Port oldOutput = edge.output;
-                    //oldOutput.DisconnectAll();
-                    RemoveEdge(edge);
-                    m_RoomGraphView.RemoveElement(edge);
-
-                    Edge newEdge = newInput.ConnectTo(oldOutput);
-                    m_RoomGraphView.AddElement(newEdge);
-
+                    InputPorts.Add(oldPort);
+                    Edge oldEdge = null;
+                    if (oldPort.connections.Count() >= 1 )
+                    {
+                        oldEdge = oldPort.connections.First();
+                        MarkPortConnectionError(oldEdge.output, oldEdge, "", false);
+                    }
+                    MarkPortConnectionError(oldPort, oldEdge, "", false);
                     indexesToRemove.Add(i);
                 }
             }
@@ -149,7 +136,7 @@ namespace NGAME.Editor
 
             for (int i = indexesToRemove.Count -1; i >= 0; i--)
             {
-                OldEdges.RemoveAt(indexesToRemove[i]);
+                OldConnectedPorts.RemoveAt(indexesToRemove[i]);
             }
         }
 
@@ -176,12 +163,18 @@ namespace NGAME.Editor
             
             foreach(Port port in excessPorts )
             {
-                if (oldPorts.Contains(port))
+
+                bool bIsRetained = false;
+                if (port.direction == Direction.Input)
                 {
-                    OnPortRemoved(port);
-                    oldPorts.Remove(port);
+                    bIsRetained = TryRetainConnectedPorts(port);
                 }
-                port.RemoveFromHierarchy();
+
+                if (!bIsRetained)
+                {
+                    oldPorts.Remove(port);
+                    port.RemoveFromHierarchy();
+                }
             }
         }
 
@@ -272,33 +265,43 @@ namespace NGAME.Editor
             return Port.Create<Edge>(orientation, direction, capacity, type);
         }
 
-        protected override void OnPortRemoved(Port port)
+        protected bool TryRetainConnectedPorts(Port port)
         {
-            base.OnPortRemoved(port);
-            Debug.Log("On Port removed called for port: " + port.portName);
+            //base.OnPortRemoved(port);
+            //Debug.Log("On Port removed called for port: " + port.portName);
             if (port.connected)
             {
+                string sourceTooltip = "Missing connection to port named " + port.portName;
+                string destinationTooltip = "Connecetion named " + port.portName + ", doesn't exist in scene.";
+                Port otherPort = null;
+                Edge edge = null;
                 List<Edge> edges = port.connections.ToList();
-                foreach (Edge edge in edges)
+                foreach (Edge e in edges)
                 {
-                    Port otherPort = port.direction == Direction.Input ? edge.output : edge.input;
-                    string errorTooltip = "Missing connection to port named " + port.portName;
-                    MarkPortConnectionError(otherPort, edge, errorTooltip);
-                    //Debug.LogWarning("Port " + otherPort.portName + ", is connected to a port that is being removed");
-
-                    OldEdges.Add(edge);
+                    edge = e;
+                    otherPort = port.direction == Direction.Input ? e.output : e.input;
+                    if(otherPort == null)
+                    {
+                        continue;
+                    }
                 }
+                MarkPortConnectionError(otherPort, edge, sourceTooltip);
+                MarkPortConnectionError(port, null, destinationTooltip);
+                OldConnectedPorts.Add(port);
+                InputPorts.Remove(port);
+                return true;
             }
+            return false;
         }
 
         private void OnPortConnected(Port port)
         {
-            string sceneName = Node.Room != null ? Node.Room.SceneName : "NULL";
+            //string sceneName = Node.Room != null ? Node.Room.SceneName : "NULL";
             //Debug.Log("port connected event on port " + port.portName + ", in room node with scene " + sceneName);
             if(port != null)
             {
-                port.RemoveFromClassList("Error1");
-                port.contentContainer.tooltip = "";
+                MarkPortConnectionError(port, null, "", false);
+                
             }
         }
 
@@ -306,13 +309,14 @@ namespace NGAME.Editor
         {
             if(port != null)
             {
-                port.RemoveFromClassList("Error1");
-                port.contentContainer.tooltip = "";
+                MarkPortConnectionError(port, edge, "", false);
+                
             }
 
-            if (OldEdges.Contains(edge))
+            if (OldConnectedPorts.Contains(port))
             {
-                OldEdges.Remove(edge);
+                OldConnectedPorts.Remove(port);
+                port.RemoveFromHierarchy();
             }
         }
 
@@ -348,13 +352,14 @@ namespace NGAME.Editor
                 {
                     port.AddToClassList("Error1");
                     port.tooltip = tooltip;
-                    //port.portColor = Color.green;
+                    port.portColor = Color.red;
                 }
 
                 if (edge != null)
                 {
                     edge.AddToClassList("Error1");
                     edge.tooltip = tooltip;
+                    edge.input.portColor = Color.red;
                 }
             }
             else
@@ -370,6 +375,7 @@ namespace NGAME.Editor
                 {
                     edge.RemoveFromClassList("Error1");
                     edge.tooltip = tooltip;
+                    edge.input.portColor = m_ValidPortColor;
                 }
             }
             
@@ -400,10 +406,10 @@ namespace NGAME.Editor
         internal void ValidateNodeScene(List<NGAME.SceneConnectionsData> mostRecentlyFetchedSceneData)
         {
 
-            //if(Node.Room == null)
-            //{
-            //    return;
-            //}
+            if (Node.Room == null)
+            {
+                return;
+            }
             SceneConnectionsData matchingScene = mostRecentlyFetchedSceneData.FirstOrDefault((SceneConnectionsData e) => e.SceneGuid == Node.Room.SceneGuid);
             if (matchingScene == null)
             {
@@ -428,14 +434,14 @@ namespace NGAME.Editor
 
             for (int i = 0; i < Node.OutgoingEdges.Count; i++)
             {
-                EdgeData edge = Node.OutgoingEdges[i];
-                Port sourcePort = GetPortByName(edge.SourcePortName, OutputPorts);
+                EdgeData serializedEdge = Node.OutgoingEdges[i];
+                Port sourcePort = GetPortByName(serializedEdge.SourcePortName, OutputPorts);
 
-                NodeView destinationView = m_RoomGraphView.GetNodeByGuid(edge.DestinationNodeGuid) as NodeView;
+                NodeView destinationView = m_RoomGraphView.GetNodeByGuid(serializedEdge.DestinationNodeGuid) as NodeView;
                 if (destinationView == null)
                 {
                     sourcePort.AddToClassList("Error1");
-                    string errorTooltip = "Connected to missing node guid: " + edge.DestinationNodeGuid;
+                    string errorTooltip = "Connected to missing node guid: " + serializedEdge.DestinationNodeGuid;
                     //Debug.LogWarning("Node " + Node.Room.SceneName + ", has a connection to a missing node with guid: " + edge.DestinationNodeGuid + ". Removing edge from node.");
                     MarkPortConnectionError(sourcePort, null, errorTooltip);
 
@@ -443,7 +449,7 @@ namespace NGAME.Editor
                     continue;
                 }
 
-                Port destinationPort = destinationView.GetPortByName(edge.DestinationPortName, destinationView.InputPorts);
+                Port destinationPort = destinationView.GetPortByName(serializedEdge.DestinationPortName, destinationView.InputPorts);
                 if (sourcePort != null)
                 {
                     if (destinationPort != null)
@@ -454,8 +460,14 @@ namespace NGAME.Editor
                     }
                     else
                     {
-                        string errorTooltip = "Missing connection to port named " + edge.DestinationPortName;
-                        MarkPortConnectionError(sourcePort, null, errorTooltip);
+                        string errorTooltip = "Missing connection to port named " + serializedEdge.DestinationPortName;
+                        string destinationTooltip = "Connecetion named " + serializedEdge.DestinationPortName + ", doesn't exist in scene.";
+                        Port newDestination = destinationView.AddErrorInputPort(serializedEdge.DestinationPortName);
+
+                        Edge newEdge = sourcePort.ConnectTo(newDestination);
+                        m_RoomGraphView.AddElement(newEdge);
+                        MarkPortConnectionError(sourcePort, newEdge, errorTooltip);
+                        MarkPortConnectionError(newDestination, null, destinationTooltip);
                         //Debug.LogWarning("Node " + node.Room.SceneName + ", has a connection to a missing port named " + edge.DestinationPortName + ", this is probably because the node this port was connected to had its scene changed.");
                     }
                 }
@@ -469,6 +481,11 @@ namespace NGAME.Editor
                 }
                 EditorUtility.SetDirty(this.Node);
             }
+        }
+
+        protected Port AddErrorInputPort( string portName)
+        {
+            return CreatePort(OldConnectedPorts, inputContainer, portName, typeof(bool)) ;
         }
 
         public override void SetPosition(Rect newPos)
