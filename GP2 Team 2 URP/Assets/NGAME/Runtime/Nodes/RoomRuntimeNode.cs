@@ -4,16 +4,18 @@ using UnityEngine;
 
 namespace NGAME
 {
+
     [Serializable]
     public class RoomRuntimeNode : RuntimeNode
     {
         public string SceneGuid;
 
-        public List<RegionConnectionData> ConnectedEntrances;
-        public List<RegionConnectionData> ConnectedExits;
-
+        public List<string> ConnectedEntrances;
         public List<string> EntranceSourceSceneGuids;
+
+        public List<string> ConnectedExits;
         public List<string> ExitDestinationSceneGuids;
+        public List<string> ExitDestinationNames;
     }
 }
 /*

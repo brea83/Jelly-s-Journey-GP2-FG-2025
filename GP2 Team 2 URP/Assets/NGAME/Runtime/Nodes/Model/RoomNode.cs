@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-namespace NGAME.Editor
+namespace NGAME
 {
     [System.Serializable]
     public class RoomNode : ScriptableObject, IMapNode
@@ -11,7 +11,7 @@ namespace NGAME.Editor
 
         public SceneConnectionsData SceneData = null;
         
-        public List<EdgeData> OutgoingEdges { get => m_OutgoingEdges; }
+        public List<EdgeData> OutgoingEdges = new List<EdgeData>();
 
 
         // private properties
@@ -20,7 +20,6 @@ namespace NGAME.Editor
         private bool _isStartNode = false;
         private int _exitCount;
         private int _entranceCount;
-        [HideInInspector] protected List<EdgeData> m_OutgoingEdges = new List<EdgeData>();
 
 
 
@@ -43,7 +42,7 @@ namespace NGAME.Editor
         private void AddRoomEdge(RoomNode otherNode, EdgeData edge)
         {
             //EdgeRuntimeData newEdgeData = new EdgeRuntimeData(edge.output.portName, Room.SceneGuid, otherNode.m_Guid, otherNode.Room.SceneGuid, edge.input.portName);
-            m_OutgoingEdges.Add(edge);
+            OutgoingEdges.Add(edge);
             //EditorUtility.SetDirty(this);
         }
 
@@ -51,9 +50,9 @@ namespace NGAME.Editor
         {
             List<int> indexesToRemove = new List<int>();
 
-            for (int i = 0; i < m_OutgoingEdges.Count; i++)
+            for (int i = 0; i < OutgoingEdges.Count; i++)
             {
-                EdgeData edgeData = m_OutgoingEdges[i];
+                EdgeData edgeData = OutgoingEdges[i];
 
                 if (edgeData.SourcePortName == edge.SourcePortName && edgeData.DestinationNodeGuid == otherNode.Guid && edgeData.DestinationPortName == edge.DestinationPortName)
                 {
@@ -65,7 +64,7 @@ namespace NGAME.Editor
             indexesToRemove.Sort();
             for (int i = indexesToRemove.Count - 1; i >= 0; i--)
             {
-                m_OutgoingEdges.RemoveAt(indexesToRemove[i]);
+                OutgoingEdges.RemoveAt(indexesToRemove[i]);
             }
             //EditorUtility.SetDirty(this);
         }
@@ -90,6 +89,10 @@ namespace NGAME.Editor
             //EditorUtility.SetDirty(this);
         }
 
+        public List<EdgeData> GetOutgoingEdges()
+        {
+            return OutgoingEdges;
+        }
     }
    
 

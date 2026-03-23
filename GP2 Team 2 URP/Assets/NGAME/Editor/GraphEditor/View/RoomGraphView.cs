@@ -46,7 +46,10 @@ namespace NGAME.Editor
 
             foreach(RoomNode node in _graph.nodes)
             {
-                CreateNodeView(node);
+                if(node is RoomNode)
+                {
+                    CreateNodeView(node as RoomNode);
+                }
             }
 
             foreach(RoomNode node in _graph.nodes)
@@ -57,7 +60,7 @@ namespace NGAME.Editor
             }
         }
 
-        private NodeView FindNodeView(RoomNode roomNode)
+        private NodeView FindNodeView(IMapNode roomNode)
         {
             return GetNodeByGuid(roomNode.Guid) as NodeView;
         }
@@ -72,6 +75,10 @@ namespace NGAME.Editor
                     if(nodeView != null)
                     {
                         _graph.DeleteNode(nodeView.Node);
+
+                        AssetDatabase.RemoveObjectFromAsset(nodeView.Node);
+                        EditorUtility.SetDirty(_graph);
+                        AssetDatabase.SaveAssetIfDirty(_graph);
                     }
 
                     Edge edge = element as Edge;
@@ -123,7 +130,14 @@ namespace NGAME.Editor
 
         void CreateNode(System.Type type)
         {
-            RoomNode node = _graph.CreateNode(type);
+            string newGuid = GUID.Generate().ToString();
+            RoomNode node = _graph.CreateNode(type, newGuid);
+
+            AssetDatabase.AddObjectToAsset(node, _graph);
+            EditorUtility.SetDirty(_graph);
+            EditorUtility.SetDirty(node);
+            AssetDatabase.SaveAssetIfDirty(_graph);
+            AssetDatabase.SaveAssetIfDirty(node);
             CreateNodeView(node);
         }
         void CreateNodeView(RoomNode roomNode)

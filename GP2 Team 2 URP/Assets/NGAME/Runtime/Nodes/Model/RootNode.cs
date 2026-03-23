@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NGAME.Editor
+namespace NGAME
 {
-    public class RootNode : ScriptableObject, IMapNode
+    public class RootNode : ScriptableObject//, IMapNode
     {
         //public properties, getters, setters
         public Vector2 Position { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }

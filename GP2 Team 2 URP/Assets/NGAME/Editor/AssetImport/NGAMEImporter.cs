@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEditor.AssetImporters;
 using UnityEngine;
+using UnityEditor;
 
 namespace NGAME.Editor
 {
@@ -8,16 +10,24 @@ namespace NGAME.Editor
     {
         public override void OnImportAsset(AssetImportContext ctx)
         {
-            //throw new System.NotImplementedException();
+            Dictionary<string, RuntimeNode> guidToNode = new Dictionary<string, RuntimeNode>();
+
+
         }
 
-        //static List<RoomGraphNode> GetNexNodes(RoomGraphNode node)
+        
+
+        static List<RuntimeNode> TranslateNodeModelToRuntimeNodes(IMapNode rootMapNode)
+        {
+           
+            return new List<RuntimeNode>();
+        }
+
+        //static T GetInputPortValue<T>(Port port)
         //{
-        //    List<EdgeData> outgoingEdges = node.GetOutgoingEdges();
-        //    foreach (EdgeData edge in outgoingEdges) 
-        //    {
-        //        edge.sourcePortName
-        //    }
+        //    return new T();
         //}
+
+
     }
 }

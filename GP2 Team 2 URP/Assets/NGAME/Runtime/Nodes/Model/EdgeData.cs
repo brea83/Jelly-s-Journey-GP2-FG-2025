@@ -1,7 +1,7 @@
-using UnityEngine;
 
-namespace NGAME.Editor
+namespace NGAME
 {
+    [System.Serializable]
     public class EdgeData
     {
         public string SourceSceneGuid;
