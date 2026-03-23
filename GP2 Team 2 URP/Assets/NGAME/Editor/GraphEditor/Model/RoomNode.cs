@@ -1,45 +1,61 @@
 using System.Collections.Generic;
-using UnityEditor;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 namespace NGAME.Editor
 {
-    public abstract class RoomGraphNode : ScriptableObject
-    {
-        [HideInInspector] public Vector2 Position;
-        public abstract List<EdgeData> GetOutgoingEdges();
-    }
     [System.Serializable]
-    public class RoomNode : RoomGraphNode, IMapNode
+    public class RoomNode : ScriptableObject, IMapNode
     {
-        [HideInInspector] public string Guid;
-        public SceneConnectionsData Room = null;
-        [HideInInspector] public int LastDropdownIndex;
-        [HideInInspector] public List<EdgeData> OutgoingEdges = new List<EdgeData>();
+        // public properties and geter/setters
+        public string Guid { get => m_Guid; set => m_Guid = value; }
+        public Vector2 Position { get => m_Position; set => m_Position = value; }
+
+        public SceneConnectionsData SceneData = null;
+        
+        public List<EdgeData> OutgoingEdges { get => m_OutgoingEdges; }
+
+
+        // private properties
+        private string m_Guid;
+        private Vector2 m_Position;
         private bool _isStartNode = false;
         private int _exitCount;
         private int _entranceCount;
-        public int ExitCount { get {return _exitCount; } }
-        public int EntranceCount { get { return _entranceCount; } }
+        [HideInInspector] protected List<EdgeData> m_OutgoingEdges = new List<EdgeData>();
 
-        public void AddEdge(RoomNode otherNode, Edge edge)
+
+
+        public void AddEdge(IMapNode otherNode, EdgeData edge)
         {
-            EdgeData newEdgeData = new EdgeData(edge.output.portName, otherNode.Guid, edge.input.portName);
-            OutgoingEdges.Add(newEdgeData);
-            EditorUtility.SetDirty(this);
+            if (otherNode is RoomNode)
+            {
+                AddRoomEdge(otherNode as RoomNode, edge);
+            }
         }
 
-        public override List<EdgeData> GetOutgoingEdges() { return OutgoingEdges; }
+        public void RemoveEdge(IMapNode otherNode, EdgeData edge)
+        {
+            if(otherNode is RoomNode)
+            {
+                RemoveRoomEdge(otherNode as RoomNode, edge);
+            }
+        }
 
-        public void RemoveEdge(RoomNode otherNode, Edge edge)
+        private void AddRoomEdge(RoomNode otherNode, EdgeData edge)
+        {
+            //EdgeRuntimeData newEdgeData = new EdgeRuntimeData(edge.output.portName, Room.SceneGuid, otherNode.m_Guid, otherNode.Room.SceneGuid, edge.input.portName);
+            m_OutgoingEdges.Add(edge);
+            //EditorUtility.SetDirty(this);
+        }
+
+        private void RemoveRoomEdge(RoomNode otherNode, EdgeData edge)
         {
             List<int> indexesToRemove = new List<int>();
 
-            for (int i = 0; i < OutgoingEdges.Count; i++)
+            for (int i = 0; i < m_OutgoingEdges.Count; i++)
             {
-                EdgeData edgeData = OutgoingEdges[i];
+                EdgeData edgeData = m_OutgoingEdges[i];
 
-                if (edgeData.SourcePortName == edge.output.portName && edgeData.DestinationNodeGuid == otherNode.Guid && edgeData.DestinationPortName == edge.input.portName)
+                if (edgeData.SourcePortName == edge.SourcePortName && edgeData.DestinationNodeGuid == otherNode.Guid && edgeData.DestinationPortName == edge.DestinationPortName)
                 {
                     indexesToRemove.Add(i);
                     //OutgoingEdges.Remove(edgeData);
@@ -47,11 +63,11 @@ namespace NGAME.Editor
             }
 
             indexesToRemove.Sort();
-            for (int i = indexesToRemove.Count -1; i >= 0; i--)
+            for (int i = indexesToRemove.Count - 1; i >= 0; i--)
             {
-                OutgoingEdges.RemoveAt(indexesToRemove[i]);
+                m_OutgoingEdges.RemoveAt(indexesToRemove[i]);
             }
-            EditorUtility.SetDirty(this);
+            //EditorUtility.SetDirty(this);
         }
 
         public void SetAsStartRoom(bool isStartNode)
@@ -60,34 +76,21 @@ namespace NGAME.Editor
         }
         public void UpdateRoomData(NGAME.SceneConnectionsData room)
         {
-            Room = room;
-            if (Room == null)
+            SceneData = room;
+            if (SceneData == null)
             {
                 _exitCount = 0;
                 _entranceCount = 0;
             }
             else
             {
-                _exitCount = Room.Exits.Count;
-                _entranceCount = Room.Entrances.Count;
+                _exitCount = SceneData.Exits.Count;
+                _entranceCount = SceneData.Entrances.Count;
             }
-            EditorUtility.SetDirty(this);
+            //EditorUtility.SetDirty(this);
         }
 
     }
-    [System.Serializable]
-    public class EdgeData
-    {
-        public string SourcePortName;
-        public string DestinationNodeGuid;
-        public string DestinationPortName;
-
-        public EdgeData(string sourcePortName, string destinationNodeGuid, string destinationPortName)
-        {
-            SourcePortName = sourcePortName;
-            DestinationNodeGuid = destinationNodeGuid;
-            DestinationPortName = destinationPortName;
-        }
-    }
+   
 
 }

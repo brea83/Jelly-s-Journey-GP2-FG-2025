@@ -80,7 +80,7 @@ namespace NGAME.Editor
                         NodeView sourceNode = edge.output.node as NodeView;
                         NodeView destinationNode = edge.input.node as NodeView;
                         NodeView.RemoveEdge(edge);
-                        _graph.RemoveEdge(sourceNode.Node, destinationNode.Node, edge);
+                        //_graph.RemoveEdge(sourceNode.Node, destinationNode.Node, edge);
                     }
                 }
             }
@@ -92,7 +92,7 @@ namespace NGAME.Editor
                     NodeView sourceNode = edge.output.node as NodeView;
                     NodeView destinationNode = edge.input.node as NodeView;
                     NodeView.AddEdge(edge);
-                    _graph.AddEdge(sourceNode.Node, destinationNode.Node, edge);
+                    //_graph.AddEdge(sourceNode.Node, destinationNode.Node, edge);
                     Debug.Log("Edge created between " + edge.input.portName + ", and " + edge.output.portName);
                 }
             }
@@ -114,7 +114,7 @@ namespace NGAME.Editor
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
             base.BuildContextualMenu(evt);
-            var types = TypeCache.GetTypesDerivedFrom<RoomGraphNode>();
+            var types = TypeCache.GetTypesDerivedFrom<IMapNode>();
             foreach(var type in types)
             {
                 evt.menu.AppendAction($"[{type.BaseType.Name}] {type.Name}", (a) => CreateNode(type));

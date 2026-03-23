@@ -223,7 +223,7 @@ namespace RoomSystem
         public RegionConnectionData GetRegionConnectionData() 
         {
             RegionConnectionData data = new RegionConnectionData();
-            data.TypeName = "JellysJourney.Door";
+            data.TypeName = this.GetType().FullName;
             data.Name = name;
             data.ConnectionType = _data.Type;
             data.IsLockable = true;
