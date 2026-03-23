@@ -144,21 +144,6 @@ namespace NGAME.Editor
 
         private void GetRoomDataObjects()
         {
-            //Debug.Log("SEARCHING FOR ROOM DATA SCRIPTABLE OBJECTS:");
-            //string[] roomDataGuids = AssetDatabase.FindAssets("t:RoomData");
-            //foreach (string roomDataGuid in roomDataGuids)
-            //{
-            //    Debug.Log(roomDataGuid);
-            //    RoomData room = AssetDatabase.LoadAssetAtPath<RoomData>(AssetDatabase.GUIDToAssetPath(roomDataGuid));
-            //    if(room != null && room.Guid == "")
-            //    {
-            //        room.Guid = GUID.Generate().ToString();
-            //    }
-            //    RoomDataObjects.Add(room);
-                
-            //}
-            //Debug.Log("SEARCH FOR ROOM DATA COMPLETE");
-
             string[] settingsGuid = AssetDatabase.FindAssets("t:SO_Settings");
 
             if(settingsGuid.Length <= 0)
@@ -209,6 +194,7 @@ namespace NGAME.Editor
             if (!aScene.IsValid())
             {
                 Debug.Log("Graph tried to include an invalid scene from filepath: " + filePath);
+                EditorSceneManager.ClosePreviewScene(aScene);
                 return null;
             }
 
@@ -243,20 +229,20 @@ namespace NGAME.Editor
             if (!bComponentsFound)
             {
                 Debug.Log("No IEncounterRegionConnector components found in scene: " + aScene.name);
+                
                 EditorSceneManager.ClosePreviewScene(aScene);
                 return null;
             }
 
             Debug.Log("Scene: " + aScene.name + " contains target data types");
-            EditorSceneManager.ClosePreviewScene(aScene);
-            
+
+
             NGAME.SceneConnectionsData result = new NGAME.SceneConnectionsData();
             result.SceneName = aScene.name;
             result.Entrances = entrances;
             result.Exits = exits;
 
-            //result.PreviewScene = aScene;
-
+            EditorSceneManager.ClosePreviewScene(aScene);
             return result;
         }
     }

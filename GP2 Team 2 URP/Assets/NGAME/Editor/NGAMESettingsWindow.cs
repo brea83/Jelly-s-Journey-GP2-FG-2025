@@ -180,6 +180,7 @@ namespace NGAME.Editor
                 }
 
                 m_GuidToSceneData.Add(guidKey, data);
+                EditorSceneManager.ClosePreviewScene(aScene);
             }
 
             // check if any new scenes need to be added
@@ -418,6 +419,7 @@ namespace NGAME.Editor
             if (!aScene.IsValid())
             {
                 Debug.Log("Invalid scene found");
+                EditorSceneManager.ClosePreviewScene(aScene);
                 return "Invalid Scene at path: " + filePath;
             }
             StringBuilder description = new StringBuilder();
