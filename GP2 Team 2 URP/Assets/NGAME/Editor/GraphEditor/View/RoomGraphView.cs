@@ -48,7 +48,8 @@ namespace NGAME.Editor
             {
                 if(node is RoomNode)
                 {
-                    CreateNodeView(node as RoomNode);
+                    RoomNode roomNode = node as RoomNode;
+                    CreateNodeView(roomNode);
                 }
             }
 
@@ -122,16 +123,18 @@ namespace NGAME.Editor
         {
             base.BuildContextualMenu(evt);
             var types = TypeCache.GetTypesDerivedFrom<IMapNode>();
+            Vector2 position = evt.localMousePosition;
             foreach(var type in types)
             {
-                evt.menu.AppendAction($"[{type.BaseType.Name}] {type.Name}", (a) => CreateNode(type));
+                evt.menu.AppendAction($"[{type.BaseType.Name}] {type.Name}", (a) => CreateNode(type, position));
             }
         }
 
-        void CreateNode(System.Type type)
+        void CreateNode(System.Type type, Vector2 position)
         {
             string newGuid = GUID.Generate().ToString();
             RoomNode node = _graph.CreateNode(type, newGuid);
+            node.Position = position;
 
             AssetDatabase.AddObjectToAsset(node, _graph);
             EditorUtility.SetDirty(_graph);
