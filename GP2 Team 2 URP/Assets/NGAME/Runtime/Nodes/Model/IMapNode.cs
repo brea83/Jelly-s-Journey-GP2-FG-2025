@@ -12,6 +12,7 @@ namespace NGAME
         [HideInInspector] public Vector2 Position { get; set; }
         [HideInInspector] public string Guid { get; set; }
 
+        public string PrintNode();
     }
 
 

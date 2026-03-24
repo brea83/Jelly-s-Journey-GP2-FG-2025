@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 namespace NGAME
 {
@@ -92,6 +93,30 @@ namespace NGAME
         public List<EdgeData> GetOutgoingEdges()
         {
             return OutgoingEdges;
+        }
+
+        public string PrintNode()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append("Room Node guid: " + Guid + "\n");
+            if (this.SceneData != null) 
+            {
+                sb.Append("Scene: " + this.SceneData.SceneName + "\n");
+            }
+            else
+            {
+                sb.Append("No Scene Data \n");
+            }
+
+            foreach (EdgeData edgeData in OutgoingEdges)
+            {
+                sb.Append("Exit: " + edgeData.SourcePortName + ", connects to ");
+                sb.Append(edgeData.DestinationPortName + ", in Node: " + edgeData.DestinationNodeGuid);
+                sb.Append("\n");
+            } 
+
+            return sb.ToString();
         }
     }
    

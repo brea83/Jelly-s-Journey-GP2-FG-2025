@@ -15,11 +15,8 @@ namespace NGAME
         {
             StringBuilder sb = new StringBuilder();
 
-            //if(m_Graph.rootNode.OutgoingEdges.Count > 0)
-            //{
-               // TODO debug walk the graph at runtime.
-            //}
-           
+            m_Graph.PrintGraph();
+
         }
     }
 }
