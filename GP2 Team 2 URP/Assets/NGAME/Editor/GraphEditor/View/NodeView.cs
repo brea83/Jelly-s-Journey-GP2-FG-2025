@@ -313,7 +313,20 @@ namespace NGAME.Editor
             if(port != null)
             {
                 MarkPortConnectionError(port, null, "", false);
-                
+                Port matchingPort = null;
+                if(port.direction == Direction.Input )
+                {
+                    matchingPort = GetPortByName(port.portName, OutputPorts);
+                }
+                else
+                {
+                    matchingPort = GetPortByName(port.portName, InputPorts);
+                }
+
+                if(matchingPort != null)
+                {
+                    matchingPort.SetEnabled(false);
+                }
             }
         }
 
@@ -322,7 +335,21 @@ namespace NGAME.Editor
             if(port != null)
             {
                 MarkPortConnectionError(port, edge, "", false);
-                
+
+                Port matchingPort = null;
+                if (port.direction == Direction.Input)
+                {
+                    matchingPort = GetPortByName(port.portName, OutputPorts);
+                }
+                else
+                {
+                    matchingPort = GetPortByName(port.portName, InputPorts);
+                }
+
+                if (matchingPort != null)
+                {
+                    matchingPort.SetEnabled(true);
+                }
             }
 
             if (OldConnectedPorts.Contains(port))
@@ -351,8 +378,14 @@ namespace NGAME.Editor
             if(sourceNode != null && destinationNode != null)
             {
                 EdgeData newEdgeData = new EdgeData(edge.output.portName, sourceNode.Node.SceneData.SceneGuid, destinationNode.Node.Guid, destinationNode.Node.SceneData.SceneGuid, edge.input.portName);
+                newEdgeData.SourceSceneGuid = sourceNode.Node.Guid;
+                newEdgeData.SourceSceneName = sourceNode.Node.SceneData.SceneName;
+                newEdgeData.DestinationSceneName = destinationNode.Node.SceneData.SceneName;
+
                 sourceNode.Node.RemoveEdge(destinationNode.Node, newEdgeData);
+                destinationNode.Node.RemoveEdge(sourceNode.Node, newEdgeData);
                 EditorUtility.SetDirty(sourceNode.Node);
+                EditorUtility.SetDirty(destinationNode.Node);
             } 
         }
 
@@ -368,8 +401,14 @@ namespace NGAME.Editor
             // runtime node updates
 
             EdgeData newEdgeData = new EdgeData(edge.output.portName, sourceNode.Node.SceneData.SceneGuid, destinationNode.Node.Guid, destinationNode.Node.SceneData.SceneGuid, edge.input.portName);
+            newEdgeData.SourceSceneGuid = sourceNode.Node.Guid;
+            newEdgeData.SourceSceneName = sourceNode.Node.SceneData.SceneName;
+            newEdgeData.DestinationSceneName = destinationNode.Node.SceneData.SceneName;
+
             sourceNode.Node.AddEdge(destinationNode.Node, newEdgeData);
+            destinationNode.Node.AddEdge(sourceNode.Node, newEdgeData);
             EditorUtility.SetDirty(sourceNode.Node);
+            EditorUtility.SetDirty(destinationNode.Node);
         }
 
         private void MarkPortConnectionError(Port port, Edge edge, string tooltip = "", bool bShowError = true)

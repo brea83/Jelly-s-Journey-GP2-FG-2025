@@ -8,6 +8,7 @@ namespace NGAME
         public void AddEdge(IMapNode otherNode, EdgeData edge);
         public void RemoveEdge(IMapNode otherNode, EdgeData edge);
         public List<EdgeData> GetOutgoingEdges();
+        public List<EdgeData> GetIncomingEdges();
 
         [HideInInspector] public Vector2 Position { get; set; }
         [HideInInspector] public string Guid { get; set; }

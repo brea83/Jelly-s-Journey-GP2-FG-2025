@@ -42,7 +42,7 @@ namespace RoomSystem
                     {
                         if (oldData.IsEquivalent(newData))
                         {
-                            newData.Destination = oldData.Destination;
+                            newData.DestinationSceneName = oldData.DestinationSceneName;
                             newData.UsedOnce = oldData.UsedOnce;
 
                             //if(_fallbackEntrance.Data == oldData)

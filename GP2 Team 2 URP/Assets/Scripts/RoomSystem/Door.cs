@@ -16,6 +16,8 @@ namespace RoomSystem
     {
         public UnityEvent DoorUnlocked;
         public UnityEvent DoorLocked;
+        public UnityEvent<EdgeData> DoorUsed;
+        public EdgeData OutgoingEdge;
 
         public bool LocksDurringCombat = true;
         public bool isDefaultEntrance = false;
@@ -25,12 +27,15 @@ namespace RoomSystem
         [SerializeField] private DoorData _data = new DoorData();//GUID.Generate().ToString(), ConnectionType.Exit, transform.position);
         //private RoomDoorData _connectedRoomEntrance = null;
         public RoomConnectionDirection Direction {  get { return _data.Direction; } }
-        public string Destination {  get { return _data.Destination; } }
+        public string Destination {  get { return _data.DestinationSceneName; } }
         public bool Locked { get { return _data.Locked; } }
         //public bool useRealDirectionFlow = true;
         public bool UsedState { get { return _data.UsedOnce; } }
         private bool _inUse = false;
         public DoorData Data { get { return _data; } }
+
+        public UnityEvent<EdgeData> ConnectorActivated => DoorUsed;
+
 
         private GameObject _barrier;
 
@@ -108,8 +113,10 @@ namespace RoomSystem
             {
                 //player stepped into the exit
                 _inUse = true;
-                
-                RoomNavigator.Instance.TravelThroughDoor(this, other.gameObject);
+
+                //RoomNavigator.Instance.TravelThroughDoor(this, other.gameObject);
+
+                if (DoorUsed != null) DoorUsed.Invoke(OutgoingEdge);
             }
         }
 
@@ -230,6 +237,14 @@ namespace RoomSystem
             data.Position = transform.position;
             return data;
         }
+
+        public void SetDestination(EdgeData edge)
+        {
+            _data.DestinationSceneName = edge.DestinationSceneName;
+            _data.DestinationPointName = edge.DestinationPortName;
+
+            OutgoingEdge = edge;
+        }
     }
         
     [Serializable]
@@ -239,7 +254,8 @@ namespace RoomSystem
         public RoomConnectionDirection Direction;
         //[HideInInspector] 
         public string ParentRoom;
-        public string Destination;
+        public string DestinationSceneName;
+        public string DestinationPointName;
         [HideInInspector] public bool UsedOnce = false;
         public bool Locked = false;
         public bool UseRealDirectionFlow = true;

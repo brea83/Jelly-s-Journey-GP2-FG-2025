@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace NGAME
 {
@@ -81,5 +82,8 @@ namespace NGAME
     public interface IEncounterRegionConnector
     {
         public RegionConnectionData GetRegionConnectionData();
+        public void SetDestination(EdgeData edge);
+
+        public UnityEvent<EdgeData> ConnectorActivated { get; }
     }
 }

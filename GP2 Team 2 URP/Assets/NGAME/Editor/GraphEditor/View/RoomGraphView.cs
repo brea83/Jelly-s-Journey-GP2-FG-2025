@@ -195,17 +195,17 @@ namespace NGAME.Editor
   
         }
 
-        private NGAME.SceneConnectionsData GetScenesRegionConnectionData(string filePath)
+        private SceneConnectionsData GetScenesRegionConnectionData(string filePath)
         {
-            //List<NGAME.RegionConnectionData> connections = new List<NGAME.RegionConnectionData>();
+            //List<RegionConnectionData> connections = new List<RegionConnectionData>();
 
             //short hands for comparisons later
-            NGAME.RegionConnectionType twoWay = NGAME.RegionConnectionType.ExitAndEntrance;
-            NGAME.RegionConnectionType entranceOnly = NGAME.RegionConnectionType.EntranceOnly;
-            NGAME.RegionConnectionType exitOnly = NGAME.RegionConnectionType.ExitOnly;
+            RegionConnectionType twoWay = RegionConnectionType.ExitAndEntrance;
+            RegionConnectionType entranceOnly = RegionConnectionType.EntranceOnly;
+            RegionConnectionType exitOnly = RegionConnectionType.ExitOnly;
 
-            List<NGAME.RegionConnectionData> entrances = new List<NGAME.RegionConnectionData>();
-            List<NGAME.RegionConnectionData> exits = new List<NGAME.RegionConnectionData>();
+            List<RegionConnectionData> entrances = new List<RegionConnectionData>();
+            List<RegionConnectionData> exits = new List<RegionConnectionData>();
 
             Scene aScene = EditorSceneManager.OpenPreviewScene(filePath);
             if (!aScene.IsValid())
@@ -222,15 +222,15 @@ namespace NGAME.Editor
 
             foreach (GameObject obj in rootObjects)
             {
-                NGAME.IEncounterRegionConnector[] components = obj.GetComponentsInChildren<NGAME.IEncounterRegionConnector>();
+                IEncounterRegionConnector[] components = obj.GetComponentsInChildren<IEncounterRegionConnector>();
 
                 if (components.Length > 0)
                 {
                     bComponentsFound = true;
-                    foreach (NGAME.IEncounterRegionConnector component in components)
+                    foreach (IEncounterRegionConnector component in components)
                     {
                         //connections.Add(component.GetRegionConnectionData());
-                        NGAME.RegionConnectionData data = component.GetRegionConnectionData();
+                        RegionConnectionData data = component.GetRegionConnectionData();
                         if (data.ConnectionType == twoWay || data.ConnectionType == entranceOnly)
                         {
                             entrances.Add(data);

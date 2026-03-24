@@ -38,21 +38,6 @@ namespace NGAME
             nodes.Remove(node);
         }
 
-        //public void AddEdge(RoomNode sourceNode, RoomNode destinationNode, Edge edge)
-        //{
-        //    //EdgeData newEdgeData = new EdgeData(edge.output.portName, child.Guid, edge.input.portName);
-        //    //parent.OutgoingEdges.Add(newEdgeData);
-        //    EdgeData newEdgeData = new EdgeData(edge.output.portName, sourceNode.SceneData.SceneGuid, destinationNode.Guid, destinationNode.SceneData.SceneGuid, edge.input.portName);
-        //    sourceNode.AddEdge(destinationNode, newEdgeData);
-        //}
-
-        //public void RemoveEdge(RoomNode sourceNode, RoomNode destinationNode, Edge edge)
-        //{
-
-        //    EdgeData newEdgeData = new EdgeData(edge.output.portName, sourceNode.SceneData.SceneGuid, destinationNode.Guid, destinationNode.SceneData.SceneGuid, edge.input.portName);
-        //    sourceNode.RemoveEdge(destinationNode, newEdgeData);
-        //}
-
         public void SetStartNode(RoomNode node)
         {
             if(rootNode != null)
@@ -105,6 +90,8 @@ namespace NGAME
 
             return results;
         }
+
+        
         
     }
 }

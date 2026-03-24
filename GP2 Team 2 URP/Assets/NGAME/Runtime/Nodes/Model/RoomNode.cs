@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 namespace NGAME
@@ -13,14 +14,15 @@ namespace NGAME
         public SceneConnectionsData SceneData = null;
         
         public List<EdgeData> OutgoingEdges = new List<EdgeData>();
+        public List<EdgeData> IncomingEdges = new List<EdgeData>();
 
 
         // private properties
         private string m_Guid;
         private Vector2 m_Position;
         private bool _isStartNode = false;
-        private int _exitCount;
-        private int _entranceCount;
+        //private int _exitCount;
+        //private int _entranceCount;
 
 
 
@@ -28,7 +30,14 @@ namespace NGAME
         {
             if (otherNode is RoomNode)
             {
-                AddRoomEdge(otherNode as RoomNode, edge);
+                if (edge.DestinationNodeGuid == Guid) 
+                {
+                    IncomingEdges.Add(edge); 
+                }
+                else
+                {
+                    OutgoingEdges.Add(edge);
+                }
             }
         }
 
@@ -36,18 +45,18 @@ namespace NGAME
         {
             if(otherNode is RoomNode)
             {
-                RemoveRoomEdge(otherNode as RoomNode, edge);
+                if (edge.DestinationNodeGuid == Guid)
+                {
+                    RemoveIncomingRoomEdge(edge);
+                }
+                else
+                {
+                    RemoveOutgoingRoomEdge(edge);
+                }
             }
         }
 
-        private void AddRoomEdge(RoomNode otherNode, EdgeData edge)
-        {
-            //EdgeRuntimeData newEdgeData = new EdgeRuntimeData(edge.output.portName, Room.SceneGuid, otherNode.m_Guid, otherNode.Room.SceneGuid, edge.input.portName);
-            OutgoingEdges.Add(edge);
-            //EditorUtility.SetDirty(this);
-        }
-
-        private void RemoveRoomEdge(RoomNode otherNode, EdgeData edge)
+        private void RemoveOutgoingRoomEdge(EdgeData edge)
         {
             List<int> indexesToRemove = new List<int>();
 
@@ -55,7 +64,7 @@ namespace NGAME
             {
                 EdgeData edgeData = OutgoingEdges[i];
 
-                if (edgeData.SourcePortName == edge.SourcePortName && edgeData.DestinationNodeGuid == otherNode.Guid && edgeData.DestinationPortName == edge.DestinationPortName)
+                if (edgeData.SourcePortName == edge.SourcePortName && edgeData.DestinationNodeGuid == edge.DestinationNodeGuid && edgeData.DestinationPortName == edge.DestinationPortName)
                 {
                     indexesToRemove.Add(i);
                     //OutgoingEdges.Remove(edgeData);
@@ -67,7 +76,27 @@ namespace NGAME
             {
                 OutgoingEdges.RemoveAt(indexesToRemove[i]);
             }
-            //EditorUtility.SetDirty(this);
+        }
+
+        private void RemoveIncomingRoomEdge( EdgeData edge)
+        {
+            List<int> indexesToRemove = new List<int>();
+
+            for (int i = 0; i < IncomingEdges.Count; i++)
+            {
+                EdgeData edgeData = IncomingEdges[i];
+
+                if (edgeData.SourcePortName == edge.SourcePortName && edgeData.DestinationNodeGuid == edge.DestinationNodeGuid && edgeData.DestinationPortName == edge.DestinationPortName)
+                {
+                    indexesToRemove.Add(i);
+                }
+            }
+
+            indexesToRemove.Sort();
+            for (int i = indexesToRemove.Count - 1; i >= 0; i--)
+            {
+                IncomingEdges.RemoveAt(indexesToRemove[i]);
+            }
         }
 
         public void SetAsStartRoom(bool isStartNode)
@@ -77,22 +106,27 @@ namespace NGAME
         public void UpdateRoomData(NGAME.SceneConnectionsData room)
         {
             SceneData = room;
-            if (SceneData == null)
-            {
-                _exitCount = 0;
-                _entranceCount = 0;
-            }
-            else
-            {
-                _exitCount = SceneData.Exits.Count;
-                _entranceCount = SceneData.Entrances.Count;
-            }
+            //if (SceneData == null)
+            //{
+            //    _exitCount = 0;
+            //    _entranceCount = 0;
+            //}
+            //else
+            //{
+            //    _exitCount = SceneData.Exits.Count;
+            //    _entranceCount = SceneData.Entrances.Count;
+            //}
             //EditorUtility.SetDirty(this);
         }
 
         public List<EdgeData> GetOutgoingEdges()
         {
             return OutgoingEdges;
+        }
+
+        public List<EdgeData> GetIncomingEdges()
+        {
+            return IncomingEdges;
         }
 
         public string PrintNode()
@@ -117,6 +151,20 @@ namespace NGAME
             } 
 
             return sb.ToString();
+        }
+
+        public List<EdgeData> GetAllEdgesAsOutgoing()
+        {
+            List<EdgeData> results = new();
+
+            results.AddRange(OutgoingEdges);
+
+            foreach(EdgeData edge in IncomingEdges)
+            {
+                results.Add(EdgeData.Invert(edge));
+            }
+
+            return results;
         }
     }
    

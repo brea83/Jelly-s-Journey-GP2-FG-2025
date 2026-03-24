@@ -171,7 +171,7 @@ namespace RoomSystem {
             {
                 if (exit.Data.IsEquivalent(data))
                 {
-                    if(data.Destination == "") data.Destination = _nextRoom.SceneName;
+                    if(data.DestinationSceneName == "") data.DestinationSceneName = _nextRoom.SceneName;
 
                     _mostRecentExit = data;
                     _mostRecentExit.UsedOnce = true;
@@ -219,7 +219,7 @@ namespace RoomSystem {
             if (currentEntrance != null && _previousRoom != null)
             {
                 currentEntrance.UsedOnce = true;
-                currentEntrance.Destination = _previousRoom.SceneName;
+                currentEntrance.DestinationSceneName = _previousRoom.SceneName;
             }
             if (PrintDebugLogs) Debug.Log($"entering room: {nextRoom.SceneName} at {nextRoom.GetCurrentEntrance().Name}, From previous door {mostRecentExit} in room {mostRecentExit?.ParentRoom}. current room has been visited is = {nextRoom.Visited}");
             _player.transform.SetPositionAndRotation(nextRoom.GetEntrancePosition(NoDoorsFallbackEntrance), nextRoom.GetEntranceRotation());
@@ -253,7 +253,7 @@ namespace RoomSystem {
             {
                 foreach(DoorData door in room.doors)
                 {
-                    Debug.Log($"{door.Name}, direction type {door.Direction}, in room {door.ParentRoom}, with destination: {door.Destination}");
+                    Debug.Log($"{door.Name}, direction type {door.Direction}, in room {door.ParentRoom}, with destination: {door.DestinationSceneName}");
                 }
             }
         }
