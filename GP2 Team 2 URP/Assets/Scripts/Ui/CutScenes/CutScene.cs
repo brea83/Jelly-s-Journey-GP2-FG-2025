@@ -54,7 +54,7 @@ public class CutScene : MonoBehaviour
         GameManager.Instance.player.GetComponent<PlayerInventory>().Initialize();
         GameManager.Instance.player.GetComponent<PlayerHealth>().Initialize();
         GameManager.Instance.switchState<StartState>();
-        Debug.LogWarning("--- WE HAVE NOT IMPLEMENTED WHAT HAPPENS WHEN THE OUTRO ENDS YET ---");
+        //Debug.LogWarning("--- WE HAVE NOT IMPLEMENTED WHAT HAPPENS WHEN THE OUTRO ENDS YET ---");
         // open credits? go to title?
     }
     public void SkipCutscene()
