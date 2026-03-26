@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class PlayerAttack : MonoBehaviour
+public class PlayerAttack : MonoBehaviour, IGameStateMachineListener
 {
     [SerializeField] private PlayerController _PC;
 
@@ -32,7 +32,8 @@ public class PlayerAttack : MonoBehaviour
 
     private void Start()
     {
-        _updateState = GameManager.Instance.GetState<PlayingState>();
+        // moved to the interface IGameStateMAchineListener func OnGameStateMachineInitialized which is called from the GameManager's events
+        //_updateState = GameManager.Instance.GetState<PlayingState>();
     }
 
     protected void OnDisable()
@@ -51,12 +52,13 @@ public class PlayerAttack : MonoBehaviour
         }
         else
         {
-            Debug.Log("tried to add listener but myUpdateState == null");
+            if (PrintDebugLogs) Debug.Log("tried to add listener but myUpdateState == null");
         }
     }
     protected void ManagedUpdate()
     {
         //RemoveCollisionTimer();
+        if(PrintDebugLogs) Debug.Log("Player Attack script Reached Managed Update");
     }
 
 
@@ -182,5 +184,17 @@ public class PlayerAttack : MonoBehaviour
         return (int)(weapon.damage * slotMultiplier[comboStep]);
     }
 
+    public void OnGameStateMachineInitialized(GameManager manager)
+    {
+        _updateState = manager.GetState<PlayingState>();
+        if (_updateState != null)
+        {
+            _updateState.StateUpdate.AddListener(ManagedUpdate);
+        }
+        else
+        {
+            Debug.Log("tried to add PlayerPickUp's listener but myUpdateState == null");
+        }
+    }
 }
 

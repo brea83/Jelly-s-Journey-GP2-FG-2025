@@ -4,7 +4,7 @@ using System.Collections;
 using UnityEngine.EventSystems;
 using Unity.VisualScripting;
 
-public class PlayerPickUp : MonoBehaviour
+public class PlayerPickUp : MonoBehaviour , IGameStateMachineListener
 {
     [SerializeField] float _detectionRange = 5f;
     public LayerMask obstacleMask;
@@ -13,6 +13,7 @@ public class PlayerPickUp : MonoBehaviour
     protected PlayingState _updateState;
     private void Start()
     {
+        // moved to the interface IGameStateMAchineListener func OnGameStateMachineInitialized which is called from the GameManager's events
         //_updateState = GameManager.Instance.GetState<PlayingState>();
 
 
@@ -34,11 +35,11 @@ public class PlayerPickUp : MonoBehaviour
         }
         else
         {
-             Debug.Log("tried to add PlayerPickUp's listener but myUpdateState == null");
+            Debug.Log("tried to add PlayerPickUp's listener but myUpdateState == null");
         }
     }
 
-    public void OnGameStateMachineInitialize(GameManager gameManager)
+    public void OnGameStateMachineInitialized(GameManager gameManager)
     {
         _updateState = gameManager.GetState<PlayingState>();
         if (_updateState != null)

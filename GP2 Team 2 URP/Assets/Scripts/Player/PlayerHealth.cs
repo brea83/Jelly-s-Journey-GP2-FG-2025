@@ -3,7 +3,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerHealth : MonoBehaviour
+public class PlayerHealth : MonoBehaviour, IGameStateMachineListener
 {
     protected PlayingState _updateState;
 
@@ -20,6 +20,9 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private int _maxHealth;
     [SerializeField] Animator _animator;
 
+    [Header("Debug Settings")]
+    public bool PrintDebugLogs = false;
+
     private void Start()
     {
         _animator = GetComponent<Animator>();
@@ -27,7 +30,8 @@ public class PlayerHealth : MonoBehaviour
         _inventory = GetComponent<PlayerInventory>();
         _weaponUI = GetComponent<PlayerWeaponUI>();
         _pAttack = GetComponent<PlayerAttack>();
-        _updateState = GameManager.Instance.GetState<PlayingState>();
+        // moved to the interface IGameStateMAchineListener func OnGameStateMachineInitialized which is called from the GameManager's events
+        //_updateState = GameManager.Instance.GetState<PlayingState>();
 
         _maxHealth = 1;
     }
@@ -47,7 +51,7 @@ public class PlayerHealth : MonoBehaviour
         }
         else
         {
-            Debug.Log("tried to add listener but myUpdateState == null");
+            if (PrintDebugLogs) Debug.Log("tried to add listener but myUpdateState == null");
         }
     }
     protected void ManagedUpdate()
@@ -126,5 +130,17 @@ public class PlayerHealth : MonoBehaviour
         _maxHealth = 1;
     }
 
+    public void OnGameStateMachineInitialized(GameManager manager)
+    {
+        _updateState = manager.GetState<PlayingState>();
+        if (_updateState != null)
+        {
+            _updateState.StateUpdate.AddListener(ManagedUpdate);
+        }
+        else
+        {
+            if (PrintDebugLogs) Debug.Log("tried to add PlayerPickUp's listener but myUpdateState == null");
+        }
+    }
 }
 
