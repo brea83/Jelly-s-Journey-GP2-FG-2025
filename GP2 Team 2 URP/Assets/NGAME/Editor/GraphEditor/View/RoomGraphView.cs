@@ -48,8 +48,8 @@ namespace NGAME.Editor
             {
                 if(node is RoomNode)
                 {
-                    RoomNode roomNode = node as RoomNode;
-                    CreateNodeView(roomNode);
+                    //RoomNode roomNode = node as RoomNode;
+                    CreateNodeView(node);
                 }
             }
 
@@ -123,13 +123,18 @@ namespace NGAME.Editor
         {
             base.BuildContextualMenu(evt);
             var types = TypeCache.GetTypesDerivedFrom<IMapNode>();
-            Vector2 position = evt.localMousePosition;
+            Vector2 position = evt.mousePosition;
             foreach(var type in types)
             {
-                evt.menu.AppendAction($"[{type.BaseType.Name}] {type.Name}", (a) => CreateNode(type, position));
+                evt.menu.AppendAction($"[{type.BaseType.Name}] {type.Name}", (a) => OnContextMenuCreateNode(a, type));
             }
         }
-
+        protected void OnContextMenuCreateNode(DropdownMenuAction a, System.Type type)
+        {
+            
+            Vector2 screenMousePosition = a.eventInfo.localMousePosition;
+            CreateNode(type, screenMousePosition);
+        }
         void CreateNode(System.Type type, Vector2 position)
         {
             string newGuid = GUID.Generate().ToString();
