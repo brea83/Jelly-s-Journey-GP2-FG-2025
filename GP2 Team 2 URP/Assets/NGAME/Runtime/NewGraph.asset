@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7245650576601195154
+--- !u!114 &-1604239483407982519
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -34,13 +34,20 @@ MonoBehaviour:
       Position: {x: 1.2985873, y: 0, z: 24.947142}
     MinPoint: {x: 0.01765375, y: -0.9998442}
     MaxPoint: {x: 0.051983174, y: 0.9986479}
-  OutgoingEdges:
-  - SourceSceneGuid: 7cb8c6b0027761a46b600f3b69174403
-    SourcePortName: Door South
-    DestinationNodeGuid: 088051e6e19482345a19f6d8798744ec
-    DestinationSceneGuid: 99c9720ab356a0642a771bea13969a05
-    DestinationPortName: Entrance Only
---- !u!114 &-5341980244758215497
+  OutgoingEdges: []
+  IncomingEdges:
+  - SourceNodeGuid: ae1bb77545505b349944775de86fdcfc
+    SourceSceneGuid: 99c9720ab356a0642a771bea13969a05
+    SourceSceneName: SampleScene
+    SourcePortName: Door North
+    DestinationNodeGuid: 45bd88e56f4e8104da07d9a946e51424
+    DestinationSceneGuid: 7cb8c6b0027761a46b600f3b69174403
+    DestinationSceneName: SampleScene 3
+    DestinationPortName: Door South
+  m_Guid: 45bd88e56f4e8104da07d9a946e51424
+  m_Position: {x: 421, y: 24}
+  _isStartNode: 0
+--- !u!114 &-58743701835840933
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -57,14 +64,36 @@ MonoBehaviour:
     SceneGuid: 99c9720ab356a0642a771bea13969a05
     Entrances:
     - TypeName: RoomSystem.Door
+      Name: Door North
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -28.000906, y: 0, z: 26.98}
+    - TypeName: RoomSystem.Door
       Name: Entrance Only
       ConnectionType: 0
       IsLockable: 1
       Position: {x: 9.329598, y: 0, z: 12.48}
-    Exits: []
-    MinPoint: {x: 1, y: 0}
-    MaxPoint: {x: 0.5987506, y: 0.80093557}
-  OutgoingEdges: []
+    Exits:
+    - TypeName: RoomSystem.Door
+      Name: Door North
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -28.000906, y: 0, z: 26.98}
+    MinPoint: {x: -1, y: 0}
+    MaxPoint: {x: 0.32680926, y: 0.94509035}
+  OutgoingEdges:
+  - SourceNodeGuid: ae1bb77545505b349944775de86fdcfc
+    SourceSceneGuid: 99c9720ab356a0642a771bea13969a05
+    SourceSceneName: SampleScene
+    SourcePortName: Door North
+    DestinationNodeGuid: 45bd88e56f4e8104da07d9a946e51424
+    DestinationSceneGuid: 7cb8c6b0027761a46b600f3b69174403
+    DestinationSceneName: SampleScene 3
+    DestinationPortName: Door South
+  IncomingEdges: []
+  m_Guid: ae1bb77545505b349944775de86fdcfc
+  m_Position: {x: 121, y: 35}
+  _isStartNode: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -77,7 +106,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18896188af12d0a41a178d67d66c5b78, type: 3}
   m_Name: NewGraph
   m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.RoomGraph
-  rootNode: {fileID: -5341980244758215497}
+  rootNode: {fileID: -58743701835840933}
   nodes:
-  - {fileID: -5341980244758215497}
-  - {fileID: -7245650576601195154}
+  - {fileID: -58743701835840933}
+  - {fileID: -1604239483407982519}

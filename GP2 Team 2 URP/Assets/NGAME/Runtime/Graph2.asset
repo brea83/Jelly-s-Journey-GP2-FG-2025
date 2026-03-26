@@ -1,6 +1,105 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-1944179087477837526
+--- !u!114 &-7615667067686235058
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
+  m_Name: RoomNode
+  m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
+  SceneData:
+    SceneName: SampleScene 3
+    SceneGuid: 7cb8c6b0027761a46b600f3b69174403
+    Entrances:
+    - TypeName: RoomSystem.Door
+      Name: Door South
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: 0.22, y: 0, z: -12.46}
+    Exits:
+    - TypeName: RoomSystem.Door
+      Name: Door South
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: 0.22, y: 0, z: -12.46}
+    - TypeName: RoomSystem.Door
+      Name: Temp Final Door
+      ConnectionType: 1
+      IsLockable: 1
+      Position: {x: 1.2985873, y: 0, z: 24.947142}
+    MinPoint: {x: 0.01765375, y: -0.9998442}
+    MaxPoint: {x: 0.051983174, y: 0.9986479}
+  OutgoingEdges: []
+  IncomingEdges:
+  - SourceNodeGuid: 698460677e992524081c2b471b135283
+    SourceSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
+    SourceSceneName: SampleScene 2
+    SourcePortName: Door West
+    DestinationNodeGuid: 272932770eef6de45a37535ebaa79d4f
+    DestinationSceneGuid: 7cb8c6b0027761a46b600f3b69174403
+    DestinationSceneName: SampleScene 3
+    DestinationPortName: Door South
+  m_Guid: 272932770eef6de45a37535ebaa79d4f
+  m_Position: {x: 768, y: -40}
+  _isStartNode: 0
+--- !u!114 &-6486888455062171157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
+  m_Name: RoomNode
+  m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
+  SceneData:
+    SceneName: SampleScene 2
+    SceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
+    Entrances:
+    - TypeName: RoomSystem.Door
+      Name: Door West
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -9.32, y: 0.5000038, z: -49.78}
+    - TypeName: RoomSystem.Door
+      Name: Door East
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: 29.93, y: 0.5000038, z: -16.44}
+    Exits:
+    - TypeName: RoomSystem.Door
+      Name: Door West
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -9.32, y: 0.5000038, z: -49.78}
+    - TypeName: RoomSystem.Door
+      Name: Door East
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: 29.93, y: 0.5000038, z: -16.44}
+    MinPoint: {x: -0.18402626, y: -0.9829213}
+    MaxPoint: {x: 1, y: 0}
+  OutgoingEdges: []
+  IncomingEdges:
+  - SourceNodeGuid: 1054876d2df8d40468fb28efd97ed6fb
+    SourceSceneGuid: 7a3963fe7029e1540abdb3d88a000b52
+    SourceSceneName: SampleScene 1
+    SourcePortName: Door East
+    DestinationNodeGuid: 06a78b5aeea4e214d9c7efb995afd0e9
+    DestinationSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
+    DestinationSceneName: SampleScene 2
+    DestinationPortName: Door West
+  m_Guid: 06a78b5aeea4e214d9c7efb995afd0e9
+  m_Position: {x: 509.00003, y: 81.083466}
+  _isStartNode: 0
+--- !u!114 &-5005448368373161328
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -50,201 +149,35 @@ MonoBehaviour:
     MinPoint: {x: -0.7762233, y: -0.630458}
     MaxPoint: {x: 0.9066414, y: 0.4219019}
   OutgoingEdges:
-  - SourceNodeGuid: 
-    SourceSceneGuid: 72f7d4d5798c1a144a4a27a9d277822f
+  - SourceNodeGuid: 1054876d2df8d40468fb28efd97ed6fb
+    SourceSceneGuid: 7a3963fe7029e1540abdb3d88a000b52
     SourceSceneName: SampleScene 1
     SourcePortName: Door West
-    DestinationNodeGuid: 11399295c72cd1d41afd897c87fa0fea
+    DestinationNodeGuid: 698460677e992524081c2b471b135283
     DestinationSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
     DestinationSceneName: SampleScene 2
     DestinationPortName: Door East
-  - SourceNodeGuid: 
-    SourceSceneGuid: 72f7d4d5798c1a144a4a27a9d277822f
+  - SourceNodeGuid: 1054876d2df8d40468fb28efd97ed6fb
+    SourceSceneGuid: 7a3963fe7029e1540abdb3d88a000b52
     SourceSceneName: SampleScene 1
     SourcePortName: Door East
-    DestinationNodeGuid: 53eb357d50461c344bf032022b18d442
+    DestinationNodeGuid: 06a78b5aeea4e214d9c7efb995afd0e9
     DestinationSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
     DestinationSceneName: SampleScene 2
     DestinationPortName: Door West
   IncomingEdges:
-  - SourceNodeGuid: 
-    SourceSceneGuid: 57e2131a65febda43bd4638bdec92e4e
+  - SourceNodeGuid: 12a949ba26042a74abf34edb089dd911
+    SourceSceneGuid: 99c9720ab356a0642a771bea13969a05
     SourceSceneName: SampleScene
     SourcePortName: Door North
-    DestinationNodeGuid: 72f7d4d5798c1a144a4a27a9d277822f
+    DestinationNodeGuid: 1054876d2df8d40468fb28efd97ed6fb
     DestinationSceneGuid: 7a3963fe7029e1540abdb3d88a000b52
     DestinationSceneName: SampleScene 1
     DestinationPortName: Door South
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18896188af12d0a41a178d67d66c5b78, type: 3}
-  m_Name: Graph2
-  m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.RoomGraph
-  rootNode: {fileID: 7209051073158965146}
-  nodes:
-  - {fileID: 7209051073158965146}
-  - {fileID: -1944179087477837526}
-  - {fileID: 1331964365666936872}
-  - {fileID: 249813599620648711}
-  - {fileID: 3875642779339910874}
---- !u!114 &249813599620648711
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
-  m_Name: RoomNode
-  m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
-  SceneData:
-    SceneName: SampleScene 2
-    SceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
-    Entrances:
-    - TypeName: RoomSystem.Door
-      Name: Door West
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -9.32, y: 0.5000038, z: -49.78}
-    - TypeName: RoomSystem.Door
-      Name: Door East
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: 29.93, y: 0.5000038, z: -16.44}
-    Exits:
-    - TypeName: RoomSystem.Door
-      Name: Door West
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -9.32, y: 0.5000038, z: -49.78}
-    - TypeName: RoomSystem.Door
-      Name: Door East
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: 29.93, y: 0.5000038, z: -16.44}
-    MinPoint: {x: -0.18402626, y: -0.9829213}
-    MaxPoint: {x: 1, y: 0}
-  OutgoingEdges: []
-  IncomingEdges:
-  - SourceNodeGuid: 
-    SourceSceneGuid: 72f7d4d5798c1a144a4a27a9d277822f
-    SourceSceneName: SampleScene 1
-    SourcePortName: Door East
-    DestinationNodeGuid: 53eb357d50461c344bf032022b18d442
-    DestinationSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
-    DestinationSceneName: SampleScene 2
-    DestinationPortName: Door West
---- !u!114 &1331964365666936872
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
-  m_Name: RoomNode
-  m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
-  SceneData:
-    SceneName: SampleScene 2
-    SceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
-    Entrances:
-    - TypeName: RoomSystem.Door
-      Name: Door West
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -9.32, y: 0.5000038, z: -49.78}
-    - TypeName: RoomSystem.Door
-      Name: Door East
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: 29.93, y: 0.5000038, z: -16.44}
-    Exits:
-    - TypeName: RoomSystem.Door
-      Name: Door West
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -9.32, y: 0.5000038, z: -49.78}
-    - TypeName: RoomSystem.Door
-      Name: Door East
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: 29.93, y: 0.5000038, z: -16.44}
-    MinPoint: {x: -0.18402626, y: -0.9829213}
-    MaxPoint: {x: 1, y: 0}
-  OutgoingEdges:
-  - SourceNodeGuid: 
-    SourceSceneGuid: 11399295c72cd1d41afd897c87fa0fea
-    SourceSceneName: SampleScene 2
-    SourcePortName: Door West
-    DestinationNodeGuid: 24f839eba853a154d87e737a14e061f4
-    DestinationSceneGuid: 7cb8c6b0027761a46b600f3b69174403
-    DestinationSceneName: SampleScene 3
-    DestinationPortName: Door South
-  IncomingEdges:
-  - SourceNodeGuid: 
-    SourceSceneGuid: 72f7d4d5798c1a144a4a27a9d277822f
-    SourceSceneName: SampleScene 1
-    SourcePortName: Door West
-    DestinationNodeGuid: 11399295c72cd1d41afd897c87fa0fea
-    DestinationSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
-    DestinationSceneName: SampleScene 2
-    DestinationPortName: Door East
---- !u!114 &3875642779339910874
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
-  m_Name: RoomNode
-  m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
-  SceneData:
-    SceneName: SampleScene 3
-    SceneGuid: 7cb8c6b0027761a46b600f3b69174403
-    Entrances:
-    - TypeName: RoomSystem.Door
-      Name: Door South
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: 0.22, y: 0, z: -12.46}
-    Exits:
-    - TypeName: RoomSystem.Door
-      Name: Door South
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: 0.22, y: 0, z: -12.46}
-    - TypeName: RoomSystem.Door
-      Name: Temp Final Door
-      ConnectionType: 1
-      IsLockable: 1
-      Position: {x: 1.2985873, y: 0, z: 24.947142}
-    MinPoint: {x: 0.01765375, y: -0.9998442}
-    MaxPoint: {x: 0.051983174, y: 0.9986479}
-  OutgoingEdges: []
-  IncomingEdges:
-  - SourceNodeGuid: 
-    SourceSceneGuid: 11399295c72cd1d41afd897c87fa0fea
-    SourceSceneName: SampleScene 2
-    SourcePortName: Door West
-    DestinationNodeGuid: 24f839eba853a154d87e737a14e061f4
-    DestinationSceneGuid: 7cb8c6b0027761a46b600f3b69174403
-    DestinationSceneName: SampleScene 3
-    DestinationPortName: Door South
---- !u!114 &7209051073158965146
+  m_Guid: 1054876d2df8d40468fb28efd97ed6fb
+  m_Position: {x: 268, y: -23.999985}
+  _isStartNode: 0
+--- !u!114 &-2616417663063570396
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -279,12 +212,94 @@ MonoBehaviour:
     MinPoint: {x: -1, y: 0}
     MaxPoint: {x: 0.32680926, y: 0.94509035}
   OutgoingEdges:
-  - SourceNodeGuid: 
-    SourceSceneGuid: 57e2131a65febda43bd4638bdec92e4e
+  - SourceNodeGuid: 12a949ba26042a74abf34edb089dd911
+    SourceSceneGuid: 99c9720ab356a0642a771bea13969a05
     SourceSceneName: SampleScene
     SourcePortName: Door North
-    DestinationNodeGuid: 72f7d4d5798c1a144a4a27a9d277822f
+    DestinationNodeGuid: 1054876d2df8d40468fb28efd97ed6fb
     DestinationSceneGuid: 7a3963fe7029e1540abdb3d88a000b52
     DestinationSceneName: SampleScene 1
     DestinationPortName: Door South
   IncomingEdges: []
+  m_Guid: 12a949ba26042a74abf34edb089dd911
+  m_Position: {x: 0, y: 0}
+  _isStartNode: 1
+--- !u!114 &-522332987697937984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
+  m_Name: RoomNode
+  m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
+  SceneData:
+    SceneName: SampleScene 2
+    SceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
+    Entrances:
+    - TypeName: RoomSystem.Door
+      Name: Door West
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -9.32, y: 0.5000038, z: -49.78}
+    - TypeName: RoomSystem.Door
+      Name: Door East
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: 29.93, y: 0.5000038, z: -16.44}
+    Exits:
+    - TypeName: RoomSystem.Door
+      Name: Door West
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -9.32, y: 0.5000038, z: -49.78}
+    - TypeName: RoomSystem.Door
+      Name: Door East
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: 29.93, y: 0.5000038, z: -16.44}
+    MinPoint: {x: -0.18402626, y: -0.9829213}
+    MaxPoint: {x: 1, y: 0}
+  OutgoingEdges:
+  - SourceNodeGuid: 698460677e992524081c2b471b135283
+    SourceSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
+    SourceSceneName: SampleScene 2
+    SourcePortName: Door West
+    DestinationNodeGuid: 272932770eef6de45a37535ebaa79d4f
+    DestinationSceneGuid: 7cb8c6b0027761a46b600f3b69174403
+    DestinationSceneName: SampleScene 3
+    DestinationPortName: Door South
+  IncomingEdges:
+  - SourceNodeGuid: 1054876d2df8d40468fb28efd97ed6fb
+    SourceSceneGuid: 7a3963fe7029e1540abdb3d88a000b52
+    SourceSceneName: SampleScene 1
+    SourcePortName: Door West
+    DestinationNodeGuid: 698460677e992524081c2b471b135283
+    DestinationSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
+    DestinationSceneName: SampleScene 2
+    DestinationPortName: Door East
+  m_Guid: 698460677e992524081c2b471b135283
+  m_Position: {x: 509, y: -50.5}
+  _isStartNode: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18896188af12d0a41a178d67d66c5b78, type: 3}
+  m_Name: Graph2
+  m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.RoomGraph
+  rootNode: {fileID: -2616417663063570396}
+  nodes:
+  - {fileID: -2616417663063570396}
+  - {fileID: -5005448368373161328}
+  - {fileID: -522332987697937984}
+  - {fileID: -6486888455062171157}
+  - {fileID: -7615667067686235058}

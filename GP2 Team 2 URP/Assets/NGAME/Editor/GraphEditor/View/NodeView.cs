@@ -401,7 +401,7 @@ namespace NGAME.Editor
             // runtime node updates
 
             EdgeData newEdgeData = new EdgeData(edge.output.portName, sourceNode.Node.SceneData.SceneGuid, destinationNode.Node.Guid, destinationNode.Node.SceneData.SceneGuid, edge.input.portName);
-            newEdgeData.SourceSceneGuid = sourceNode.Node.Guid;
+            newEdgeData.SourceNodeGuid = sourceNode.Node.Guid;
             newEdgeData.SourceSceneName = sourceNode.Node.SceneData.SceneName;
             newEdgeData.DestinationSceneName = destinationNode.Node.SceneData.SceneName;
 

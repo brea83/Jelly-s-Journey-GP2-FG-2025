@@ -18,8 +18,11 @@ namespace NGAME
 
 
         // private properties
+        [SerializeField]
         private string m_Guid;
+        [SerializeField]
         private Vector2 m_Position;
+        [SerializeField]
         private bool _isStartNode = false;
         //private int _exitCount;
         //private int _entranceCount;
