@@ -13,7 +13,7 @@ public class PlayerPickUp : MonoBehaviour
     protected PlayingState _updateState;
     private void Start()
     {
-        _updateState = GameManager.Instance.GetState<PlayingState>();
+        //_updateState = GameManager.Instance.GetState<PlayingState>();
 
 
     }
@@ -34,7 +34,20 @@ public class PlayerPickUp : MonoBehaviour
         }
         else
         {
-            Debug.Log("tried to add listener but myUpdateState == null");
+             Debug.Log("tried to add PlayerPickUp's listener but myUpdateState == null");
+        }
+    }
+
+    public void OnGameStateMachineInitialize(GameManager gameManager)
+    {
+        _updateState = gameManager.GetState<PlayingState>();
+        if (_updateState != null)
+        {
+            _updateState.StateUpdate.AddListener(ManagedUpdate);
+        }
+        else
+        {
+            Debug.Log("tried to add PlayerPickUp's listener but myUpdateState == null");
         }
     }
 

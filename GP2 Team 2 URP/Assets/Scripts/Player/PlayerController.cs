@@ -237,7 +237,7 @@ public class PlayerController : MonoBehaviour
 
     public void OnPickup()
     {
-        if (PrintDebugLogs) Debug.Log("PLAYER RECIEVED THROW ACTION");
+        if (PrintDebugLogs) Debug.Log("PLAYER RECIEVED PICKUP ACTION");
         if (_currentWeapon != null && (_currentWeapon.transform.position.x - transform.position.x) <= _pickupRange.x && (_currentWeapon.transform.position.z - transform.position.z) <= _pickupRange.z)
         {
             if (_currentWeapon.GetComponent<Weapon>().isPickedUp == true || _currentWeapon.GetComponent<Weapon>().isThrown == true) { return; }
