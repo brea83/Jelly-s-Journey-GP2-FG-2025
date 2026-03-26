@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour
     public PlayerInventory playerInventory;
     public GameObject[] highlightedHand;
 
-    public PlayerAttack playerAttack;
+    public PlayerAttack PlayerAttackComponent;
 
     [Header("Movement Settings")]
     private Vector2 _moveDirection;
@@ -52,6 +52,20 @@ public class PlayerController : MonoBehaviour
 
     [Header("Debug Settings")]
     public bool PrintDebugLogs = false;
+    [SerializeField]
+    private bool _GodMode = false;
+
+    public void ToggleGodmode(bool value)
+    {
+        PlayerAttackComponent.ToggleGodmode(value);
+        PlayerHealth health = GetComponentInChildren<PlayerHealth>();
+        if (health != null)
+        {
+            health.ToggleGodmode(value);
+        }
+    }
+
+
     void Start()
     {
         _updateState = GameManager.Instance.GetState<PlayingState>();
@@ -69,6 +83,8 @@ public class PlayerController : MonoBehaviour
         animator = GetComponent<Animator>();
         playerInventory = GetComponent<PlayerInventory>();
         _playerPickUp = GetComponent<PlayerPickUp>();
+
+        ToggleGodmode(_GodMode);
     }
 
     protected void ManagedUpdate()
@@ -76,13 +92,13 @@ public class PlayerController : MonoBehaviour
         _currentWeapon = _playerPickUp.closestWeapon;
         CheckWeaponAmount();
 
-        if (Time.time - playerAttack.lastAttackTime > playerAttack.comboResetTimer && playerAttack.isAttacking == false) 
+        if (Time.time - PlayerAttackComponent.lastAttackTime > PlayerAttackComponent.comboResetTimer && PlayerAttackComponent.isAttacking == false) 
         { 
-            playerAttack.comboStep = 0;
+            PlayerAttackComponent.comboStep = 0;
         }
 
-        if (playerAttack.comboStep >= weaponsEquipped) playerAttack.comboStep = 0;
-        playerAttack.maxComboStep = weaponsEquipped;
+        if (PlayerAttackComponent.comboStep >= weaponsEquipped) PlayerAttackComponent.comboStep = 0;
+        PlayerAttackComponent.maxComboStep = weaponsEquipped;
 
         _throwCD += Time.deltaTime;
         if (_throwCD >= 0.5f) { _canThrow = true; }
@@ -91,13 +107,25 @@ public class PlayerController : MonoBehaviour
     public void OnEnable()
     {
         _isDashing = false;
-        playerAttack.isAttacking = false;
+        if (PlayerAttackComponent == null)
+        {
+            PlayerAttackComponent = GetComponentInChildren<PlayerAttack>();
+            if (PlayerAttackComponent != null)
+            {
+                PlayerAttackComponent.isAttacking = false;
+            }
+            else
+            {
+                Debug.LogWarning("Player Controller could not find PlayerAttack in children on enable");
+            }
+        }
+        
     }
 
     protected void ManagedFixedUpdate()
     {
 
-        if(playerAttack.isAttacking || _isDashing) { return; }
+        if(PlayerAttackComponent.isAttacking || _isDashing) { return; }
         Movement();
 
 
@@ -118,13 +146,13 @@ public class PlayerController : MonoBehaviour
     public void OnAttack()
     {
         if (PrintDebugLogs) Debug.Log("PLAYER RECIEVED ATTACK ACTION");
-        playerAttack.Attack();
+        PlayerAttackComponent.Attack();
     }
 
     public void OnThrow()
     {
         if (PrintDebugLogs) Debug.Log("PLAYER RECIEVED THROW ACTION");
-        if (_canThrow) { playerAttack.ThrowAttack(); _canThrow = false; _throwCD = 0f; }
+        if (_canThrow) { PlayerAttackComponent.ThrowAttack(); _canThrow = false; _throwCD = 0f; }
                 
     }
     #endregion

@@ -29,6 +29,13 @@ public class PlayerAttack : MonoBehaviour, IGameStateMachineListener
     //float timer = 1.5f;
     [Header("Debug Settings")]
     public bool PrintDebugLogs = false;
+    [SerializeField]
+    private bool _MaxDamage = false;
+
+    public void ToggleGodmode(bool value)
+    {
+        _MaxDamage = value;
+    }
 
     private void Start()
     {
@@ -176,12 +183,20 @@ public class PlayerAttack : MonoBehaviour, IGameStateMachineListener
 
     public int CalculateDamage()
     {
-        if (_PC.handPositions[0].childCount <= 0)
-            return unarmedDamage;
+        if (_MaxDamage) 
+        {
+            return 999;
+        }
+        else
+        {
+            if (_PC.handPositions[0].childCount <= 0)
+                return unarmedDamage;
 
-        _currentWeaponAttack = _PC.handPositions[comboStep].GetChild(0).gameObject;
-        Weapon weapon = _currentWeaponAttack.GetComponent<Weapon>();
-        return (int)(weapon.damage * slotMultiplier[comboStep]);
+            _currentWeaponAttack = _PC.handPositions[comboStep].GetChild(0).gameObject;
+            Weapon weapon = _currentWeaponAttack.GetComponent<Weapon>();
+
+            return (int)(weapon.damage * slotMultiplier[comboStep]);
+        }
     }
 
     public void OnGameStateMachineInitialized(GameManager manager)

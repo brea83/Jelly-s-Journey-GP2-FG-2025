@@ -22,6 +22,13 @@ public class PlayerHealth : MonoBehaviour, IGameStateMachineListener
 
     [Header("Debug Settings")]
     public bool PrintDebugLogs = false;
+    [SerializeField]
+    private bool _NoDamage = false;
+
+    public void ToggleGodmode(bool value)
+    {
+        _NoDamage = value;
+    }
 
     private void Start()
     {
@@ -64,6 +71,11 @@ public class PlayerHealth : MonoBehaviour, IGameStateMachineListener
     {
         _animator.Play("rig_001|gethit", 0);
         _pAttack.EndAttack();
+
+        if (_NoDamage) 
+        {
+            return;
+        }
 
         if (!_IsDamaged)
         {
