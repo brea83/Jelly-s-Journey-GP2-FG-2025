@@ -85,5 +85,7 @@ namespace NGAME
         public void SetDestination(EdgeData edge);
 
         public UnityEvent<EdgeData> ConnectorActivated { get; }
+
+        public void InitializeFromGraphData(EdgeData edge);
     }
 }

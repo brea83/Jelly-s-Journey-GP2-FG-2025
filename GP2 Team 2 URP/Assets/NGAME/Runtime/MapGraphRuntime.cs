@@ -109,10 +109,12 @@ namespace NGAME
             RegionConnectionData data = exit.GetRegionConnectionData();
 
             EdgeData edge = m_CurrentRoomExits.FirstOrDefault((EdgeData e) => e.SourcePortName == data.Name);
-            if(edge != null)
-            {
-                exit.SetDestination(edge);
-            }
+
+            exit.InitializeFromGraphData(edge);
+            //if(edge != null)
+            //{
+            //    exit.SetDestination(edge);
+            //}
         }
 
         protected void InitCurrentConnectors(Scene loadedScene)

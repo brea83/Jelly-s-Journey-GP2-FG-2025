@@ -60,19 +60,22 @@ namespace RoomSystem
                 _data.EntranceRotation = entrance.transform.rotation;
             }
             _data.Name = name;
-
-            if (LocksDurringCombat)
+            
+            if (_hasDisabled)
             {
-                SpawnManager spawnManager = FindFirstObjectByType<SpawnManager>();
-                if (spawnManager != null)
+                SubscribeToPlayState();
+                if (LocksDurringCombat)
                 {
-                    spawnManager.OnEncounterStart.AddListener(OnEncounterStart);
-                    spawnManager.OnEncounterEnd.AddListener(OnEncounterEnd);
+                    SpawnManager spawnManager = FindFirstObjectByType<SpawnManager>();
+                    if (spawnManager != null)
+                    {
+                        spawnManager.OnEncounterStart.AddListener(OnEncounterStart);
+                        spawnManager.OnEncounterEnd.AddListener(OnEncounterEnd);
+                    }
                 }
             }
-            if (_hasDisabled) SubscribeToPlayState();
-            
         }
+            
         private void Start()
         {
             Transform childTransform = this.gameObject.FindComponentInChildWithTag<Transform>("Barrier");//this.transform.Find("Barrier");
@@ -244,6 +247,28 @@ namespace RoomSystem
             _data.DestinationPointName = edge.DestinationPortName;
 
             OutgoingEdge = edge;
+        }
+
+        public void InitializeFromGraphData(EdgeData edge)
+        {
+            if(edge == null)
+            {
+                LockDoor();
+            }
+            else
+            {
+                if(LocksDurringCombat == true)
+                {
+                    SpawnManager spawnManager = FindFirstObjectByType<SpawnManager>();
+                    if (spawnManager != null)
+                    {
+                        spawnManager.OnEncounterStart.AddListener(OnEncounterStart);
+                        spawnManager.OnEncounterEnd.AddListener(OnEncounterEnd);
+                    }
+                }
+
+                SetDestination(edge);
+            }
         }
     }
         
