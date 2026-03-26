@@ -313,20 +313,40 @@ namespace NGAME.Editor
             if(port != null)
             {
                 MarkPortConnectionError(port, null, "", false);
-                Port matchingPort = null;
-                if(port.direction == Direction.Input )
-                {
-                    matchingPort = GetPortByName(port.portName, OutputPorts);
-                }
-                else
-                {
-                    matchingPort = GetPortByName(port.portName, InputPorts);
-                }
+                SetUsedPortsOtherDirectionEnabled(port, false);
+                //Port matchingPort = null;
+                //if(port.direction == Direction.Input )
+                //{
+                //    matchingPort = GetPortByName(port.portName, OutputPorts);
+                //}
+                //else
+                //{
+                //    matchingPort = GetPortByName(port.portName, InputPorts);
+                //}
 
-                if(matchingPort != null)
-                {
-                    matchingPort.SetEnabled(false);
-                }
+                //if(matchingPort != null)
+                //{
+                //    matchingPort.SetEnabled(false);
+                //}
+            }
+        }
+
+        private static void SetUsedPortsOtherDirectionEnabled(Port port, bool value)
+        {
+            Port matchingPort = null;
+            NodeView view = port.node as NodeView;
+            if (port.direction == Direction.Input)
+            {
+                matchingPort = view.GetPortByName(port.portName, view.OutputPorts);
+            }
+            else
+            {
+                matchingPort = view.GetPortByName(port.portName, view.InputPorts);
+            }
+
+            if (matchingPort != null)
+            {
+                matchingPort.SetEnabled(value);
             }
         }
 
@@ -335,21 +355,8 @@ namespace NGAME.Editor
             if(port != null)
             {
                 MarkPortConnectionError(port, edge, "", false);
-
-                Port matchingPort = null;
-                if (port.direction == Direction.Input)
-                {
-                    matchingPort = GetPortByName(port.portName, OutputPorts);
-                }
-                else
-                {
-                    matchingPort = GetPortByName(port.portName, InputPorts);
-                }
-
-                if (matchingPort != null)
-                {
-                    matchingPort.SetEnabled(true);
-                }
+                SetUsedPortsOtherDirectionEnabled(port, true);
+                
             }
 
             if (OldConnectedPorts.Contains(port))
@@ -523,7 +530,8 @@ namespace NGAME.Editor
                     {
                         Edge newEdge = sourcePort.ConnectTo(destinationPort);
                         m_RoomGraphView.AddElement(newEdge);
-
+                        SetUsedPortsOtherDirectionEnabled(sourcePort, false);
+                        SetUsedPortsOtherDirectionEnabled(destinationPort, false);
                     }
                     else
                     {
@@ -535,6 +543,8 @@ namespace NGAME.Editor
                         m_RoomGraphView.AddElement(newEdge);
                         MarkPortConnectionError(sourcePort, newEdge, errorTooltip);
                         MarkPortConnectionError(newDestination, null, destinationTooltip);
+                        SetUsedPortsOtherDirectionEnabled(sourcePort, false);
+                        SetUsedPortsOtherDirectionEnabled(destinationPort, false);
                         //Debug.LogWarning("Node " + node.Room.SceneName + ", has a connection to a missing port named " + edge.DestinationPortName + ", this is probably because the node this port was connected to had its scene changed.");
                     }
                 }
