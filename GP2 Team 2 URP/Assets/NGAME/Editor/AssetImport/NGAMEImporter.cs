@@ -10,23 +10,11 @@ namespace NGAME.Editor
     {
         public override void OnImportAsset(AssetImportContext ctx)
         {
-            Dictionary<string, RuntimeNode> guidToNode = new Dictionary<string, RuntimeNode>();
+            
 
 
         }
 
-        
-
-        static List<RuntimeNode> TranslateNodeModelToRuntimeNodes(IMapNode rootMapNode)
-        {
-           
-            return new List<RuntimeNode>();
-        }
-
-        //static T GetInputPortValue<T>(Port port)
-        //{
-        //    return new T();
-        //}
 
 
     }
