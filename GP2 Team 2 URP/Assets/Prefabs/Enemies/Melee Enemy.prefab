@@ -375,6 +375,10 @@ PrefabInstance:
       value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 389223929294870192, guid: 21348ff32ebd9934c80630beddf5eb25, type: 3}
+      propertyPath: _spawnTypeTag
+      value: 
+      objectReference: {fileID: 11400000, guid: 9ee823ae691a5554b9b7ffbee152cead, type: 2}
+    - target: {fileID: 389223929294870192, guid: 21348ff32ebd9934c80630beddf5eb25, type: 3}
       propertyPath: AttackCoolDown
       value: 5
       objectReference: {fileID: 0}

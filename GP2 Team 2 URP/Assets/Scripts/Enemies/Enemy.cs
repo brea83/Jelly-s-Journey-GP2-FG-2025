@@ -1,11 +1,14 @@
+using NGAME;
 using System;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, NGAME.ISpawnable
 {
     protected PlayingState _updateState;
-
+    [Header("Spawning Info")]
+    [SerializeField]
+    protected SO_SpawnTypeTag _spawnTypeTag;
     [Header("Enemy Stats")]
     [SerializeField]
     public int _moveSpeed;
@@ -42,6 +45,8 @@ public class Enemy : MonoBehaviour
 
     [Header("Debug Settings")]
     public bool PrintDebugLogs = false;
+
+    public SO_SpawnTypeTag SpawnTypeTag => _spawnTypeTag;
 
     private void Start()
     {
