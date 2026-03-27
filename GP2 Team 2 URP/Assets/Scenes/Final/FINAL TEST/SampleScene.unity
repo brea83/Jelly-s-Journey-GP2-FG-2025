@@ -2969,6 +2969,10 @@ PrefabInstance:
       propertyPath: 'm_AllowedSpawnableTypes.Array.data[0]'
       value: 
       objectReference: {fileID: 11400000, guid: dbbabfda2eac6424db2ed97e93de216e, type: 2}
+    - target: {fileID: 5564395060646320182, guid: a2570e90212745a44865e06d4bc4a80e, type: 3}
+      propertyPath: 'm_AllowedSpawnableTypes.Array.data[1]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 2609c893ef4e26a478f3354078db2cf0, type: 2}
     - target: {fileID: 8557446266308472645, guid: a2570e90212745a44865e06d4bc4a80e, type: 3}
       propertyPath: m_Name
       value: MeleeSpawnPoint (1)
