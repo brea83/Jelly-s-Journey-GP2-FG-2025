@@ -30,5 +30,15 @@ namespace EncounterSystem
         {
             return transform.position;
         }
+
+        public SpawnerData GetSpawnerData()
+        {
+            SpawnerData spawnerData = new SpawnerData();
+            spawnerData.ValidTypes = AllowedSpawnableTypes;
+            spawnerData.Name = name;
+            spawnerData.Position = transform.position;
+
+            return spawnerData;
+        }
     }
 }

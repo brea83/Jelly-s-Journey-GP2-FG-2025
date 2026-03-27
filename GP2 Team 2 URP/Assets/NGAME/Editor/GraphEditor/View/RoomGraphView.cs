@@ -15,8 +15,9 @@ namespace NGAME.Editor
     public partial class RoomGraphView : GraphView
     {
         public Action<NodeView> OnNodeSelected;
-        public List<NGAME.Editor.SceneData> IncludedScenes = new List<NGAME.Editor.SceneData>();
-        public List<NGAME.SceneConnectionsData> ValidScenes = new List<NGAME.SceneConnectionsData>();
+        public List<SceneData> IncludedScenes = new List<SceneData>();
+        public List<SceneConnectionsData> ValidScenes = new List<SceneConnectionsData>();
+        public List<SceneSpawnData> SpawnersByScene = new List<SceneSpawnData>();
         //public StyleSheet Style;
         
         private RoomGraph _graph;
@@ -173,7 +174,7 @@ namespace NGAME.Editor
                 return;
             }
 
-            NGAME.Editor.SO_Settings settings = AssetDatabase.LoadAssetAtPath<NGAME.Editor.SO_Settings>(AssetDatabase.GUIDToAssetPath(settingsGuid[0]));
+            SO_Settings settings = AssetDatabase.LoadAssetAtPath<SO_Settings>(AssetDatabase.GUIDToAssetPath(settingsGuid[0]));
 
             if (settings == null || settings.Scenes.Count <= 0)
             {
@@ -182,28 +183,43 @@ namespace NGAME.Editor
 
             for (int i = 0; i < settings.Scenes.Count; i++)
             {
-                NGAME.Editor.SceneData data = settings.Scenes[i];
+                SceneData data = settings.Scenes[i];
 
                 if(data.FilePath == "" || !data.IncludeInGraphTool)
                 {
                     continue;
                 }
 
-                NGAME.SceneConnectionsData connections = GetScenesRegionConnectionData(data.FilePath);
-                if (connections != null)
+                // open the scene to collect data from it
+                Scene aScene = EditorSceneManager.OpenPreviewScene(data.FilePath);
+                if (!aScene.IsValid())
                 {
-                    connections.SceneName = data.Name;
-                    connections.SceneGuid = settings.Guids[i];
-                    ValidScenes.Add(connections);
+                    Debug.Log("Graph tried to include an invalid scene from filepath: " + data.FilePath);
+                    EditorSceneManager.ClosePreviewScene(aScene);
+                    continue;
                 }
+                string sceneGuid = settings.Guids[i];
+
+                (SceneConnectionsData connections, SceneSpawnData spawners) componentData = GetScenesRegionConnectionData(aScene, sceneGuid);
+                if (componentData.Item1 != null)
+                {
+                    
+                    ValidScenes.Add(componentData.Item1);
+                }
+
+                if (componentData.Item2 != null) 
+                {
+                    SpawnersByScene.Add(componentData.Item2);
+                }
+
+
+                EditorSceneManager.ClosePreviewScene(aScene);
             }
-  
+
         }
 
-        private SceneConnectionsData GetScenesRegionConnectionData(string filePath)
+        private (SceneConnectionsData connections, SceneSpawnData spawners) GetScenesRegionConnectionData(Scene aScene, string sceneGuid)
         {
-            //List<RegionConnectionData> connections = new List<RegionConnectionData>();
-
             //short hands for comparisons later
             RegionConnectionType twoWay = RegionConnectionType.ExitAndEntrance;
             RegionConnectionType entranceOnly = RegionConnectionType.EntranceOnly;
@@ -212,60 +228,78 @@ namespace NGAME.Editor
             List<RegionConnectionData> entrances = new List<RegionConnectionData>();
             List<RegionConnectionData> exits = new List<RegionConnectionData>();
 
-            Scene aScene = EditorSceneManager.OpenPreviewScene(filePath);
-            if (!aScene.IsValid())
-            {
-                Debug.Log("Graph tried to include an invalid scene from filepath: " + filePath);
-                EditorSceneManager.ClosePreviewScene(aScene);
-                return null;
-            }
+            List<SpawnerData> spawners = new();
 
-            bool bComponentsFound = false;
+
+            bool bConnectionsFound = false;
+            bool bSpawnersFound = false;
 
             GameObject[] rootObjects = aScene.GetRootGameObjects();
 
 
             foreach (GameObject obj in rootObjects)
             {
-                IEncounterRegionConnector[] components = obj.GetComponentsInChildren<IEncounterRegionConnector>();
+                // connection data
+                IEncounterRegionConnector[] connectorComponent = obj.GetComponentsInChildren<IEncounterRegionConnector>();
+                if (connectorComponent.Length > 0) bConnectionsFound = true;
 
-                if (components.Length > 0)
+                foreach (IEncounterRegionConnector connection in connectorComponent)
                 {
-                    bComponentsFound = true;
-                    foreach (IEncounterRegionConnector component in components)
+                    //connections.Add(component.GetRegionConnectionData());
+                    RegionConnectionData data = connection.GetRegionConnectionData();
+                    if (data.ConnectionType == twoWay || data.ConnectionType == entranceOnly)
                     {
-                        //connections.Add(component.GetRegionConnectionData());
-                        RegionConnectionData data = component.GetRegionConnectionData();
-                        if (data.ConnectionType == twoWay || data.ConnectionType == entranceOnly)
-                        {
-                            entrances.Add(data);
-                        }
-                        if(data.ConnectionType == twoWay || data.ConnectionType == exitOnly)
-                        {
-                            exits.Add(data);
-                        }
+                        entrances.Add(data);
+                    }
+                    if(data.ConnectionType == twoWay || data.ConnectionType == exitOnly)
+                    {
+                        exits.Add(data);
                     }
                 }
+
+                // spawner data
+
+                ISpawnPoint[] spawnerComponents = obj.GetComponentsInChildren<ISpawnPoint>();
+                if(spawnerComponents.Length > 0) bSpawnersFound = true;
+
+                foreach (ISpawnPoint spawner in spawnerComponents)
+                {
+                    spawners.Add(spawner.GetSpawnerData());
+                }
+
             }
 
-            if (!bComponentsFound)
+            if (!bConnectionsFound && !bSpawnersFound)
             {
-                Debug.Log("No IEncounterRegionConnector components found in scene: " + aScene.name);
-                
-                EditorSceneManager.ClosePreviewScene(aScene);
-                return null;
+                Debug.Log("No IEncounterRegionConnector or ISpawnPoint components found in scene: " + aScene.name);
+            }
+            else
+            {
+                Debug.Log("Scene: " + aScene.name + " contains target data types");
             }
 
-            Debug.Log("Scene: " + aScene.name + " contains target data types");
+            SceneConnectionsData connectionData = null;
+            if (bConnectionsFound) 
+            {
+                connectionData = new SceneConnectionsData();
+                connectionData.SceneName = aScene.name;
+                connectionData.SceneGuid = sceneGuid;
+                connectionData.Entrances = entrances;
+                connectionData.Exits = exits;
+            }
+            
 
-
-            NGAME.SceneConnectionsData result = new NGAME.SceneConnectionsData();
-            result.SceneName = aScene.name;
-            result.Entrances = entrances;
-            result.Exits = exits;
-
-            EditorSceneManager.ClosePreviewScene(aScene);
-            return result;
+            SceneSpawnData spawnData = null;
+            if (bSpawnersFound) 
+            {
+                spawnData = new SceneSpawnData();
+                spawnData.SpawnPoints = spawners;
+                spawnData.SceneGUID = sceneGuid;
+            }
+            
+            return (connectionData, spawnData);
         }
+    
+        
     }
 }

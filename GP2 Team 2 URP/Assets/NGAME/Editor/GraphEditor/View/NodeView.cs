@@ -21,6 +21,11 @@ namespace NGAME.Editor
         private int m_LastDropDownIndex = 0;
         private List<NGAME.SceneConnectionsData> _roomDataObjects;
         private Color m_ValidPortColor = new();
+
+        // container that input and output containers are in is called  topContainer on the parent class
+        private SceneSpawnData m_CurrentSceneSpawnData;
+        private VisualElement m_SpawningContainer;
+        private ScrollView m_SpawningScrollView;
         
         public NodeView(RoomGraphView graph, RoomNode node, List<NGAME.SceneConnectionsData> roomDataObjects = null) 
         {
@@ -37,11 +42,43 @@ namespace NGAME.Editor
                 _roomDataObjects = roomDataObjects;
                 CreateRoomSelector( roomDataObjects );
             }
+
+            Label entranceLabel = new();
+            entranceLabel.text = "Entrances";
+            inputContainer.Add( entranceLabel );
+
+            Label exitLabel = new();
+            exitLabel.text = "Exits";
+            outputContainer.Add( exitLabel );
+
+
+            m_SpawningContainer = new VisualElement();
+            Label spawnDataLabel = new();
+            spawnDataLabel.text = "Encounter Spawning";
+            spawnDataLabel.AddToClassList("header2");
+            m_SpawningContainer.Add( spawnDataLabel );
+            m_SpawningContainer.style.minHeight = 50;
+            m_SpawningContainer.style.maxHeight = 100;
+            m_SpawningContainer.AddToClassList("nodeExtension");
+
+            m_SpawningScrollView = new ScrollView();
+            m_SpawningContainer.Add(m_SpawningScrollView);
+
+            extensionContainer.Add(m_SpawningContainer);
+            extensionContainer.style.flexGrow = 1.0f;
+            RefreshExpandedState();
             
+
             CreateInputPorts();
             CreateOutputPorts();
+            UpdateCurrentSceneSpawnData();
+            PopulateEncounterContainer();
         }
 
+        private void UpdateCurrentSceneSpawnData()
+        {
+            m_CurrentSceneSpawnData = m_RoomGraphView.SpawnersByScene.FirstOrDefault((SceneSpawnData e) => e.SceneGUID == Node.SceneData.SceneGuid);
+        }
         private void CreateRoomSelector(List<NGAME.SceneConnectionsData> roomDataObjects)
         {
             List<string> choices = new List<string>();
@@ -76,6 +113,73 @@ namespace NGAME.Editor
             
             m_RoomSelectDropdown.RegisterValueChangedCallback(OnValueChanged);
         }
+        
+        private void PopulateEncounterContainer()
+        {
+            m_SpawningScrollView.Clear();
+            if(Node.SceneData == null)
+            {
+                return;
+            }
+
+            //Validate Connections?
+
+            if(m_CurrentSceneSpawnData != null)
+            {
+
+                
+                foreach(SpawnerData spawner in m_CurrentSceneSpawnData.SpawnPoints)
+                {
+                    if (spawner != null)
+                    {
+                        VisualElement item = MakeSpawnListItem(spawner);
+                        if(item != null)
+                        {
+                            
+                            m_SpawningScrollView.Add(item);
+                        }
+                    }
+                }
+                
+                
+            }
+        }
+
+        private VisualElement MakeSpawnListItem(SpawnerData spawner)
+        {
+            if (spawner == null)
+            {
+                return null;
+            }
+            VisualElement panel = new VisualElement();
+            panel.AddToClassList("ListItem");
+
+            Label label = new Label();
+            label.AddToClassList("header3");
+            label.name = "SpawnerLabel";
+            label.text = spawner.Name;
+
+            TextElement description = new TextElement();
+            description.name = "SpawnerDescription";
+            
+
+            string typesDescription = "Valid Types: ";
+
+            foreach (SO_SpawnTypeTag data in spawner.ValidTypes)
+            {
+                typesDescription += data.Tag;
+                typesDescription += ", ";
+            }
+
+            description.text = typesDescription;
+
+            panel.Add(label);
+            panel.Add(description);
+
+            panel.style.flexShrink = 0;
+            return panel;
+        }
+
         private void OnValueChanged(ChangeEvent<string> change) 
         {
             if (change.newValue == change.previousValue) return;
@@ -95,6 +199,9 @@ namespace NGAME.Editor
             Node.UpdateRoomData( newData );
             UpdatePorts();
             MarkMissingSceneError("", false);
+
+            UpdateCurrentSceneSpawnData();
+            PopulateEncounterContainer();
         }
 
         private void UpdatePorts()
