@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 namespace NGAME.Editor
@@ -30,6 +31,7 @@ namespace NGAME.Editor
         private ScrollView m_SpawningScrollView;
 
         private VisualElement m_WavesContainer;
+        private List<VisualElement> m_WaveItems = new List<VisualElement>();
         
         public NodeView(RoomGraphView graph, RoomNode node, List<NGAME.SceneConnectionsData> roomDataObjects = null) 
         {
@@ -57,42 +59,44 @@ namespace NGAME.Editor
 
 
             m_EncountersContainer = new VisualElement();
+            m_EncountersContainer.style.minHeight = 50;
+            //m_EncountersContainer.style.maxHeight = 200;
+            m_EncountersContainer.AddToClassList("nodeExtension");
+
             Label encountersLabel = new();
             encountersLabel.text = "Encounters";
             encountersLabel.AddToClassList("header2");
             m_EncountersContainer.Add(encountersLabel);
 
-            Label spawnDataLabel = new();
+            Foldout spawnDataLabel = new();
             spawnDataLabel.text = "Count of Spawners by Allowed Type";
             spawnDataLabel.AddToClassList("header3");
             m_EncountersContainer.Add(spawnDataLabel);
 
-            m_EncountersContainer.style.minHeight = 50;
-            m_EncountersContainer.style.maxHeight = 100;
-            m_EncountersContainer.AddToClassList("nodeExtension");
 
             m_SpawningScrollView = new ScrollView();
-            m_EncountersContainer.Add(m_SpawningScrollView);
+            spawnDataLabel.Add(m_SpawningScrollView);
 
             m_WavesContainer = new VisualElement();
             VisualElement headerPanel = new();
             headerPanel.style.flexDirection = FlexDirection.Row;
+            headerPanel.AddToClassList("header3");
 
             Label wavesLabel = new();
             wavesLabel.text = "Waves";
-            wavesLabel.AddToClassList("header2");
+            wavesLabel.AddToClassList("header3");
 
             Button addWaveButton = new();
             addWaveButton.text = "+";
             addWaveButton.clicked += AddWave;
 
-            Button removeWaveButton = new();
-            removeWaveButton.text = "-";
-            removeWaveButton.clicked += RemoveWave;
+            //Button removeWaveButton = new();
+            //removeWaveButton.text = "-";
+            //removeWaveButton.clicked += RemoveWave;
 
             headerPanel.Add(wavesLabel);
             headerPanel.Add(addWaveButton);
-            headerPanel.Add(removeWaveButton);
+            //headerPanel.Add(removeWaveButton);
             m_WavesContainer.Add(headerPanel);
             m_EncountersContainer.Add(m_WavesContainer);
 
@@ -104,7 +108,7 @@ namespace NGAME.Editor
 
             CreateInputPorts();
             CreateOutputPorts();
-            CreateWavePorts();
+            //CreateWavePorts();
             UpdateCurrentSceneSpawnData();
             PopulateEncounterContainer();
         }
@@ -171,6 +175,14 @@ namespace NGAME.Editor
                     m_SpawningScrollView.Add(label);
                 }
             }
+
+            if(Node.NumberOfWaves > 0)
+            {
+                for(int i = 0; i < Node.NumberOfWaves; i++)
+                {
+                    CreateWaveItem();
+                }
+            }
         }
 
 
@@ -198,25 +210,25 @@ namespace NGAME.Editor
             PopulateEncounterContainer();
         }
 
-        private void UpdateWavePorts()
-        {
-            List<string> WaveNames = new();
-            for (int i = 0; i < Node.NumberOfWaves; i++)
-            {
-                string portName = "Wave " + (i + 1).ToString();
-                WaveNames.Add(portName);
-            }
+        //private void UpdateWavePorts()
+        //{
+        //    List<string> WaveNames = new();
+        //    for (int i = 0; i < Node.NumberOfWaves; i++)
+        //    {
+        //        string portName = "Wave " + (i + 1).ToString();
+        //        WaveNames.Add(portName);
+        //    }
 
-            RemoveExcessPorts(WavePorts, m_WavesContainer, WaveNames);
-            AddMissingPorts(WavePorts, m_WavesContainer, WaveNames);
-        }
+        //    RemoveExcessPorts(WavePorts, m_WavesContainer, WaveNames);
+        //    AddMissingPorts(WavePorts, m_WavesContainer, WaveNames);
+        //}
 
         private void UpdatePorts()
         {
 
             List<string> EntranceNames;
             List<string> ExitNames;
-            List<string> WaveNames = new();
+            //List<string> WaveNames = new();
             if (Node.SceneData == null)
             {
                 EntranceNames = new();
@@ -227,11 +239,11 @@ namespace NGAME.Editor
                 EntranceNames = Node.SceneData.Entrances.ConvertAll(entrance => entrance.Name);
                 ExitNames = Node.SceneData.Exits.ConvertAll(entrance => entrance.Name);
 
-                for (int i = 0; i < Node.NumberOfWaves; i++)
-                {
-                    string portName = "Wave " + (i + 1).ToString();
-                    WaveNames.Add(portName);
-                }
+                //for (int i = 0; i < Node.NumberOfWaves; i++)
+                //{
+                //    string portName = "Wave " + (i + 1).ToString();
+                //    WaveNames.Add(portName);
+                //}
             }
             
             TryReconnectOldEdges(EntranceNames);
@@ -242,8 +254,8 @@ namespace NGAME.Editor
             RemoveExcessPorts(OutputPorts, outputContainer, ExitNames);
             AddMissingPorts(OutputPorts, outputContainer, ExitNames, false);
 
-            RemoveExcessPorts(WavePorts, m_WavesContainer, WaveNames);
-            AddMissingPorts(WavePorts, m_WavesContainer, WaveNames);
+            //RemoveExcessPorts(WavePorts, m_WavesContainer, WaveNames);
+            //AddMissingPorts(WavePorts, m_WavesContainer, WaveNames);
         }
 
         private void TryReconnectOldEdges(List<string> newPortNames)
@@ -378,27 +390,61 @@ namespace NGAME.Editor
             }
         }
 
-        private void CreateWavePorts()
-        {
-            if (Node.SceneData == null || Node.SceneData.SceneGuid == null) return;
+        //private void CreateWavePorts()
+        //{
+        //    if (Node.SceneData == null || Node.SceneData.SceneGuid == null) return;
             
-            for(int i = 0; i < Node.NumberOfWaves; i++)
+        //    for(int i = 0; i < Node.NumberOfWaves; i++)
+        //    {
+        //        string portName = "Wave " + (i + 1).ToString();
+        //        Port newPort = CreatePort(WavePorts, m_WavesContainer, portName, typeof(int));
+        //    }
+        //}
+
+        private void CreateWaveItem() 
+        { 
+            VisualElement row = new VisualElement();
+            row.style.flexDirection = FlexDirection.Row;
+            row.AddToClassList("ListItem");
+
+            string waveName = "Wave " + m_WaveItems.Count.ToString();
+
+            Foldout header = new Foldout();
+            header.text = waveName;
+            //header.contentContainer.style.flexDirection = FlexDirection.Row;
+
+            ObjectField field = new ObjectField();
+            field.objectType = typeof(IWaveData);
+            
+            Button removeMe = new Button();
+            removeMe.style.flexGrow = 0;
+            removeMe.text = "Remove Wave";
+            removeMe.clicked += () =>
             {
-                string portName = "Wave " + (i + 1).ToString();
-                Port newPort = CreatePort(WavePorts, m_WavesContainer, portName, typeof(int));
-            }
+                RemoveWave(row);
+            };
+
+            header.Add(removeMe);
+            header.Add(field);
+
+            row.Add(header);
+
+            m_WavesContainer.Add(row);
+            m_WaveItems.Add(row);
         }
 
         private void AddWave()
         {
             Node.NumberOfWaves += 1;
-            UpdateWavePorts();
+            CreateWaveItem();
+            //UpdateWavePorts();
         }
 
-        private void RemoveWave()
+        private void RemoveWave(VisualElement waveItem)
         {
             Node.NumberOfWaves -= 1;
-            UpdateWavePorts();
+            m_WaveItems.Remove(waveItem);
+            waveItem.RemoveFromHierarchy();
         }
 
         private Port CreatePort(List<Port> portList, VisualElement portContainer, string portName, System.Type passedDataType, 

@@ -26,10 +26,14 @@ namespace NGAME
     {
         public string SceneName;
         public string SceneGuid;
+        [HideInInspector]
         public List<RegionConnectionData> Entrances;
+        [HideInInspector]
         public List<RegionConnectionData> Exits;
         //public List<string> SpawnPositions;
+        [HideInInspector]
         public Vector2 MinPoint = Vector3.zero;
+        [HideInInspector]
         public Vector2 MaxPoint = Vector3.zero;
 
         public void UpdateBounds()

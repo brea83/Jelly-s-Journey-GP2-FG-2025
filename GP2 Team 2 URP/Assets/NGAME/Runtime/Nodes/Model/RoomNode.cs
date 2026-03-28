@@ -12,15 +12,17 @@ namespace NGAME
         public Vector2 Position { get => m_Position; set => m_Position = value; }
 
         public SceneConnectionsData SceneData = null;
-        
+
+        [HideInInspector]
         public List<EdgeData> OutgoingEdges = new List<EdgeData>();
+        [HideInInspector]
         public List<EdgeData> IncomingEdges = new List<EdgeData>();
 
 
         // private properties
-        [SerializeField]
+        [SerializeField, HideInInspector]
         private string m_Guid;
-        [SerializeField]
+        [SerializeField, HideInInspector]
         private Vector2 m_Position;
         [SerializeField]
         private bool _isStartNode = false;
