@@ -14,5 +14,8 @@ namespace NGAME
         public float MinSecondsBeforeNextWave {  get; set; }
         public int EnemiesRemainingTrigger { get; set; }
 
+        //public void SerializeData();
+        //TODO: make serialization hook in.
+
     }
 }

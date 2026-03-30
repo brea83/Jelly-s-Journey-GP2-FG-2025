@@ -17,6 +17,8 @@ namespace NGAME
         public List<EdgeData> OutgoingEdges = new List<EdgeData>();
         [HideInInspector]
         public List<EdgeData> IncomingEdges = new List<EdgeData>();
+        [SerializeField]
+        public List<SOWaveData> Waves = new List<SOWaveData>();
 
 
         // private properties
@@ -33,6 +35,36 @@ namespace NGAME
         //private int _entranceCount;
 
 
+        public List<EdgeData> GetOutgoingEdges()
+        {
+            return OutgoingEdges;
+        }
+
+        public List<EdgeData> GetIncomingEdges()
+        {
+            return IncomingEdges;
+        }
+
+        public List<SOWaveData> GetWaveData() { return Waves; }
+
+        public void AddWave(SOWaveData wave)
+        {
+            Waves.Add(wave);
+        }
+        public void RemoveWave(int waveIndex)
+        {
+            Waves.RemoveAt(waveIndex);
+        }
+
+        public void PatchWaveData(SOWaveData wave, int index)
+        {
+            if(Waves.Count <= index)
+            {
+                return;
+            }
+
+            Waves[index] = wave;
+        }
 
         public void AddEdge(IMapNode otherNode, EdgeData edge)
         {
@@ -127,15 +159,6 @@ namespace NGAME
             //EditorUtility.SetDirty(this);
         }
 
-        public List<EdgeData> GetOutgoingEdges()
-        {
-            return OutgoingEdges;
-        }
-
-        public List<EdgeData> GetIncomingEdges()
-        {
-            return IncomingEdges;
-        }
 
         public string PrintNode()
         {

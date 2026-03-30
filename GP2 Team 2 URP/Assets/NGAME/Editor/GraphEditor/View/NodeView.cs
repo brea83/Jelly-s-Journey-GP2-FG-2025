@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Unity.Properties;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
@@ -176,11 +177,11 @@ namespace NGAME.Editor
                 }
             }
 
-            if(Node.NumberOfWaves > 0)
+            if(Node.Waves.Count > 0)
             {
-                for(int i = 0; i < Node.NumberOfWaves; i++)
+                for(int i = 0; i < Node.Waves.Count; i++)
                 {
-                    CreateWaveItem();
+                    CreateWaveItem(Node.Waves[i], i);
                 }
             }
         }
@@ -401,7 +402,7 @@ namespace NGAME.Editor
         //    }
         //}
 
-        private void CreateWaveItem() 
+        private void CreateWaveItem(SOWaveData wave, int index) 
         { 
             VisualElement row = new VisualElement();
             row.style.flexDirection = FlexDirection.Row;
@@ -414,14 +415,27 @@ namespace NGAME.Editor
             //header.contentContainer.style.flexDirection = FlexDirection.Row;
 
             ObjectField field = new ObjectField();
-            field.objectType = typeof(IWaveData);
-            
+            field.objectType = typeof(SOWaveData);
+            if(wave != null )
+            {
+                field.value = wave;
+            }
+            field.RegisterValueChangedCallback(
+                evt => PatchWaveData(evt, index));
+            //field.RegisterCallback<ChangeEvent<ObjectField>, int>(PatchWaveData, index);
+            //field.dataSource = Node;
+            //field.SetBinding("value", new DataBinding
+            //{
+            //    dataSourcePath = new PropertyPath(nameof(RoomNode.Waves[index]))
+            //});
+
+
             Button removeMe = new Button();
             removeMe.style.flexGrow = 0;
             removeMe.text = "Remove Wave";
             removeMe.clicked += () =>
             {
-                RemoveWave(row);
+                RemoveWave(row, index);
             };
 
             header.Add(removeMe);
@@ -433,16 +447,20 @@ namespace NGAME.Editor
             m_WaveItems.Add(row);
         }
 
+        private void PatchWaveData(ChangeEvent<UnityEngine.Object> evt, int index)
+        {
+            Node.PatchWaveData(evt.newValue as SOWaveData, index);
+        }
         private void AddWave()
         {
-            Node.NumberOfWaves += 1;
-            CreateWaveItem();
+            SOWaveData wave = ScriptableObject.CreateInstance(typeof(SOWaveData)) as SOWaveData;
+            Node.AddWave(wave);
+            CreateWaveItem(wave, Node.Waves.Count -1);
             //UpdateWavePorts();
         }
 
-        private void RemoveWave(VisualElement waveItem)
+        private void RemoveWave(VisualElement waveItem, int waveIndex)
         {
-            Node.NumberOfWaves -= 1;
             m_WaveItems.Remove(waveItem);
             waveItem.RemoveFromHierarchy();
         }
