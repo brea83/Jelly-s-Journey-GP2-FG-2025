@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace NGAME
 {
-    
+    [System.Serializable]
     public class SOWaveData : ScriptableObject, IWaveData
     {
         public bool RespawnsOnBacktrack { get => m_RespawnsOnBacktrack; set => m_RespawnsOnBacktrack = value; }

@@ -100,7 +100,7 @@ MonoBehaviour:
     DestinationPortName: Door West
   Waves: []
   m_Guid: 06a78b5aeea4e214d9c7efb995afd0e9
-  m_Position: {x: 508.66666, y: 177.33333}
+  m_Position: {x: 523, y: 213}
   _isStartNode: 0
   NumberOfWaves: 0
 --- !u!114 &-5005448368373161328
@@ -180,8 +180,9 @@ MonoBehaviour:
     DestinationPortName: Door South
   Waves:
   - {fileID: 11400000, guid: 57dc0ad3e8ee2434787c7b25ed42c9b9, type: 2}
+  - {fileID: 0}
   m_Guid: 1054876d2df8d40468fb28efd97ed6fb
-  m_Position: {x: 246, y: 0}
+  m_Position: {x: 129, y: -63.52}
   _isStartNode: 0
   NumberOfWaves: 0
 --- !u!114 &-2616417663063570396
@@ -228,9 +229,10 @@ MonoBehaviour:
     DestinationSceneName: SampleScene 1
     DestinationPortName: Door South
   IncomingEdges: []
-  Waves: []
+  Waves:
+  - {fileID: 0}
   m_Guid: 12a949ba26042a74abf34edb089dd911
-  m_Position: {x: 0, y: 0}
+  m_Position: {x: -165.4791, y: -21.000021}
   _isStartNode: 1
   NumberOfWaves: 0
 --- !u!114 &-522332987697937984
@@ -292,7 +294,7 @@ MonoBehaviour:
     DestinationPortName: Door East
   Waves: []
   m_Guid: 698460677e992524081c2b471b135283
-  m_Position: {x: 509, y: -50.5}
+  m_Position: {x: 509.00012, y: -142.00002}
   _isStartNode: 0
   NumberOfWaves: 0
 --- !u!114 &11400000

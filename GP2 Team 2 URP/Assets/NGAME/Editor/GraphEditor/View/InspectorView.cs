@@ -12,10 +12,12 @@ namespace NGAME.Editor
         {
             Clear();
             Object.DestroyImmediate(_editor);
-            _editor = UnityEditor.Editor.CreateEditor(nodeView.Node);
-            SerializedObject serializedNode = new SerializedObject(nodeView.Node);
+             _editor = UnityEditor.Editor.CreateEditor(nodeView.Node);
+            //SerializedObject serializedNode = new SerializedObject(nodeView.Node);
             IMGUIContainer container = new IMGUIContainer(() => { _editor.OnInspectorGUI(); });
+            //var container = _editor.CreateInspectorGUI();
             Add(container);
+
         }
     }
 }
