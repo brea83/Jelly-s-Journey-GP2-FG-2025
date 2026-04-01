@@ -453,7 +453,7 @@ namespace NGAME.Editor
         }
         private void AddWave()
         {
-            SOWaveData wave = ScriptableObject.CreateInstance(typeof(SOWaveData)) as SOWaveData;
+            SOWaveData wave = null;// ScriptableObject.CreateInstance(typeof(SOWaveData)) as SOWaveData;
             Node.AddWave(wave);
             CreateWaveItem(wave, Node.Waves.Count -1);
             //UpdateWavePorts();
@@ -461,6 +461,7 @@ namespace NGAME.Editor
 
         private void RemoveWave(VisualElement waveItem, int waveIndex)
         {
+            Node.RemoveWave(waveIndex);
             m_WaveItems.Remove(waveItem);
             waveItem.RemoveFromHierarchy();
         }
