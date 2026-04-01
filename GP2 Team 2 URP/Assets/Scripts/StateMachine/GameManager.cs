@@ -12,6 +12,10 @@ public class GameManager : StateMachine
     [SerializeField]
     private UiController _uiController;
 
+    [SerializeField]
+    private NewEncounterManager _newEncounterManager;
+    public NewEncounterManager EncounterManager { get { return _newEncounterManager; } }
+
 
     // Turner added this 2/11/2025
     // Adding for BGM mangement

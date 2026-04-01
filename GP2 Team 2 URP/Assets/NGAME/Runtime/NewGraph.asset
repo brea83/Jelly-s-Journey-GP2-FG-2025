@@ -44,9 +44,11 @@ MonoBehaviour:
     DestinationSceneGuid: 7cb8c6b0027761a46b600f3b69174403
     DestinationSceneName: SampleScene 3
     DestinationPortName: Door South
+  Waves: []
   m_Guid: 45bd88e56f4e8104da07d9a946e51424
   m_Position: {x: 421, y: 24}
   _isStartNode: 0
+  NumberOfWaves: 0
 --- !u!114 &-58743701835840933
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -91,9 +93,11 @@ MonoBehaviour:
     DestinationSceneName: SampleScene 3
     DestinationPortName: Door South
   IncomingEdges: []
+  Waves: []
   m_Guid: ae1bb77545505b349944775de86fdcfc
   m_Position: {x: 121, y: 35}
   _isStartNode: 1
+  NumberOfWaves: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0

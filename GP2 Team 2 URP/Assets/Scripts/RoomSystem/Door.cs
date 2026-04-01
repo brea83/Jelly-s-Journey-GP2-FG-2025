@@ -66,11 +66,18 @@ namespace RoomSystem
                 SubscribeToPlayState();
                 if (LocksDurringCombat)
                 {
-                    SpawnManager spawnManager = FindFirstObjectByType<SpawnManager>();
-                    if (spawnManager != null)
+                    //SpawnManager spawnManager = FindFirstObjectByType<SpawnManager>();
+                    //if (spawnManager != null)
+                    //{
+                    //    spawnManager.OnEncounterStart.AddListener(OnEncounterStart);
+                    //    spawnManager.OnEncounterEnd.AddListener(OnEncounterEnd);
+                    //}
+
+                    NewEncounterManager encounterManager = GameManager.Instance.EncounterManager;
+                    if( encounterManager != null )
                     {
-                        spawnManager.OnEncounterStart.AddListener(OnEncounterStart);
-                        spawnManager.OnEncounterEnd.AddListener(OnEncounterEnd);
+                        encounterManager.OnEncounterStart.AddListener(OnEncounterStart);
+                        encounterManager.OnEncounterEnd.AddListener(OnEncounterEnd);
                     }
                 }
             }
@@ -98,11 +105,18 @@ namespace RoomSystem
             UnsubscribeToPlayState();
             if(LocksDurringCombat)
             {
-                SpawnManager spawnManager = FindFirstObjectByType<SpawnManager>();
-                if (spawnManager != null)
+                //SpawnManager spawnManager = FindFirstObjectByType<SpawnManager>();
+                //if (spawnManager != null)
+                //{
+                //    spawnManager.OnEncounterStart.RemoveListener(OnEncounterStart);
+                //    spawnManager.OnEncounterEnd.RemoveListener(OnEncounterEnd);
+                //}
+
+                NewEncounterManager encounterManager = GameManager.Instance.EncounterManager;
+                if (encounterManager != null)
                 {
-                    spawnManager.OnEncounterStart.RemoveListener(OnEncounterStart);
-                    spawnManager.OnEncounterEnd.RemoveListener(OnEncounterEnd);
+                    encounterManager.OnEncounterStart.RemoveListener(OnEncounterStart);
+                    encounterManager.OnEncounterEnd.RemoveListener(OnEncounterEnd);
                 }
             }
             _hasDisabled = true;

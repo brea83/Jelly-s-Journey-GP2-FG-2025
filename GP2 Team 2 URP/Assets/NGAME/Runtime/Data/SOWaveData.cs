@@ -16,12 +16,14 @@ namespace NGAME
         public float MinSecondsBeforeNextWave { get => m_MinSecondsBeforeNextWave; set => m_MinSecondsBeforeNextWave = value; }
         public int EnemiesRemainingTrigger { get => m_EnemiesReamainingTrigger; set => m_EnemiesReamainingTrigger = value; }
 
+        public List<GameObject> PrefabsNeeded => m_PossibleEnemies;
+
         [SerializeField]
         protected bool m_RespawnsOnBacktrack = false;
         [SerializeField, TypeConstraint(typeof(ISpawnable))]
         protected List<GameObject> m_PossibleEnemies = new List<GameObject>();
-        [SerializeField, HideInInspector]
-        protected bool m_EnemyListDirty = false;
+        //[SerializeField, HideInInspector]
+        protected bool m_EnemyListDirty = true;
         [SerializeField]
         protected float m_SecBtwnSpawns = 0.5f;
         [SerializeField]
@@ -34,9 +36,9 @@ namespace NGAME
         protected int m_EnemiesReamainingTrigger = 0;
 
         // store the dictionary of spawn count by type as two lists
-        [SerializeField, HideInInspector]
+        //[SerializeField, HideInInspector]
         protected List<SO_SpawnTypeTag> m_SpawnTypes = new List<SO_SpawnTypeTag>();
-        [SerializeField, HideInInspector]
+        //[SerializeField, HideInInspector]
         protected List<int> m_SpawnCountPerType = new List<int>();
 
 
@@ -69,7 +71,7 @@ namespace NGAME
                 }
             }
 
-            if (m_EnemyListDirty && m_PossibleEnemies.Count > 0)
+            if ( m_PossibleEnemies.Count > 0)
             {
                 for (int i = 0; i < m_PossibleEnemies.Count; i++)
                 {
@@ -96,6 +98,7 @@ namespace NGAME
             m_SpawnTypes = result.Keys.ToList();
             m_SpawnCountPerType = result.Values.ToList();
 
+            m_EnemyListDirty = false;
             return result;
         }
 
@@ -113,6 +116,12 @@ namespace NGAME
             }
 
             return result;
+        }
+
+        public List<SO_SpawnTypeTag> GetUniqueSpawnTypes()
+        {
+            UpdateSpawnTypesList();
+            return m_SpawnTypes;
         }
     }
 }

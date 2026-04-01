@@ -4,7 +4,7 @@ using UnityEngine;
 //using UnityEngine.Events;
 namespace EncounterSystem
 {
-    public enum AllowedEnemyType { Any, Melee, Ranged }
+    public enum AllowedEnemyType { Any, Melee, Ranged, None }
     public class SpawnPoint : MonoBehaviour, ISpawnPoint
     {
         [SerializeField]

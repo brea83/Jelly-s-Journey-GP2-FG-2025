@@ -15,11 +15,9 @@ MonoBehaviour:
   m_RespawnsOnBacktrack: 0
   m_PossibleEnemies:
   - {fileID: 2883558245128991901, guid: 638030d515ce8424f82fb34ec71bcd74, type: 3}
-  m_EnemyListDirty: 0
+  - {fileID: 5807435856107287583, guid: 9fe70d218c9c77d4980656c5a168265f, type: 3}
   m_SecBtwnSpawns: 0
   m_NumToSpawn: 2
   m_UseSpawnByType: 0
   m_MinSecondsBeforeNextWave: 2
   m_EnemiesReamainingTrigger: 0
-  m_SpawnTypes: []
-  m_SpawnCountPerType: 

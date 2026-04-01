@@ -1359,7 +1359,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8566594163567588980, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
       propertyPath: StateMachineInitialized.m_PersistentCalls.m_Calls.Array.size
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8566594163567588980, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
       propertyPath: StateEnter.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -1378,6 +1378,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1037926346}
     - target: {fileID: 8566594163567588980, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
+      propertyPath: StateMachineInitialized.m_PersistentCalls.m_Calls.Array.data[3].m_Target
+      value: 
+      objectReference: {fileID: 1379533629}
+    - target: {fileID: 8566594163567588980, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
       propertyPath: StateMachineInitialized.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
@@ -1387,6 +1391,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8566594163567588980, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
       propertyPath: StateMachineInitialized.m_PersistentCalls.m_Calls.Array.data[2].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8566594163567588980, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
+      propertyPath: StateMachineInitialized.m_PersistentCalls.m_Calls.Array.data[3].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8566594163567588980, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
@@ -1402,6 +1410,10 @@ PrefabInstance:
       value: OnGameStateMachineInitialized
       objectReference: {fileID: 0}
     - target: {fileID: 8566594163567588980, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
+      propertyPath: StateMachineInitialized.m_PersistentCalls.m_Calls.Array.data[3].m_MethodName
+      value: OnGameStateMachineInitialized
+      objectReference: {fileID: 0}
+    - target: {fileID: 8566594163567588980, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
       propertyPath: StateMachineInitialized.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: PlayerPickUp, JellysJourneyAssembly
       objectReference: {fileID: 0}
@@ -1412,6 +1424,10 @@ PrefabInstance:
     - target: {fileID: 8566594163567588980, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
       propertyPath: StateMachineInitialized.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
       value: PlayerHealth, JellysJourneyAssembly
+      objectReference: {fileID: 0}
+    - target: {fileID: 8566594163567588980, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
+      propertyPath: StateMachineInitialized.m_PersistentCalls.m_Calls.Array.data[3].m_TargetAssemblyTypeName
+      value: NewEncounterManager, JellysJourneyAssembly
       objectReference: {fileID: 0}
     - target: {fileID: 8566594163567588980, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
       propertyPath: StateMachineInitialized.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -1425,9 +1441,16 @@ PrefabInstance:
       propertyPath: StateMachineInitialized.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 8566594163567588980, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
+      propertyPath: StateMachineInitialized.m_PersistentCalls.m_Calls.Array.data[3].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 4378512605328189340, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
+      insertIndex: 0
+      addedObject: {fileID: 1379533628}
     - targetCorrespondingSourceObject: {fileID: 2849534896159370048, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2007720380}
@@ -1439,6 +1462,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1300253259}
   m_SourcePrefab: {fileID: 100100000, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
+--- !u!4 &452848669 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4378512605328189340, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
+  m_PrefabInstance: {fileID: 452848668}
+  m_PrefabAsset: {fileID: 0}
 --- !u!43 &495021117
 Mesh:
   m_ObjectHideFlags: 0
@@ -2968,7 +2996,7 @@ PrefabInstance:
     - target: {fileID: 5564395060646320182, guid: a2570e90212745a44865e06d4bc4a80e, type: 3}
       propertyPath: 'm_AllowedSpawnableTypes.Array.data[0]'
       value: 
-      objectReference: {fileID: 11400000, guid: dbbabfda2eac6424db2ed97e93de216e, type: 2}
+      objectReference: {fileID: 11400000, guid: e2d35a20315884a4b852513d92e5e482, type: 2}
     - target: {fileID: 5564395060646320182, guid: a2570e90212745a44865e06d4bc4a80e, type: 3}
       propertyPath: 'm_AllowedSpawnableTypes.Array.data[1]'
       value: 
@@ -3227,8 +3255,83 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   EnableNavigation: 1
-  PrintDebugLogs: 1
+  PrintDebugLogs: 0
   m_Graph: {fileID: 11400000, guid: 12c12fac449533b41b2fca23443d0968, type: 2}
+--- !u!1 &1379533627
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1379533628}
+  - component: {fileID: 1379533630}
+  - component: {fileID: 1379533629}
+  m_Layer: 0
+  m_Name: NewEncounterManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1379533628
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1379533627}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.47317, y: -29.64231, z: 49.76826}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 452848669}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1379533629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1379533627}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f90554ccdf11e414d86db780b9202e4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: JellysJourneyAssembly::NewEncounterManager
+  OnEncounterStart:
+    m_PersistentCalls:
+      m_Calls: []
+  OnWaveStart:
+    m_PersistentCalls:
+      m_Calls: []
+  OnWaveEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  OnEncounterEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Graph: {fileID: 1300253260}
+  m_SecondsBeforeEncounterStart: 0
+  PrintDebugLogText: 1
+  m_KillAll: 0
+  m_ResetWaves: 0
+--- !u!114 &1379533630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1379533627}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b477368510e0be74e84c536fdb5ba1e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: JellysJourneyAssembly::EncounterSystem.EnemyPool
+  PrintDebugLogText: 0
 --- !u!43 &1436254435
 Mesh:
   m_ObjectHideFlags: 0
@@ -3423,7 +3526,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1465530843
 Transform:
   m_ObjectHideFlags: 0
@@ -3446,7 +3549,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1465530842}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9637d41557fda404d978a0d8938ab503, type: 3}
   m_Name: 
@@ -4722,7 +4825,7 @@ PrefabInstance:
     - target: {fileID: 5564395060646320182, guid: a2570e90212745a44865e06d4bc4a80e, type: 3}
       propertyPath: 'm_AllowedSpawnableTypes.Array.data[0]'
       value: 
-      objectReference: {fileID: 11400000, guid: dbbabfda2eac6424db2ed97e93de216e, type: 2}
+      objectReference: {fileID: 11400000, guid: e2d35a20315884a4b852513d92e5e482, type: 2}
     - target: {fileID: 8557446266308472645, guid: a2570e90212745a44865e06d4bc4a80e, type: 3}
       propertyPath: m_Name
       value: MeleeSpawnPoint
