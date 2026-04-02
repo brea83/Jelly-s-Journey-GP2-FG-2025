@@ -1,11 +1,9 @@
 using EncounterSystem;
 using System;
-using System.Collections;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
-using static Unity.Cinemachine.CinemachineSplineRoll;
 using NGAME;
+
 namespace RoomSystem
 {
     public enum RoomConnectionDirection { North, East, South, West }
@@ -273,11 +271,18 @@ namespace RoomSystem
             {
                 if(LocksDurringCombat == true)
                 {
-                    SpawnManager spawnManager = FindFirstObjectByType<SpawnManager>();
-                    if (spawnManager != null)
+                    //SpawnManager spawnManager = FindFirstObjectByType<SpawnManager>();
+                    //if (spawnManager != null)
+                    //{
+                    //    spawnManager.OnEncounterStart.AddListener(OnEncounterStart);
+                    //    spawnManager.OnEncounterEnd.AddListener(OnEncounterEnd);
+                    //}
+
+                    NewEncounterManager encounterManager = GameManager.Instance.EncounterManager;
+                    if (encounterManager != null)
                     {
-                        spawnManager.OnEncounterStart.AddListener(OnEncounterStart);
-                        spawnManager.OnEncounterEnd.AddListener(OnEncounterEnd);
+                        encounterManager.OnEncounterStart.AddListener(OnEncounterStart);
+                        encounterManager.OnEncounterEnd.AddListener(OnEncounterEnd);
                     }
                 }
 
