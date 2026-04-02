@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using NGAME;
+using System.ComponentModel;
 
 public class NewRoomNavigator : MonoBehaviour
 {
@@ -18,7 +19,7 @@ public class NewRoomNavigator : MonoBehaviour
     private MapGraphRuntime m_Graph;
 
     [Header("Debug stuff")]
-    public bool EnableNavigation = true;
+    public bool NavigationEnabled = true;
     public bool PrintDebugLogs = false;
 
     private void Start()
@@ -82,10 +83,10 @@ public class NewRoomNavigator : MonoBehaviour
             IEncounterRegionConnector arrivalObject = null;
             foreach (IEncounterRegionConnector connector in m_Graph.CurrentConnectors)
             {
+                ConnectExit(connector);
                 if (connector.GetRegionConnectionData().Name == arrivalName)
                 {
                     arrivalObject = connector;
-                    break;
                 }
             }
 
@@ -106,21 +107,6 @@ public class NewRoomNavigator : MonoBehaviour
         //{
         //    exit.SetDestination(edge);
         //}
-    }
-    protected void LinkConnectorsToEdges(Scene loadedScene)
-    {
-        if (!loadedScene.IsValid())
-        {
-            Debug.Log("NewRoomNavigator could not find current active scene ");
-            return;
-        }
-
-
-        foreach (IEncounterRegionConnector component in m_Graph.CurrentConnectors)
-        {
-            ConnectExit(component);
-        }
-       
     }
 
     protected void OnConnectorActivated(EdgeData edge)

@@ -48,11 +48,12 @@ public class NewEncounterManager : MonoBehaviour, IGameStateMachineListener
 
     private void Awake()
     {
-        if(m_Graph != null)
-        {
-            m_Graph.RoomLoadComplete.AddListener(OnRoomLoadComplete);
-            m_Graph.RoomLoadStart.AddListener(OnRoomLoadStart);
-        }
+        
+        //if(m_Graph != null)
+        //{
+        //    m_Graph.RoomLoadComplete.AddListener(OnRoomLoadComplete);
+        //    m_Graph.RoomLoadStart.AddListener(OnRoomLoadStart);
+        //}
 
         m_CurrentEnemyPool = GetComponent<EnemyPool>();
         //SubscribeToPlayState();
@@ -73,6 +74,13 @@ public class NewEncounterManager : MonoBehaviour, IGameStateMachineListener
 
         m_UpdateState.StateUpdate.AddListener(ManagedUpdate);
         m_UpdateState.StateFixedUpdate.AddListener(ManagedFixedUpdate);
+
+        NewRoomNavigator loadingSystem = manager.GetComponent<NewRoomNavigator>();
+        if(loadingSystem != null)
+        {
+            loadingSystem.RoomLoadStart.AddListener(OnRoomLoadStart);
+            loadingSystem.RoomLoadComplete.AddListener(OnRoomLoadComplete);
+        }
     }
     private void ResetValues()
     {
