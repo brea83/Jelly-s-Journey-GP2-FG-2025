@@ -230,6 +230,7 @@ public class NewEncounterManager : MonoBehaviour, IGameStateMachineListener
     public void OnRoomLoadComplete (IEncounterRegionConnector connector)
     {
         ResetValues();
+        m_ListOfSpawnsPerTypeLookup.Clear();
 
         m_IsBacktracking = m_Graph.IsCurrentRoomBacktracking();
 
@@ -359,20 +360,19 @@ public class NewEncounterManager : MonoBehaviour, IGameStateMachineListener
                 {
                     case AllowedEnemyType.Any:
                         bool coinFlip = UnityEngine.Random.Range(0, 100) >= 50;
-                        //if (meleeCount < data.NumberMelee
-                        //    && (rangedCount == data.NumberRanged || rangedCount > meleeCount))
-                        //{
-                        //    spawnSuccess = SpawnByType(point, typeof(MeleeEnemy), data.NumberMelee, meleeCount);
-                        //    if (spawnSuccess) meleeCount++;
-                        //}
-                        //else if (rangedCount < data.NumberRanged
-                        //    && (meleeCount == data.NumberMelee || meleeCount > rangedCount))
-                        //{
-                        //    spawnSuccess = SpawnByType(point, typeof(RangedEnemy), data.NumberRanged, rangedCount);
-                        //    if (spawnSuccess) rangedCount++;
-                        //}
-                        //else if (coinFlip)
-                        if(coinFlip)
+                        if (meleeCount < maxMelee
+                            && (rangedCount == maxRanged || rangedCount > meleeCount))
+                        {
+                            spawnSuccess = SpawnByType(point, typeof(MeleeEnemy), maxMelee, meleeCount);
+                            if (spawnSuccess) meleeCount++;
+                        }
+                        else if (rangedCount < maxRanged
+                            && (meleeCount == maxMelee || meleeCount > rangedCount))
+                        {
+                            spawnSuccess = SpawnByType(point, typeof(RangedEnemy), maxRanged, rangedCount);
+                            if (spawnSuccess) rangedCount++;
+                        }
+                        else if (coinFlip)
                         {
                             spawnSuccess = SpawnByType(point, typeof(MeleeEnemy), maxMelee, meleeCount);
                             if (spawnSuccess) meleeCount++;
@@ -385,13 +385,19 @@ public class NewEncounterManager : MonoBehaviour, IGameStateMachineListener
                         break;
 
                     case AllowedEnemyType.Melee:
-                        spawnSuccess = SpawnByType(point, typeof(MeleeEnemy), maxMelee, meleeCount);
-                        if (spawnSuccess) meleeCount++;
+                        if(possibleSpawnTypes.FirstOrDefault((SO_SpawnTypeTag tag) => tag.Tag == "Any" || tag.Tag == "Melee") != null)
+                        {
+                            spawnSuccess = SpawnByType(point, typeof(MeleeEnemy), maxMelee, meleeCount);
+                            if (spawnSuccess) meleeCount++;
+                        }
                         break;
 
                     case AllowedEnemyType.Ranged:
-                        spawnSuccess = SpawnByType(point, typeof(RangedEnemy), maxRanged, rangedCount);
-                        if (spawnSuccess) rangedCount++;
+                        if (possibleSpawnTypes.FirstOrDefault((SO_SpawnTypeTag tag) => tag.Tag == "Any" || tag.Tag == "Ranged") != null)
+                        {
+                            spawnSuccess = SpawnByType(point, typeof(RangedEnemy), maxRanged, rangedCount);
+                            if (spawnSuccess) rangedCount++;
+                        }
                         break;
 
                     default:
