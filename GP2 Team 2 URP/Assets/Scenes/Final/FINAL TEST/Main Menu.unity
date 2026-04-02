@@ -316,13 +316,9 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 8566594163567588980, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
-      propertyPath: _titleSceneName
-      value: Main Menu
-      objectReference: {fileID: 0}
-    - target: {fileID: 8566594163567588980, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
-      propertyPath: _gameplaySceneName
-      value: Main Menu
+    - target: {fileID: 8096219509772182816, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
+      propertyPath: RoomLoadStart.m_PersistentCalls.m_Calls.Array.size
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

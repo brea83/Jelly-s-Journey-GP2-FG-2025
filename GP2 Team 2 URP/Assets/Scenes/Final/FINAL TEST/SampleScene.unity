@@ -1314,6 +1314,18 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8566594163567588980, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
+      propertyPath: _currentState
+      value: 
+      objectReference: {fileID: 452848669}
+    - target: {fileID: 8566594163567588980, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
+      propertyPath: _titleSceneName
+      value: SampleScene
+      objectReference: {fileID: 0}
+    - target: {fileID: 8566594163567588980, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
+      propertyPath: _gameplaySceneName
+      value: SampleScene
+      objectReference: {fileID: 0}
+    - target: {fileID: 8566594163567588980, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
       propertyPath: StateEnter.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
@@ -1325,6 +1337,17 @@ PrefabInstance:
       addedObject: {fileID: 2007720380}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
+--- !u!114 &452848669 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7189640865008834643, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
+  m_PrefabInstance: {fileID: 452848668}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a83cda8e5a6f4b4ebe9aafc7a44438a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!43 &495021117
 Mesh:
   m_ObjectHideFlags: 0

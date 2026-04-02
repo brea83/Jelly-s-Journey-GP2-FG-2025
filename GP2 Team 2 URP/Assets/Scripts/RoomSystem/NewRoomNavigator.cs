@@ -6,17 +6,21 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using NGAME;
-using System.ComponentModel;
+using FMODUnity;
 
 public class NewRoomNavigator : MonoBehaviour
 {
     public UnityEvent RoomLoadStart;
     public UnityEvent<IEncounterRegionConnector> RoomLoadComplete;
-    //[Header("Room Load Effects")]
-    //public CircleWipeControler CircleWipe;
 
     [SerializeField]
     private MapGraphRuntime m_Graph;
+    [Header("Room Load Effects")]
+    [SerializeField]
+    private CircleWipeControler m_CircleWipe;
+    private bool m_ThisLoadUsesCircleWipe = false;
+    [SerializeField]
+    private string m_RoomTransitionFmodEvent = "event:/sfx/RoomTransition";
 
     [Header("Debug stuff")]
     public bool NavigationEnabled = true;
@@ -33,38 +37,51 @@ public class NewRoomNavigator : MonoBehaviour
     public void EnterFirstRoom()
     {
         RoomNode firstRoom = m_Graph.TryEnterFirstRoom();
-        
+
         if (firstRoom == null)
         {
             Debug.LogError("No RoomNode found, make sure Graph runtime is assigned, and has rooms");
             return;
         }
-        StartCoroutine(LoadAfterSeconds(2, firstRoom.SceneData.SceneName));
+        LoadScene(firstRoom.SceneData.SceneName, false);
 
     }
-    private IEnumerator LoadAfterSeconds(float seconds, string sceneName)
+    private IEnumerator LoadAfterSeconds(float seconds, string sceneName, bool bIsCircleWipe = false)
     {
         if (RoomLoadStart != null) RoomLoadStart.Invoke();
-        yield return new WaitForSeconds(seconds);
-
+        if (bIsCircleWipe)
+        {
+            m_CircleWipe.OnRoomLoadStart();
+            yield return new WaitWhile(() =>
+            {
+                return m_CircleWipe.DoingFadeOut == true;
+            });
+        }
+        else
+        {
+            yield return new WaitForSeconds(seconds);
+        }
+        RuntimeManager.PlayOneShot(m_RoomTransitionFmodEvent);
         SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
     }
 
-    protected void LoadScene(string sceneName)
+    protected void LoadScene(string sceneName, bool bUseCircleWipe = true)
     {
-        //if (CircleWipe != null)
-        //{
-        //    StartCoroutine(LoadAfterSeconds(CircleWipe.FadeSeconds));
-        //}
-        //else
-        //{
-        //    if (RoomLoadStart != null) RoomLoadStart.Invoke();
-        //    RuntimeManager.PlayOneShot("event:/sfx/RoomTransition");
-        //    SceneManager.LoadScene(_nextRoom.SceneName, LoadSceneMode.Single);
-        //}
+        if (bUseCircleWipe && m_CircleWipe != null)
+        {
+            m_ThisLoadUsesCircleWipe = true;
+            StartCoroutine(LoadAfterSeconds(m_CircleWipe.FadeSeconds, sceneName, true));
+        }
+        else
+        {
+            m_ThisLoadUsesCircleWipe = false;
+            if (RoomLoadStart != null) RoomLoadStart.Invoke();
+            RuntimeManager.PlayOneShot(m_RoomTransitionFmodEvent);
+            SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+        }
 
-        if (RoomLoadStart != null) RoomLoadStart.Invoke();
-        SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+        //if (RoomLoadStart != null) RoomLoadStart.Invoke();
+        //SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
     }
 
     protected void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -90,6 +107,10 @@ public class NewRoomNavigator : MonoBehaviour
                 }
             }
 
+            if (m_ThisLoadUsesCircleWipe)
+            {
+                m_CircleWipe.OnRoomLoadComplete(arrivalObject);
+            }
             RoomLoadComplete.Invoke(arrivalObject);
         }
     }

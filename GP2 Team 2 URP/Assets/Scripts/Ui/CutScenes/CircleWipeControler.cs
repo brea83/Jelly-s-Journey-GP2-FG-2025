@@ -1,3 +1,4 @@
+using NGAME;
 using RoomSystem;
 using System;
 using UnityEngine;
@@ -24,18 +25,18 @@ public class CircleWipeControler : MonoBehaviour
     {
         _canvasImage = GetComponent<Image>();
 
-        RoomNavigator navigator = RoomNavigator.Instance;
-        navigator.RoomLoadStart.AddListener(OnRoomLoadStart);
-        navigator.RoomLoadComplete.AddListener(OnRoomLoadComplete);
+        //RoomNavigator navigator = RoomNavigator.Instance;
+        //navigator.RoomLoadStart.AddListener(OnRoomLoadStart);
+        //navigator.RoomLoadComplete.AddListener(OnRoomLoadComplete);
     }
 
-    private void OnRoomLoadComplete(Room arg0)
+    public void OnRoomLoadComplete(IEncounterRegionConnector connector)
     {
         DoingFadeIn = true;
         Debug.Log($"DOING FADE IN. timescale is {Time.timeScale} and time is {Time.time}");
     }
 
-    private void OnRoomLoadStart()
+    public void OnRoomLoadStart()
     {
         DoingFadeOut = true;
         Debug.Log($"DOING FADE OUT. timescale is {Time.timeScale} and time is {Time.time}");
