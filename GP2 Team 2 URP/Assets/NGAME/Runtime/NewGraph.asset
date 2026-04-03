@@ -27,13 +27,9 @@ MonoBehaviour:
       ConnectionType: 2
       IsLockable: 1
       Position: {x: 0.22, y: 0, z: -12.46}
-    - TypeName: RoomSystem.Door
-      Name: Temp Final Door
-      ConnectionType: 1
-      IsLockable: 1
-      Position: {x: 1.2985873, y: 0, z: 24.947142}
-    MinPoint: {x: 0.01765375, y: -0.9998442}
-    MaxPoint: {x: 0.051983174, y: 0.9986479}
+    MinPoint: {x: 0.22, y: -12.46}
+    MaxPoint: {x: 0.22, y: 0}
+    WidthByHeight: {x: 0, y: 12.46}
   OutgoingEdges: []
   IncomingEdges:
   - SourceNodeGuid: ae1bb77545505b349944775de86fdcfc
@@ -44,6 +40,7 @@ MonoBehaviour:
     DestinationSceneGuid: 7cb8c6b0027761a46b600f3b69174403
     DestinationSceneName: SampleScene 3
     DestinationPortName: Door South
+    m_bIsValid: 1
   Waves: []
   m_Guid: 45bd88e56f4e8104da07d9a946e51424
   m_Position: {x: 421, y: 24}
@@ -81,8 +78,9 @@ MonoBehaviour:
       ConnectionType: 2
       IsLockable: 1
       Position: {x: -28.000906, y: 0, z: 26.98}
-    MinPoint: {x: -1, y: 0}
-    MaxPoint: {x: 0.32680926, y: 0.94509035}
+    MinPoint: {x: -28.000906, y: 0}
+    MaxPoint: {x: 9.329598, y: 26.98}
+    WidthByHeight: {x: 37.330505, y: 26.98}
   OutgoingEdges:
   - SourceNodeGuid: ae1bb77545505b349944775de86fdcfc
     SourceSceneGuid: 99c9720ab356a0642a771bea13969a05
@@ -92,6 +90,7 @@ MonoBehaviour:
     DestinationSceneGuid: 7cb8c6b0027761a46b600f3b69174403
     DestinationSceneName: SampleScene 3
     DestinationPortName: Door South
+    m_bIsValid: 1
   IncomingEdges: []
   Waves: []
   m_Guid: ae1bb77545505b349944775de86fdcfc

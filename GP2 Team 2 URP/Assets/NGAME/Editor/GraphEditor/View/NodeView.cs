@@ -33,6 +33,8 @@ namespace NGAME.Editor
 
         private VisualElement m_WavesContainer;
         private List<VisualElement> m_WaveItems = new List<VisualElement>();
+
+        private RegionPreview m_RegionPreview;
         
         public NodeView(RoomGraphView graph, RoomNode node, List<NGAME.SceneConnectionsData> roomDataObjects = null) 
         {
@@ -43,6 +45,19 @@ namespace NGAME.Editor
 
             style.left = node.Position.x;
             style.top = node.Position.y;
+
+            if(Node.SceneData != null)
+            {
+                m_RegionPreview = new RegionPreview(Node.SceneData.WidthByHeight);
+            }
+            else
+            {
+                m_RegionPreview = new RegionPreview();
+            }
+            extensionContainer.Add(m_RegionPreview.Container);
+            //m_RegionPreview.SetHeight(50.0f);
+            //Add(new Button());
+            
             
             if (roomDataObjects != null )
             {
@@ -133,11 +148,10 @@ namespace NGAME.Editor
                 SceneConnectionsData room = roomDataObjects[i];
 
                 choices.Add(room.SceneName);
-                if (room.MinPoint == Vector2.zero && room.MaxPoint == Vector2.zero)
-                {
-                    room.UpdateBounds();
-                }
-
+                room.UpdateBounds();
+                //if (room.MinPoint == Vector2.zero && room.MaxPoint == Vector2.zero)
+                //{
+                //}
                 if(Node.SceneData != null && Node.SceneData.SceneName == room.SceneName)
                 {
                     defaultIndex = i + 1; // plus 1 because we have the default none at index 0 of the list before this loop starts
@@ -215,11 +229,14 @@ namespace NGAME.Editor
                 }
             }
             Node.UpdateRoomData( newData );
+            m_RegionPreview.SetRegionSize(newData.WidthByHeight);
+
             UpdatePorts();
             MarkMissingSceneError("", false);
 
             UpdateCurrentSceneSpawnData();
             PopulateEncounterContainer();
+
             EditorUtility.SetDirty(Node);
         }
 

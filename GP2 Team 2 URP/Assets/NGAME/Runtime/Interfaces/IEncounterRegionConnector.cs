@@ -35,6 +35,8 @@ namespace NGAME
         public Vector2 MinPoint = Vector3.zero;
         [HideInInspector]
         public Vector2 MaxPoint = Vector3.zero;
+        [HideInInspector]
+        public Vector2 WidthByHeight = Vector2.zero;
 
         public void UpdateBounds()
         {
@@ -46,8 +48,7 @@ namespace NGAME
             MaxPoint.x = max.x;
             MaxPoint.y = max.z;
 
-            MinPoint.Normalize();
-            MaxPoint.Normalize();
+            WidthByHeight = new Vector2(max.x - min.x, max.z - min.z);
         }
         public Vector3 CalculateMinBounds()
         {
