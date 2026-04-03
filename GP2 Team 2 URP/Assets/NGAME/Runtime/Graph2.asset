@@ -39,6 +39,7 @@ MonoBehaviour:
     DestinationSceneGuid: 7cb8c6b0027761a46b600f3b69174403
     DestinationSceneName: SampleScene 3
     DestinationPortName: Door South
+    m_bIsValid: 1
   Waves:
   - {fileID: 11400000, guid: 3e39ffcdb3a8614409ba2a251a694d8f, type: 2}
   m_Guid: 272932770eef6de45a37535ebaa79d4f
@@ -93,6 +94,7 @@ MonoBehaviour:
     DestinationSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
     DestinationSceneName: SampleScene 2
     DestinationPortName: Door East
+    m_bIsValid: 1
   IncomingEdges:
   - SourceNodeGuid: 12a949ba26042a74abf34edb089dd911
     SourceSceneGuid: 99c9720ab356a0642a771bea13969a05
@@ -102,10 +104,11 @@ MonoBehaviour:
     DestinationSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
     DestinationSceneName: SampleScene 2
     DestinationPortName: Door East
+    m_bIsValid: 1
   Waves:
   - {fileID: 11400000, guid: db11945bdb46fb6488d5063ffffe68ea, type: 2}
   m_Guid: 1054876d2df8d40468fb28efd97ed6fb
-  m_Position: {x: 129.00002, y: -46}
+  m_Position: {x: 165.33331, y: 10.293327}
   _isStartNode: 0
   NumberOfWaves: 0
 --- !u!114 &-2616417663063570396
@@ -151,6 +154,7 @@ MonoBehaviour:
     DestinationSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
     DestinationSceneName: SampleScene 2
     DestinationPortName: Door East
+    m_bIsValid: 1
   IncomingEdges: []
   Waves:
   - {fileID: 11400000, guid: 0a28601bacdd7dc41a36736438b7df58, type: 2}
@@ -206,6 +210,7 @@ MonoBehaviour:
     DestinationSceneGuid: 7cb8c6b0027761a46b600f3b69174403
     DestinationSceneName: SampleScene 3
     DestinationPortName: Door South
+    m_bIsValid: 1
   IncomingEdges:
   - SourceNodeGuid: 1054876d2df8d40468fb28efd97ed6fb
     SourceSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
@@ -215,11 +220,12 @@ MonoBehaviour:
     DestinationSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
     DestinationSceneName: SampleScene 2
     DestinationPortName: Door East
+    m_bIsValid: 1
   Waves:
   - {fileID: 11400000, guid: 3e39ffcdb3a8614409ba2a251a694d8f, type: 2}
   - {fileID: 11400000, guid: db11945bdb46fb6488d5063ffffe68ea, type: 2}
   m_Guid: 698460677e992524081c2b471b135283
-  m_Position: {x: 523, y: -145}
+  m_Position: {x: 486.16574, y: -20.000008}
   _isStartNode: 0
   NumberOfWaves: 0
 --- !u!114 &11400000

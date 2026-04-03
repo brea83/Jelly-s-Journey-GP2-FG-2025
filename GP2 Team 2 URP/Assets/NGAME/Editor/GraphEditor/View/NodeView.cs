@@ -116,6 +116,11 @@ namespace NGAME.Editor
 
         private void UpdateCurrentSceneSpawnData()
         {
+            if(Node.SceneData == null)
+            {
+                m_CurrentSceneSpawnData = null;
+                return;
+            }
             m_CurrentSceneSpawnData = m_RoomGraphView.SpawnersByScene.FirstOrDefault((SceneSpawnData e) => e.SceneGUID == Node.SceneData.SceneGuid);
         }
         private void CreateRoomSelector(List<NGAME.SceneConnectionsData> roomDataObjects)
@@ -177,8 +182,14 @@ namespace NGAME.Editor
                 }
             }
 
-            if(Node.Waves.Count > 0)
+            if(Node.Waves.Count != m_WaveItems.Count)
             {
+                foreach(VisualElement row in m_WaveItems)
+                {
+                    row.RemoveFromHierarchy();
+                }
+                m_WaveItems.Clear();
+
                 for(int i = 0; i < Node.Waves.Count; i++)
                 {
                     CreateWaveItem(Node.Waves[i], i);
@@ -194,8 +205,8 @@ namespace NGAME.Editor
             m_LastDropDownIndex = m_RoomSelectDropdown.index;
             //Node.LastDropdownIndex = m_RoomSelectDropdown.index;
 
-            NGAME.SceneConnectionsData newData = null;
-            foreach(NGAME.SceneConnectionsData room in _roomDataObjects )
+            SceneConnectionsData newData = null;
+            foreach(SceneConnectionsData room in _roomDataObjects )
             {
                 if( room.SceneName == change.newValue )
                 {
@@ -209,6 +220,7 @@ namespace NGAME.Editor
 
             UpdateCurrentSceneSpawnData();
             PopulateEncounterContainer();
+            EditorUtility.SetDirty(Node);
         }
 
         //private void UpdateWavePorts()
@@ -239,15 +251,10 @@ namespace NGAME.Editor
             {
                 EntranceNames = Node.SceneData.Entrances.ConvertAll(entrance => entrance.Name);
                 ExitNames = Node.SceneData.Exits.ConvertAll(entrance => entrance.Name);
-
-                //for (int i = 0; i < Node.NumberOfWaves; i++)
-                //{
-                //    string portName = "Wave " + (i + 1).ToString();
-                //    WaveNames.Add(portName);
-                //}
             }
             
-            TryReconnectOldEdges(EntranceNames);
+            TryReconnectOldEdges(EntranceNames, Direction.Input);
+            TryReconnectOldEdges(ExitNames, Direction.Output);
 
             RemoveExcessPorts(InputPorts, inputContainer, EntranceNames);
             AddMissingPorts(InputPorts, inputContainer, EntranceNames);
@@ -255,25 +262,44 @@ namespace NGAME.Editor
             RemoveExcessPorts(OutputPorts, outputContainer, ExitNames);
             AddMissingPorts(OutputPorts, outputContainer, ExitNames, false);
 
-            //RemoveExcessPorts(WavePorts, m_WavesContainer, WaveNames);
-            //AddMissingPorts(WavePorts, m_WavesContainer, WaveNames);
+            foreach(Port port in InputPorts)
+            {
+                SetUsedPortsOtherDirectionEnabled(port, !port.connected);
+            }
+            foreach(Port port in OutputPorts)
+            {
+                SetUsedPortsOtherDirectionEnabled(port, !port.connected);
+            }
         }
 
-        private void TryReconnectOldEdges(List<string> newPortNames)
+        private void TryReconnectOldEdges(List<string> newPortNames, Direction portDirection)
         {
             List<int> indexesToRemove = new();
 
             for (int i = 0; i < OldConnectedPorts.Count; i++)
             {
                 Port oldPort = OldConnectedPorts[i];
+                if(oldPort.direction != portDirection)
+                {
+                    continue;
+                }
                 if (newPortNames.Contains(oldPort.portName))
                 {
-                    InputPorts.Add(oldPort);
-                    Edge oldEdge = null;
+                    if(oldPort.direction == Direction.Input)
+                    {
+                        InputPorts.Add(oldPort);
+                    }
+                    else
+                    {
+                        OutputPorts.Add(oldPort);
+                    }
+                        //portCollection.Add(oldPort);
+                        Edge oldEdge = null;
                     if (oldPort.connections.Count() >= 1 )
                     {
                         oldEdge = oldPort.connections.First();
                         MarkPortConnectionError(oldEdge.output, oldEdge, "", false);
+                        MarkPortConnectionError(oldEdge.input, oldEdge, "", false);
                     }
                     MarkPortConnectionError(oldPort, oldEdge, "", false);
                     indexesToRemove.Add(i);
@@ -313,9 +339,9 @@ namespace NGAME.Editor
             {
 
                 bool bIsRetained = false;
-                if (portContainer != m_WavesContainer && port.direction == Direction.Input)
+                if (portContainer != m_WavesContainer)
                 {
-                    bIsRetained = TryRetainConnectedPorts(port);
+                    bIsRetained = TryRetainConnectedPorts(port, oldPorts);
                 }
 
                 if (!bIsRetained)
@@ -422,13 +448,6 @@ namespace NGAME.Editor
             }
             field.RegisterValueChangedCallback(
                 evt => PatchWaveData(evt, index));
-            //field.RegisterCallback<ChangeEvent<ObjectField>, int>(PatchWaveData, index);
-            //field.dataSource = Node;
-            //field.SetBinding("value", new DataBinding
-            //{
-            //    dataSourcePath = new PropertyPath(nameof(RoomNode.Waves[index]))
-            //});
-
 
             Button removeMe = new Button();
             removeMe.style.flexGrow = 0;
@@ -456,7 +475,6 @@ namespace NGAME.Editor
             SOWaveData wave = null;// ScriptableObject.CreateInstance(typeof(SOWaveData)) as SOWaveData;
             Node.AddWave(wave);
             CreateWaveItem(wave, Node.Waves.Count -1);
-            //UpdateWavePorts();
         }
 
         private void RemoveWave(VisualElement waveItem, int waveIndex)
@@ -484,14 +502,11 @@ namespace NGAME.Editor
 
         public override Port InstantiatePort(Orientation orientation, Direction direction, Port.Capacity capacity, Type type)
         {
-            //Debug.Log("InstantiatePort called");
             return Port.Create<Edge>(orientation, direction, capacity, type);
         }
 
-        protected bool TryRetainConnectedPorts(Port port)
+        protected bool TryRetainConnectedPorts(Port port, List<Port> portCollection)
         {
-            //base.OnPortRemoved(port);
-            //Debug.Log("On Port removed called for port: " + port.portName);
             if (port.connected)
             {
                 string sourceTooltip = "Missing connection to port named " + port.portName;
@@ -511,7 +526,7 @@ namespace NGAME.Editor
                 MarkPortConnectionError(otherPort, edge, sourceTooltip);
                 MarkPortConnectionError(port, null, destinationTooltip);
                 OldConnectedPorts.Add(port);
-                InputPorts.Remove(port);
+                portCollection.Remove(port);
                 return true;
             }
             return false;
@@ -519,26 +534,11 @@ namespace NGAME.Editor
 
         private void OnPortConnected(Port port)
         {
-            //string sceneName = Node.Room != null ? Node.Room.SceneName : "NULL";
-            //Debug.Log("port connected event on port " + port.portName + ", in room node with scene " + sceneName);
             if(port != null)
             {
                 MarkPortConnectionError(port, null, "", false);
                 SetUsedPortsOtherDirectionEnabled(port, false);
-                //Port matchingPort = null;
-                //if(port.direction == Direction.Input )
-                //{
-                //    matchingPort = GetPortByName(port.portName, OutputPorts);
-                //}
-                //else
-                //{
-                //    matchingPort = GetPortByName(port.portName, InputPorts);
-                //}
-
-                //if(matchingPort != null)
-                //{
-                //    matchingPort.SetEnabled(false);
-                //}
+                
             }
         }
 

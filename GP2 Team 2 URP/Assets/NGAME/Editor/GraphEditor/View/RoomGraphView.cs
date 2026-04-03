@@ -96,13 +96,27 @@ namespace NGAME.Editor
 
             if(viewChange.edgesToCreate != null)
             {
+                List<Edge> invalidEdges = new();
                 foreach(Edge edge in viewChange.edgesToCreate)
                 {
-                    NodeView sourceNode = edge.output.node as NodeView;
-                    NodeView destinationNode = edge.input.node as NodeView;
-                    NodeView.AddEdge(edge);
-                    //_graph.AddEdge(sourceNode.Node, destinationNode.Node, edge);
-                    Debug.Log("Edge created between " + edge.input.portName + ", and " + edge.output.portName);
+                    if(!edge.output.enabledSelf || !edge.input.enabledSelf)
+                    {
+                        //this.RemoveElement(edge);
+                        invalidEdges.Add(edge);
+                    }
+                    else
+                    {
+                        NodeView sourceNode = edge.output.node as NodeView;
+                        NodeView destinationNode = edge.input.node as NodeView;
+                        NodeView.AddEdge(edge);
+                        //_graph.AddEdge(sourceNode.Node, destinationNode.Node, edge);
+                        Debug.Log("Edge created between " + edge.input.portName + ", and " + edge.output.portName);
+                    }
+                }
+
+                foreach(Edge edge in invalidEdges)
+                {
+                    viewChange.edgesToCreate.Remove(edge);
                 }
             }
 

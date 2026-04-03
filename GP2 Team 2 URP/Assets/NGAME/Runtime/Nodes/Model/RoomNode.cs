@@ -143,22 +143,27 @@ namespace NGAME
         {
             _isStartNode = isStartNode;
         }
-        public void UpdateRoomData(NGAME.SceneConnectionsData room)
+        public void UpdateRoomData(SceneConnectionsData room)
         {
             SceneData = room;
-            //if (SceneData == null)
-            //{
-            //    _exitCount = 0;
-            //    _entranceCount = 0;
-            //}
-            //else
-            //{
-            //    _exitCount = SceneData.Exits.Count;
-            //    _entranceCount = SceneData.Entrances.Count;
-            //}
-            //EditorUtility.SetDirty(this);
+            
+            UpdateEdges();
         }
 
+        protected void UpdateEdges()
+        {
+            foreach(EdgeData edge in OutgoingEdges)
+            {
+                edge.ReplaceSceneAtNodeGuid(m_Guid, SceneData);
+            }
+
+            foreach(EdgeData edge in IncomingEdges)
+            {
+                edge.ReplaceSceneAtNodeGuid(m_Guid, SceneData);
+            }
+        }
+
+        
 
         public string PrintNode()
         {

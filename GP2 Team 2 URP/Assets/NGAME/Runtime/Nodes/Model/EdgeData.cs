@@ -1,5 +1,6 @@
-
-using NUnit.Framework.Interfaces;
+using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace NGAME
 {
@@ -17,6 +18,9 @@ namespace NGAME
         public string DestinationSceneName = "";
         public string DestinationPortName = "";
 
+        public bool IsEdgeValid { get => m_bIsValid; }
+        [SerializeField, HideInInspector]
+        protected bool m_bIsValid = true;
         public EdgeData()
         { }
 
@@ -45,6 +49,43 @@ namespace NGAME
             DestinationNodeGuid = destinationNodeGuid;
             DestinationSceneGuid = destinationSceneGuid;
             DestinationPortName = destinationPortName;
+        }
+
+        // intended to be called by a node when its scene connections change
+        public bool ReplaceSceneAtNodeGuid(string changedNodeGuid, SceneConnectionsData sceneData)
+        {
+            if (sceneData == null)
+            {
+                m_bIsValid = false;
+            }
+            else if (changedNodeGuid == SourceNodeGuid)
+            {
+                List<string> exitNames = sceneData.Exits.ConvertAll(exit => exit.Name);
+
+                if (!exitNames.Contains(SourcePortName))
+                {
+                    m_bIsValid = false;
+                }
+
+                SourceSceneGuid = sceneData.SceneGuid;
+                SourceSceneName = sceneData.SceneName;
+                m_bIsValid = true;
+            }
+            else if(changedNodeGuid == DestinationNodeGuid)
+            {
+                List<string> entranceNames = sceneData.Entrances.ConvertAll(entrance => entrance.Name);
+
+                if (!entranceNames.Contains(DestinationPortName))
+                {
+                    m_bIsValid = false;
+                }
+
+                DestinationSceneGuid = sceneData.SceneGuid;
+                DestinationSceneName = sceneData.SceneName;
+                m_bIsValid = true;
+            }
+
+            return m_bIsValid;
         }
     }
 }
