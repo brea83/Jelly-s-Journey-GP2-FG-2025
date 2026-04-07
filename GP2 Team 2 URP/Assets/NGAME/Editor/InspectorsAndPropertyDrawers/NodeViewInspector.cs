@@ -16,6 +16,7 @@ namespace NGAME.Editor
         //}
         public override VisualElement CreateInspectorGUI()
         {
+            serializedObject.Update();
             VisualElement inspector = new();
 
             inspector.Add(new Label("Room Node"));
@@ -40,6 +41,7 @@ namespace NGAME.Editor
 
             PropertyField waves = new PropertyField(serializedObject.FindProperty("Waves"));
             waves.Bind(serializedObject);
+            waves.name = "WavesField";
 
             Foldout graphData = new();
             graphData.text = "Graph Debug Info";
@@ -66,9 +68,23 @@ namespace NGAME.Editor
             inspector.Add(sceneData);
             inspector.Add(waves);
             inspector.Add(graphData);
+
+            serializedObject.ApplyModifiedProperties();
             return inspector;
         }
 
+        //private void OnWavesPropertyChanged(SerializedPropertyChangeEvent evt, VisualElement wavesPanel)
+        //{
+        //    SerializedProperty wavesList = evt.changedProperty;
+        //    VisualElement parentPanel = wavesPanel.parent;
+        //    wavesPanel.RemoveFromHierarchy();
 
+        //    PropertyField waves = new PropertyField(serializedObject.FindProperty("Waves"));
+        //    waves.Bind(serializedObject);
+        //    waves.RegisterValueChangeCallback(
+        //    evt => OnWavesPropertyChanged(evt, waves));
+
+        //    parentPanel.Add(waves);
+        //}
     }
 }

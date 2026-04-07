@@ -60,6 +60,7 @@ namespace NGAME.Editor
             _inspectorView = root.Q<InspectorView>();
 
             _graphView.OnNodeSelected = OnNodeSelectionChanged;
+            _graphView.OnNodeValuesChanged = OnNodeValuesChanged;
             OnSelectionChange();
 
             if(m_Style != null)
@@ -93,6 +94,11 @@ namespace NGAME.Editor
         private void OnNodeSelectionChanged(NodeView nodeView)
         {
             _inspectorView.UpdateSelection(nodeView);
+        }
+
+        private void OnNodeValuesChanged(NodeView nodeView)
+        {
+            _inspectorView.Repaint();
         }
 
         private void OnNewGraphClicked()

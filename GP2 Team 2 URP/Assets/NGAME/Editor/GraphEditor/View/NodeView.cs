@@ -14,12 +14,13 @@ namespace NGAME.Editor
     {
         public RoomGraphView m_RoomGraphView;
         public Action<NodeView> OnNodeSelected;
+        public Action<NodeView> OnNodeValuesChanged;
         public RoomNode Node;
         public List<Port> InputPorts = new List<Port>();
         public List<Port> OutputPorts = new List<Port>();
         public List<Port> OldConnectedPorts = new List<Port>();
 
-        public List<Port> WavePorts = new();
+        //public List<Port> WavePorts = new();
 
         private DropdownField m_RoomSelectDropdown;
         private int m_LastDropDownIndex = 0;
@@ -486,12 +487,15 @@ namespace NGAME.Editor
         private void PatchWaveData(ChangeEvent<UnityEngine.Object> evt, int index)
         {
             Node.PatchWaveData(evt.newValue as SOWaveData, index);
+            OnValuesChanged();
         }
         private void AddWave()
         {
             SOWaveData wave = null;// ScriptableObject.CreateInstance(typeof(SOWaveData)) as SOWaveData;
             Node.AddWave(wave);
             CreateWaveItem(wave, Node.Waves.Count -1);
+            OnValuesChanged();
+            
         }
 
         private void RemoveWave(VisualElement waveItem, int waveIndex)
@@ -499,6 +503,7 @@ namespace NGAME.Editor
             Node.RemoveWave(waveIndex);
             m_WaveItems.Remove(waveItem);
             waveItem.RemoveFromHierarchy();
+            OnValuesChanged();
         }
 
         private Port CreatePort(List<Port> portList, VisualElement portContainer, string portName, System.Type passedDataType, 
@@ -813,6 +818,17 @@ namespace NGAME.Editor
                 OnNodeSelected.Invoke(this);
             }
         }
+
+        public void OnValuesChanged()
+        {
+            EditorUtility.SetDirty(Node);
+            
+            if(OnNodeValuesChanged != null)
+            {
+                OnNodeValuesChanged.Invoke(this);
+            }
+        }
+        
     }
 }
 

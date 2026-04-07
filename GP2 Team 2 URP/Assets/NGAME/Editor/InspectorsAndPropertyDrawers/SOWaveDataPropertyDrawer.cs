@@ -36,6 +36,8 @@ namespace NGAME.Editor
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
 
+            var popup = new UnityEngine.UIElements.PopupWindow();
+            popup.text = "Wave Data";
             if(property.objectReferenceValue == null)
             {
                 VisualElement row = new VisualElement();
@@ -43,7 +45,10 @@ namespace NGAME.Editor
 
                 PropertyField objectInput = new PropertyField(property, "Load Scriptable Object");
                 objectInput.Bind(property.serializedObject);
-                
+                objectInput.name = "WaveDataObjectField";
+                objectInput.RegisterValueChangeCallback(
+                evt => OnPropertyChanged(evt, popup));
+
 
                 Button newObjectButton = new Button();
                 newObjectButton.text = "New";
@@ -52,12 +57,10 @@ namespace NGAME.Editor
                 row.Add(objectInput);
                 row.Add(newObjectButton);
 
-                //popup.Add(row);
-                return row;
+                popup.Add(row);
+                return popup;
             }
             
-            var popup = new UnityEngine.UIElements.PopupWindow();
-            popup.text = "Wave Data";
 
 
             //SOWaveData data = ScriptableObject.CreateInstance<SOWaveData>(property.objectReferenceValue);
@@ -85,5 +88,13 @@ namespace NGAME.Editor
             waveDataProperty.serializedObject.ApplyModifiedProperties();
             waveDataProperty.serializedObject.UpdateIfRequiredOrScript();
         }
+
+        private void OnPropertyChanged(SerializedPropertyChangeEvent evt, VisualElement container)
+        {
+            //SerializedProperty wavesList = evt.changedProperty;
+            evt.changedProperty.serializedObject.ApplyModifiedProperties();
+            evt.changedProperty.serializedObject.UpdateIfRequiredOrScript();
+        }
+
     }
 }

@@ -15,6 +15,7 @@ namespace NGAME.Editor
     public partial class RoomGraphView : GraphView
     {
         public Action<NodeView> OnNodeSelected;
+        public Action<NodeView> OnNodeValuesChanged;
         public List<SceneData> IncludedScenes = new List<SceneData>();
         public List<SceneConnectionsData> ValidScenes = new List<SceneConnectionsData>();
         public List<SceneSpawnData> SpawnersByScene = new List<SceneSpawnData>();
@@ -167,6 +168,7 @@ namespace NGAME.Editor
         {
             NodeView nodeView = new NodeView(this, roomNode, ValidScenes);
             nodeView.OnNodeSelected = OnNodeSelected;
+            nodeView.OnNodeValuesChanged = OnNodeValuesChanged;
             AddElement(nodeView);
         }
 
