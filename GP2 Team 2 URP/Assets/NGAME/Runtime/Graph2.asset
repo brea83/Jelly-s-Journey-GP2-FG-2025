@@ -119,9 +119,8 @@ MonoBehaviour:
     m_bIsValid: 1
   Waves:
   - {fileID: 11400000, guid: db11945bdb46fb6488d5063ffffe68ea, type: 2}
-  - {fileID: 11400000, guid: db11945bdb46fb6488d5063ffffe68ea, type: 2}
   m_Guid: 1054876d2df8d40468fb28efd97ed6fb
-  m_Position: {x: 155, y: -66}
+  m_Position: {x: 157.33331, y: -66}
   _isStartNode: 0
   NumberOfWaves: 0
 --- !u!114 &-2616417663063570396
@@ -173,7 +172,7 @@ MonoBehaviour:
   Waves:
   - {fileID: 11400000, guid: 0a28601bacdd7dc41a36736438b7df58, type: 2}
   m_Guid: 12a949ba26042a74abf34edb089dd911
-  m_Position: {x: -223.37877, y: -32.66659}
+  m_Position: {x: -244, y: -35.97834}
   _isStartNode: 1
   NumberOfWaves: 0
 --- !u!114 &-522332987697937984
@@ -240,7 +239,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3e39ffcdb3a8614409ba2a251a694d8f, type: 2}
   - {fileID: 11400000, guid: db11945bdb46fb6488d5063ffffe68ea, type: 2}
   m_Guid: 698460677e992524081c2b471b135283
-  m_Position: {x: 485, y: -20}
+  m_Position: {x: 486.6667, y: -20.881664}
   _isStartNode: 0
   NumberOfWaves: 0
 --- !u!114 &11400000

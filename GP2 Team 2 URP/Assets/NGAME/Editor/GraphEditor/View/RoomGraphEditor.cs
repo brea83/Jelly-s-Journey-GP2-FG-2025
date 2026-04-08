@@ -2,11 +2,23 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 
 namespace NGAME.Editor
 {
     public class RoomGraphEditor : EditorWindow
     {
+        public virtual IEnumerable<GraphView> graphViews 
+        { 
+            get 
+            { 
+                List<GraphView> graphs = new()
+                {
+                    _graphView
+                }; 
+                return graphs; 
+            } 
+        }
         private RoomGraph _graph;
         private RoomGraphView _graphView;
         private InspectorView _inspectorView;
@@ -26,6 +38,8 @@ namespace NGAME.Editor
             RoomGraphEditor window = GetWindow<RoomGraphEditor>();
             window.titleContent = new GUIContent("RoomGraphEditor");
             //window.saveChangesMessage = "This Graph has unsaved changes. Would you like to save?";
+            //List<EditorWindow> windows = ShowGraphViewWindowWithTools<RoomGraphEditor>();
+            
         }
 
         public void CreateGUI()
@@ -98,7 +112,7 @@ namespace NGAME.Editor
 
         private void OnNodeValuesChanged(NodeView nodeView)
         {
-            _inspectorView.Repaint();
+            _inspectorView.Repaint(nodeView);
         }
 
         private void OnNewGraphClicked()

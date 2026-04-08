@@ -23,7 +23,8 @@ namespace NGAME.Editor
         
         private RoomGraph _graph;
 
-        public RoomGraphView()
+        //public override bool supportsWindowedBlackboard => true;
+        public RoomGraphView() : base()
         {
             Insert(0, new GridBackground());
 
@@ -31,6 +32,7 @@ namespace NGAME.Editor
             this.AddManipulator(new ContentDragger());
             this.AddManipulator(new SelectionDragger());
             this.AddManipulator(new RectangleSelector());
+
 
             GetRoomDataObjects();
 

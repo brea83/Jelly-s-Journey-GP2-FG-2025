@@ -464,8 +464,22 @@ namespace NGAME.Editor
             {
                 field.value = wave;
             }
+            
             field.RegisterValueChangedCallback(
                 evt => PatchWaveData(evt, index));
+
+            field.dataSource = Node;
+            PropertyPath path = new PropertyPath(nameof(Node.Waves) + "[" + index.ToString() + "]");
+            DataBinding binding = new DataBinding
+            {
+                dataSourcePath = path
+            };
+            field.SetBinding("value", binding);
+
+            //SerializedObject serializedRoomNode = new SerializedObject(Node);
+            //PropertyField objectInput = new PropertyField(serializedRoomNode.FindProperty("Waves.Array.data[" + index.ToString() +"]"), "Load Scriptable Object");
+            //objectInput.Bind(serializedRoomNode);
+            //objectInput.name = "WaveDataObjectField";
 
             Button removeMe = new Button();
             removeMe.style.flexGrow = 0;
@@ -486,7 +500,7 @@ namespace NGAME.Editor
 
         private void PatchWaveData(ChangeEvent<UnityEngine.Object> evt, int index)
         {
-            Node.PatchWaveData(evt.newValue as SOWaveData, index);
+            //Node.PatchWaveData(evt.newValue as SOWaveData, index);
             OnValuesChanged();
         }
         private void AddWave()
