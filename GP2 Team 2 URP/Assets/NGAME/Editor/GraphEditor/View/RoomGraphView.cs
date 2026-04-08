@@ -22,6 +22,9 @@ namespace NGAME.Editor
         //public StyleSheet Style;
         
         private RoomGraph _graph;
+        private Blackboard m_Blackboard;
+
+        private NodeInspector m_Inspector;
 
         //public override bool supportsWindowedBlackboard => true;
         public RoomGraphView() : base()
@@ -38,6 +41,42 @@ namespace NGAME.Editor
 
             //var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI Toolkit/Styles/Editor/RoomGraphEditor.uss");
             //styleSheets.Add(styleSheet);
+        }
+
+        public override bool supportsWindowedBlackboard => true;
+
+        public NodeInspector GetOrCreateNodeInspector()
+        {
+            if(m_Inspector == null)
+            {
+                m_Inspector = new NodeInspector(this);
+            }
+            return m_Inspector;
+        }
+
+        public void ReleaseNodeInspector(NodeInspector inspector)
+        {
+            if(m_Inspector == inspector)
+            {
+                m_Inspector = null;
+            }
+        }
+
+        public override Blackboard GetBlackboard()
+        {
+            if(m_Blackboard == null)
+            {
+                m_Blackboard = new Blackboard(this);
+            }
+            return m_Blackboard;
+        }
+        public override void ReleaseBlackboard(Blackboard toRelease)
+        {
+            if(m_Blackboard == toRelease)
+            {
+                m_Blackboard = null;
+                //RemoveElement(toRelease);
+            }
         }
 
         internal void PopulateView(RoomGraph roomGraph)

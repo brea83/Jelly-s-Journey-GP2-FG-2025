@@ -3,12 +3,13 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
+using UnityEditor.Overlays;
 
 namespace NGAME.Editor
 {
-    public class RoomGraphEditor : EditorWindow
+    public class RoomGraphEditor : GraphViewEditorWindow
     {
-        public virtual IEnumerable<GraphView> graphViews 
+        public override IEnumerable<GraphView> graphViews 
         { 
             get 
             { 
@@ -21,7 +22,10 @@ namespace NGAME.Editor
         }
         private RoomGraph _graph;
         private RoomGraphView _graphView;
-        private InspectorView _inspectorView;
+        private NodeInspectorWindow _inspectorView;
+
+        private GraphViewBlackboardWindow _blackboardWindow;
+        private GraphViewMinimapWindow _minimapWindow;
 
         //toolbar buttons
         private UnityEngine.UIElements.Button _newGraphButton;
@@ -35,11 +39,24 @@ namespace NGAME.Editor
         [MenuItem("NGAME/Editor")]
         public static void OpenWindow()
         {
-            RoomGraphEditor window = GetWindow<RoomGraphEditor>();
-            window.titleContent = new GUIContent("RoomGraphEditor");
+            //RoomGraphEditor window = GetWindow<RoomGraphEditor>();
+            //window.titleContent = new GUIContent("RoomGraphEditor");
             //window.saveChangesMessage = "This Graph has unsaved changes. Would you like to save?";
-            //List<EditorWindow> windows = ShowGraphViewWindowWithTools<RoomGraphEditor>();
+            List<EditorWindow> windows = ShowGraphViewWindowWithTools<RoomGraphEditor>();
+            RoomGraphEditor editor = windows[0] as RoomGraphEditor;
+            editor._blackboardWindow = windows[1] as GraphViewBlackboardWindow;
+            editor._minimapWindow = windows[2] as GraphViewMinimapWindow;
+
+            System.Type[] dockNextToType = new System.Type[1] { typeof(GraphViewBlackboardWindow) };
+
+            editor._inspectorView = GetWindow<NodeInspectorWindow>("Node Inspector", dockNextToType);
             
+            if(editor._graphView != null)
+            {
+                editor._inspectorView.SelectGraphViewFromWindow(editor, editor._graphView);
+            }
+            editor._inspectorView.ShowTab();
+
         }
 
         public void CreateGUI()
@@ -71,7 +88,7 @@ namespace NGAME.Editor
 
             
             _graphView = root.Q<RoomGraphView>();
-            _inspectorView = root.Q<InspectorView>();
+            
 
             _graphView.OnNodeSelected = OnNodeSelectionChanged;
             _graphView.OnNodeValuesChanged = OnNodeValuesChanged;
@@ -80,7 +97,7 @@ namespace NGAME.Editor
             if(m_Style != null)
             {
                 _graphView.styleSheets.Add(m_Style);
-                _inspectorView.styleSheets.Add(m_Style);
+                //_inspectorView.styleSheets.Add(m_Style);
             }
 
             _newGraphButton = root.Q<Button>("NewGraphButton");
