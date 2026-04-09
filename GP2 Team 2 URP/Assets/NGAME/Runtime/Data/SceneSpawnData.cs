@@ -11,6 +11,16 @@ namespace NGAME
         public string SceneGUID;
         public List<SpawnerData> SpawnPoints = new();
 
+        public SceneSpawnData()
+        {
+
+        }
+        public SceneSpawnData(SceneData sceneData)
+        {
+            SceneGUID = sceneData.Guid;
+            SpawnPoints = sceneData.SpawnPoints;
+        }
+
         public Dictionary<string, int> CountSpawnersWithMatchingTypes()
         {
             Dictionary<string, int> result = new();

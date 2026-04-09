@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e7f4d31a07f9e241952cb7bca23e907, type: 3}
   m_Name: ScenePreviewTestData
   m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.NpcSpawnTest
-  scenePath: Assets/Scenes/Final/FINAL TEST/SampleScene.unity
+  scenePath: Assets/Scenes/Final/FINAL TEST/SampleScene 2.unity
   AspectRatioEnum: 4
   AspectRatio: {x: 1.2, y: 1}
-  CameraPosition: {x: -9.36, y: 6.9, z: 17.45}
-  OrothoHeight: 25.69
+  CameraPosition: {x: 10.6, y: 6.9, z: -24.17}
+  OrothoHeight: 26.9
   RenderTextureHeight: 100

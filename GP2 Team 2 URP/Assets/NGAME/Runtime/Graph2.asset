@@ -164,8 +164,8 @@ MonoBehaviour:
     SourceSceneName: SampleScene
     SourcePortName: Door North
     DestinationNodeGuid: 1054876d2df8d40468fb28efd97ed6fb
-    DestinationSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
-    DestinationSceneName: SampleScene 2
+    DestinationSceneGuid: 7a3963fe7029e1540abdb3d88a000b52
+    DestinationSceneName: SampleScene 1
     DestinationPortName: Door East
     m_bIsValid: 1
   IncomingEdges: []

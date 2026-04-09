@@ -1,5 +1,7 @@
+using NGAME;
 using NGAME.Editor;
 using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -27,6 +29,7 @@ public class ScenePreviewCaptureInspector : Editor
     float _worldScreenHeight;// = 5;
     int _renderTextureHeight;// = 1080;
 
+    SceneData _currentSceneData;
     float ToFloat(SupportedAspects aspects)
     {
         switch (aspects)
@@ -75,7 +78,9 @@ public class ScenePreviewCaptureInspector : Editor
         //_aspectChoiceIdx = (SupportedAspects)aspectRatioProperty.intValue;
 
         _scene = EditorSceneManager.OpenPreviewScene(scenePreviewTest.scenePath);
+        _currentSceneData = CreateSceneData(_scene, "", scenePreviewTest.scenePath);
         InitPreviewCamera();
+        
 
         SerializedProperty orthoProperty = serializedObject.FindProperty("OrothoHeight");
         _worldScreenHeight = orthoProperty.floatValue;
@@ -102,10 +107,12 @@ public class ScenePreviewCaptureInspector : Editor
         SerializedProperty aspectProperty = serializedObject.FindProperty("AspectRatio");
         _aspectRatio = aspectProperty.vector2Value;
         _curAspect = _aspectRatio.x / _aspectRatio.y; //ToFloat(_aspectChoiceIdx);
-        _cam.aspect = _curAspect;
+
+        //_cam.aspect = _curAspect;
+        _cam.aspect = _currentSceneData.Bounds.AspectRatio;
 
         SerializedProperty orthoProperty = serializedObject.FindProperty("OrothoHeight");
-        _cam.orthographicSize = orthoProperty.floatValue;//_worldScreenHeight;
+        _cam.orthographicSize = _currentSceneData.Bounds.Height();//orthoProperty.floatValue;//_worldScreenHeight;
     }
 
     void OnDisable()
@@ -116,11 +123,12 @@ public class ScenePreviewCaptureInspector : Editor
 
     void OnCamSettingChange(ScenePreviewCapture sceneToPreview)
     {
-        SerializedProperty aspectProperty = serializedObject.FindProperty("AspectRatio");
-        aspectProperty.vector2Value = _aspectRatio;
-        _curAspect = _aspectRatio.x / _aspectRatio.y;//ToFloat(_aspectChoiceIdx);
+        //SerializedProperty aspectProperty = serializedObject.FindProperty("AspectRatio");
+        //aspectProperty.vector2Value = _aspectRatio;
+        //_curAspect = _aspectRatio.x / _aspectRatio.y;//ToFloat(_aspectChoiceIdx);
+        _curAspect = _currentSceneData.Bounds.AspectRatio;
         _cam.aspect = _curAspect;
-        _cam.orthographicSize = _worldScreenHeight;
+        _cam.orthographicSize = _currentSceneData.Bounds.Height();//_worldScreenHeight;
 
         SerializedProperty positionProperty = serializedObject.FindProperty("CameraPosition");
         positionProperty.vector3Value = _cam.transform.position;
@@ -163,6 +171,7 @@ public class ScenePreviewCaptureInspector : Editor
             EditorSceneManager.ClosePreviewScene(_scene);
 
             _scene = EditorSceneManager.OpenPreviewScene(newPath);
+            _currentSceneData = CreateSceneData(_scene, "", newPath);
             InitPreviewCamera();
             OnCamSettingChange(sceneToPreview);
         }
@@ -210,6 +219,62 @@ public class ScenePreviewCaptureInspector : Editor
 
         serializedObject.ApplyModifiedProperties();
 
+    }
+
+    private SceneData CreateSceneData(Scene aScene, string sceneGuid, string filePath)
+    {
+        SceneData result = new();
+        result.Name = aScene.name;
+        result.Guid = sceneGuid;
+        result.FilePath = filePath;
+
+        List<RegionConnectionData> conectionObjects = new();
+        List<SpawnerData> spawners = new();
+
+        bool bConnectionsFound = false;
+        bool bSpawnersFound = false;
+
+        GameObject[] rootObjects = aScene.GetRootGameObjects();
+
+        foreach (GameObject obj in rootObjects)
+        {
+            // connection data
+            IEncounterRegionConnector[] connectorComponent = obj.GetComponentsInChildren<IEncounterRegionConnector>();
+            if (connectorComponent.Length > 0) bConnectionsFound = true;
+
+            foreach (IEncounterRegionConnector connection in connectorComponent)
+            {
+                //connections.Add(component.GetRegionConnectionData());
+                RegionConnectionData data = connection.GetRegionConnectionData();
+                conectionObjects.Add(data);
+            }
+
+            // spawner data
+
+            ISpawnPoint[] spawnerComponents = obj.GetComponentsInChildren<ISpawnPoint>();
+            if (spawnerComponents.Length > 0) bSpawnersFound = true;
+
+            foreach (ISpawnPoint spawner in spawnerComponents)
+            {
+                spawners.Add(spawner.GetSpawnerData());
+            }
+
+        }
+
+        if (!bConnectionsFound && !bSpawnersFound)
+        {
+            Debug.Log("No IEncounterRegionConnector or ISpawnPoint components found in scene: " + aScene.name);
+        }
+        else
+        {
+            Debug.Log("Scene: " + aScene.name + " contains target data types");
+        }
+
+        result.UniqueConnectionObjects = conectionObjects;
+        result.SpawnPoints = spawners;
+        result.Bounds = new(conectionObjects, spawners);
+
+        return result;
     }
 }
 

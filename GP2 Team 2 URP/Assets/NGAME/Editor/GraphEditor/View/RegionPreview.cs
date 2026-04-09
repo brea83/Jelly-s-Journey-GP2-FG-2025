@@ -7,6 +7,7 @@ namespace NGAME.Editor
     public class RegionPreview
     {
         public VisualElement Container { get => m_Container; }
+        public SceneBounds Bounds { get; private set; }
 
         private VisualElement m_Container = new();
         private VisualElement m_RegionBG = new();
@@ -21,11 +22,30 @@ namespace NGAME.Editor
 
         private List<VisualElement> m_DoorMarkers = new();
 
+        private NodeView m_ParentNode;
+
+        public RegionPreview(NodeView parentNode)
+        {
+            m_ParentNode = parentNode;
+            Bounds = new(parentNode.CurrentSceneConnections, parentNode.CurrentSpawnData);
+            //if
+            CreateUiElements();
+        }
+
         public RegionPreview()
+        {
+            CreateUiElements();
+            Bounds = new();
+            //m_RegionBG.style.position = Position.Absolute;
+            //SetHeight(50.0f);
+
+        }
+
+        private void CreateUiElements()
         {
             m_Container = new VisualElement();
             m_Container.style.flexShrink = 0;
-            
+
             m_Container.style.backgroundColor = Color.white;
             m_Container.style.alignItems = Align.Center;
             m_Container.style.justifyContent = Justify.Center;
@@ -38,9 +58,14 @@ namespace NGAME.Editor
 
             m_Container.Add(m_RegionBG);
             m_Container.RegisterCallback<GeometryChangedEvent>(GeometryChangedCallback);
-            //m_RegionBG.style.position = Position.Absolute;
-            //SetHeight(50.0f);
+        }
 
+        public void UpdateBounds()
+        {
+            if(m_ParentNode == null)
+            {
+                return;
+            }
         }
 
         public RegionPreview(Vector2 newRegionSize)

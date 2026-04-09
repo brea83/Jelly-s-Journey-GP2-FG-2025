@@ -16,9 +16,11 @@ namespace NGAME.Editor
     {
         public Action<NodeView> OnNodeSelected;
         public Action<NodeView> OnNodeValuesChanged;
-        public List<SceneData> IncludedScenes = new List<SceneData>();
+        public List<SceneInclusionData> IncludedScenes = new List<SceneInclusionData>();
         public List<SceneConnectionsData> ValidScenes = new List<SceneConnectionsData>();
         public List<SceneSpawnData> SpawnersByScene = new List<SceneSpawnData>();
+        public Dictionary<string, SceneData> SceneLookup = new();
+        public Dictionary<string, Texture2D> ScenePreviewLookup = new();
         //public StyleSheet Style;
         
         private RoomGraph _graph;
@@ -240,7 +242,7 @@ namespace NGAME.Editor
 
             for (int i = 0; i < settings.Scenes.Count; i++)
             {
-                SceneData data = settings.Scenes[i];
+                SceneInclusionData data = settings.Scenes[i];
 
                 if(data.FilePath == "" || !data.IncludeInGraphTool)
                 {
@@ -257,18 +259,23 @@ namespace NGAME.Editor
                 }
                 string sceneGuid = settings.Guids[i];
 
-                (SceneConnectionsData connections, SceneSpawnData spawners) componentData = GetScenesRegionConnectionData(aScene, sceneGuid);
-                if (componentData.Item1 != null)
-                {
-                    
-                    ValidScenes.Add(componentData.Item1);
-                }
+                //(SceneConnectionsData connections, SceneSpawnData spawners) componentData = GetScenesRegionConnectionData(aScene, sceneGuid);
+                //if (componentData.Item1 != null)
+                //{
+                //    ValidScenes.Add(componentData.Item1);
+                //}
 
-                if (componentData.Item2 != null) 
-                {
-                    SpawnersByScene.Add(componentData.Item2);
-                }
+                //if (componentData.Item2 != null) 
+                //{
+                //    SpawnersByScene.Add(componentData.Item2);
+                //}
 
+                SceneData sceneData = CreateSceneData(aScene, sceneGuid, data.FilePath);
+                SceneLookup.Add(sceneGuid, sceneData);
+                SceneConnectionsData connections = new(sceneData);
+                ValidScenes.Add(connections);
+                SceneSpawnData spawnData = new(sceneData);
+                SpawnersByScene.Add(spawnData); 
 
                 EditorSceneManager.ClosePreviewScene(aScene);
             }
@@ -356,7 +363,61 @@ namespace NGAME.Editor
             
             return (connectionData, spawnData);
         }
-    
-        
+
+        private SceneData CreateSceneData(Scene aScene, string sceneGuid, string filePath)
+        {
+            SceneData result = new();
+            result.Name = aScene.name;
+            result.Guid = sceneGuid;
+            result.FilePath = filePath;
+
+            List<RegionConnectionData> conectionObjects = new();
+            List<SpawnerData> spawners = new();
+
+            bool bConnectionsFound = false;
+            bool bSpawnersFound = false;
+
+            GameObject[] rootObjects = aScene.GetRootGameObjects();
+
+            foreach (GameObject obj in rootObjects)
+            {
+                // connection data
+                IEncounterRegionConnector[] connectorComponent = obj.GetComponentsInChildren<IEncounterRegionConnector>();
+                if (connectorComponent.Length > 0) bConnectionsFound = true;
+
+                foreach (IEncounterRegionConnector connection in connectorComponent)
+                {
+                    //connections.Add(component.GetRegionConnectionData());
+                    RegionConnectionData data = connection.GetRegionConnectionData();
+                    conectionObjects.Add(data);
+                }
+
+                // spawner data
+
+                ISpawnPoint[] spawnerComponents = obj.GetComponentsInChildren<ISpawnPoint>();
+                if (spawnerComponents.Length > 0) bSpawnersFound = true;
+
+                foreach (ISpawnPoint spawner in spawnerComponents)
+                {
+                    spawners.Add(spawner.GetSpawnerData());
+                }
+
+            }
+
+            if (!bConnectionsFound && !bSpawnersFound)
+            {
+                Debug.Log("No IEncounterRegionConnector or ISpawnPoint components found in scene: " + aScene.name);
+            }
+            else
+            {
+                Debug.Log("Scene: " + aScene.name + " contains target data types");
+            }
+
+            result.UniqueConnectionObjects = conectionObjects;
+            result.SpawnPoints = spawners;
+            result.Bounds = new(conectionObjects, spawners);
+
+            return result;
+        }
     }
 }

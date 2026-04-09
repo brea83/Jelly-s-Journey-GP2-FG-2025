@@ -24,10 +24,13 @@ namespace NGAME.Editor
 
         private DropdownField m_RoomSelectDropdown;
         private int m_LastDropDownIndex = 0;
-        private List<NGAME.SceneConnectionsData> _roomDataObjects;
+        public SceneConnectionsData CurrentSceneConnections { get; private set; }
+        private List<SceneConnectionsData> _roomDataObjects;
         private Color m_ValidPortColor = new();
 
         // container that input and output containers are in is called  topContainer on the parent class
+
+        public SceneSpawnData CurrentSpawnData { get => m_CurrentSceneSpawnData; }
         private SceneSpawnData m_CurrentSceneSpawnData;
         private VisualElement m_EncountersContainer;
         private ScrollView m_SpawningScrollView;
@@ -220,17 +223,17 @@ namespace NGAME.Editor
             m_LastDropDownIndex = m_RoomSelectDropdown.index;
             //Node.LastDropdownIndex = m_RoomSelectDropdown.index;
 
-            SceneConnectionsData newData = null;
+            CurrentSceneConnections = null;
             foreach(SceneConnectionsData room in _roomDataObjects )
             {
                 if( room.SceneName == change.newValue )
                 {
-                    newData = room;
+                    //newData = room;
+                    CurrentSceneConnections = room;
                     break;
                 }
             }
-            Node.UpdateRoomData( newData );
-            m_RegionPreview.SetRegionSize(newData.WidthByHeight);
+            Node.UpdateRoomData(CurrentSceneConnections);
 
             UpdatePorts();
             MarkMissingSceneError("", false);
@@ -238,6 +241,7 @@ namespace NGAME.Editor
             UpdateCurrentSceneSpawnData();
             PopulateEncounterContainer();
 
+            m_RegionPreview.UpdateBounds();
             EditorUtility.SetDirty(Node);
         }
 

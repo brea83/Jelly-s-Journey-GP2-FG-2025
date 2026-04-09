@@ -24,7 +24,7 @@ namespace NGAME.Editor
         private ListView m_ScenesListView;
         private VisualElement m_ScenesRightPane;
 
-        private Dictionary<string, SceneData> m_GuidToSceneData;
+        private Dictionary<string, SceneInclusionData> m_GuidToSceneData;
 
         private StyleSheet m_Styles;
 
@@ -135,14 +135,14 @@ namespace NGAME.Editor
 
             if(m_GuidToSceneData == null)
             {
-                m_GuidToSceneData = new Dictionary<string, SceneData>();
+                m_GuidToSceneData = new Dictionary<string, SceneInclusionData>();
                 Debug.Log("Settings Window's Guid To Scene Data dictionary was null so making a new one");
             }
 
             if(m_Settings.Scenes == null)
             {
                 Debug.Log("Settings Object's SceneData list was null so making a new one");
-                m_Settings.Scenes = new List<SceneData>();
+                m_Settings.Scenes = new List<SceneInclusionData>();
             }
             if (m_Settings.Guids == null)
             {
@@ -159,7 +159,7 @@ namespace NGAME.Editor
             for(int i = 0; i < m_Settings.Guids.Count(); i++)
             {
                 string guidKey = m_Settings.Guids[i];
-                SceneData data = m_Settings.Scenes[i];
+                SceneInclusionData data = m_Settings.Scenes[i];
                 Debug.Log("Checking if " + data.Name + " is a valid scene");
 
                 string filePath = AssetDatabase.GUIDToAssetPath(guidKey);
@@ -294,7 +294,7 @@ namespace NGAME.Editor
                 m_ScenesListView.Clear();
             }
             // Get a list of all sprites in the project.
-            List<SceneData> allSceneData = m_GuidToSceneData.Values.ToList();//FindSceneData();
+            List<SceneInclusionData> allSceneData = m_GuidToSceneData.Values.ToList();//FindSceneData();
 
             // Initialize the list view with all sprites' names.
             m_ScenesListView.makeItem = () => new Label();
@@ -310,7 +310,7 @@ namespace NGAME.Editor
             var enumerator = selectedItems.GetEnumerator();
             if (enumerator.MoveNext())
             {
-                var selectedScene = enumerator.Current as SceneData;
+                var selectedScene = enumerator.Current as SceneInclusionData;
                 if (selectedScene != null)
                 {
                     DisplaySceneSettings(selectedScene);
@@ -319,7 +319,7 @@ namespace NGAME.Editor
         }
 
         // does not include a null check because intended use is after a null check
-        private void DisplaySceneSettings(SceneData sceneData)
+        private void DisplaySceneSettings(SceneInclusionData sceneData)
         {
 
             VisualElement settingsPane = new VisualElement();
@@ -391,7 +391,7 @@ namespace NGAME.Editor
                     continue;
                 }
 
-                SceneData currentSceneData = new SceneData();
+                SceneInclusionData currentSceneData = new SceneInclusionData();
                 currentSceneData.Name = aScene.name;
                 currentSceneData.Guid = guid;
                 currentSceneData.FilePath = filePath;

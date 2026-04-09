@@ -24,19 +24,46 @@ namespace NGAME
     [Serializable]
     public class SceneConnectionsData
     {
-        public string SceneName;
-        public string SceneGuid;
+        public string SceneName = "";
+        public string SceneGuid = "";
         [HideInInspector]
-        public List<RegionConnectionData> Entrances;
+        public List<RegionConnectionData> Entrances = new();
         [HideInInspector]
-        public List<RegionConnectionData> Exits;
-        //public List<string> SpawnPositions;
+        public List<RegionConnectionData> Exits = new();
         [HideInInspector]
         public Vector2 MinPoint = Vector3.zero;
         [HideInInspector]
         public Vector2 MaxPoint = Vector3.zero;
         [HideInInspector]
         public Vector2 WidthByHeight = Vector2.zero;
+
+        public SceneConnectionsData() { }
+        public SceneConnectionsData(SceneData sceneData)
+        {
+            SceneName = sceneData.Name;
+            SceneGuid = sceneData.Guid;
+
+            foreach (RegionConnectionData connection in sceneData.UniqueConnectionObjects)
+            {
+                switch (connection.ConnectionType)
+                {
+                    case RegionConnectionType.EntranceOnly:
+                        Entrances.Add(connection);
+                        break;
+                    case RegionConnectionType.ExitOnly:
+                        Exits.Add(connection);
+                        break;
+                    case RegionConnectionType.ExitAndEntrance:
+                        Entrances.Add(connection);
+                        Exits.Add(connection);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            UpdateBounds();
+        }
 
         public void UpdateBounds()
         {
@@ -54,12 +81,12 @@ namespace NGAME
         {
             Vector3 min = new Vector2(float.MaxValue, float.MaxValue);
 
-            foreach(NGAME.RegionConnectionData entrance in Entrances)
+            foreach(RegionConnectionData entrance in Entrances)
             {
                 min = Vector3.Min(min, entrance.Position);
             }
 
-            foreach(NGAME.RegionConnectionData exit in Exits)
+            foreach(RegionConnectionData exit in Exits)
             {
                 min = Vector3.Min(min, exit.Position);
             }
@@ -71,12 +98,12 @@ namespace NGAME
         {
             Vector3 max = new Vector2(float.MinValue, float.MinValue);
 
-            foreach (NGAME.RegionConnectionData entrance in Entrances)
+            foreach (RegionConnectionData entrance in Entrances)
             {
                 max = Vector3.Max(max, entrance.Position);
             }
 
-            foreach (NGAME.RegionConnectionData exit in Exits)
+            foreach (RegionConnectionData exit in Exits)
             {
                 max = Vector3.Max(max, exit.Position);
             }

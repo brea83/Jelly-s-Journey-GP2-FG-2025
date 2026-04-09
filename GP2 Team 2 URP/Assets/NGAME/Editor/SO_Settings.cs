@@ -6,7 +6,7 @@ using UnityEngine;
 namespace NGAME.Editor
 {
     [Serializable]
-    public class SceneData
+    public class SceneInclusionData
     {
         public string Name = "default name";
         public string Guid;
@@ -23,6 +23,6 @@ namespace NGAME.Editor
         public string Guid;
         //public Dictionary<string, SceneData> GuidToSceneData;
         public List<string> Guids;
-        public List<SceneData> Scenes;
+        public List<SceneInclusionData> Scenes;
     }
 }
