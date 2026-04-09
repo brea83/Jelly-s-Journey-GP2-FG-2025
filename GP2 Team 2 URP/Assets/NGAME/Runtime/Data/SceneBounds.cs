@@ -9,6 +9,7 @@ namespace NGAME
     {
         public Vector2 MinPoint { get; private set; }
         public Vector2 MaxPoint { get; private set; }
+        public Vector2 CenterPoint { get; private set; }
         public float AspectRatio { get; private set; }
 
         public float Width()
@@ -41,25 +42,7 @@ namespace NGAME
                 max = Vector2.Max(connectionMax, max);
             }
 
-            if(spawnData != null)
-            {
-                List<Vector3> spawnPositions = spawnData.SpawnPoints.ConvertAll(x => x.Position);
-            
-                foreach(Vector3 position3d in spawnPositions)
-                {
-                    Vector2 position = new Vector2(position3d.x, position3d.z);
-
-                    min = Vector2.Min(position, min);
-                    max = Vector2.Max(position, max);
-                }
-            }
-
-            MinPoint = min; 
-            MaxPoint = max;
-
-            float width = MaxPoint.x - MinPoint.x;
-            float height = MaxPoint.y - MinPoint.y;
-            AspectRatio = width / height;
+            UpdateBounds(null, spawnData.SpawnPoints);
 
         }
 
@@ -73,7 +56,7 @@ namespace NGAME
             Vector2 min = new Vector2(float.MaxValue, float.MaxValue);
             Vector2 max = new Vector2(float.MinValue, float.MinValue);
 
-            if (connectionsData != null)
+            if (connectionsData != null && connectionsData.Count > 0)
             {
                 List<Vector3> connectionPositions = connectionsData.ConvertAll(x => x.Position);
 
@@ -86,7 +69,7 @@ namespace NGAME
                 }
             }
 
-            if (spawnData != null)
+            if (spawnData != null && spawnData.Count > 0)
             {
                 List<Vector3> spawnPositions = spawnData.ConvertAll(x => x.Position);
 
@@ -105,6 +88,8 @@ namespace NGAME
             float width = MaxPoint.x - MinPoint.x;
             float height = MaxPoint.y - MinPoint.y;
             AspectRatio = width / height;
+
+            CalculateCenter();
         }
 
         public void AddPointToBounds(Vector2 point) 
@@ -114,6 +99,14 @@ namespace NGAME
             float width = MaxPoint.x - MinPoint.x;
             float height = MaxPoint.y - MinPoint.y;
             AspectRatio = width / height;
+        }
+
+        private void CalculateCenter()
+        {
+            float halfWidth = Width() / 2.0f;
+            float halfHeight = Height() / 2.0f;
+
+            CenterPoint = new Vector2(MinPoint.x + halfWidth, MinPoint.y + halfHeight);
         }
     }
 }

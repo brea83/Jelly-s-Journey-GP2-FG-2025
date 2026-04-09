@@ -13,8 +13,4 @@ MonoBehaviour:
   m_Name: ScenePreviewTestData
   m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.NpcSpawnTest
   scenePath: Assets/Scenes/Final/FINAL TEST/SampleScene 2.unity
-  AspectRatioEnum: 4
-  AspectRatio: {x: 1.2, y: 1}
-  CameraPosition: {x: 10.6, y: 6.9, z: -24.17}
-  OrothoHeight: 26.9
-  RenderTextureHeight: 100
+  RenderTextureHeight: 10
