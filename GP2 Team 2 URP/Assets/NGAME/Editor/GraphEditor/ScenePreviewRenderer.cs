@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UIElements;
-using UnityEngine.Windows;
 
 namespace NGAME.Editor
 {
@@ -17,14 +16,16 @@ namespace NGAME.Editor
 
             Texture2D result = DrawScene(bounds, camera, renderTextureHeight);
             Color[] pixels = result.GetPixels();
-            MarkSpawners(sceneData, result, new Vector2Int(result.width, result.height), camera);
+            Vector2Int size = new Vector2Int(result.width, result.height);
+            DrawSpawners(sceneData.SpawnPoints, result, size, camera);
+            DrawConnections(sceneData.UniqueConnectionObjects, result, size, camera);
             result.Apply(false);
             return result;
         }
-        void DelayWritingSpawnerData()
-        {
-
-        }
+        //static void DelayWritingSpawnerData()
+        //{
+        //    EditorApplication.delayCall -= DelayWritingSpawnerData;
+        //}
 
         private static Camera InitPreviewCamera(Scene aScene, SceneBounds bounds)
         {
@@ -70,9 +71,8 @@ namespace NGAME.Editor
             return textureResult;
         }
 
-        private static void MarkSpawners(SceneData sceneData, Texture2D texture, Vector2Int actualTextureSize, Camera camera)
+        private static void DrawSpawners(List<SpawnerData> spawnPoints, Texture2D texture, Vector2Int actualTextureSize, Camera camera)
         {
-            SceneBounds bounds = sceneData.Bounds;
 
             Color[] pixels = texture.GetPixels();
             //texture.
@@ -91,7 +91,7 @@ namespace NGAME.Editor
             }
             pixels[0] = Color.blue;
 
-            foreach (SpawnerData spawner in sceneData.SpawnPoints)
+            foreach (SpawnerData spawner in spawnPoints)
             {
                 Vector2 position = new Vector2(spawner.Position.x, spawner.Position.z);
 
@@ -99,16 +99,75 @@ namespace NGAME.Editor
 
                 int x = Mathf.FloorToInt(position.x);
                 int y = Mathf.FloorToInt(position.y);
-                int index = y * (actualTextureSize.x) + x;
-                if(index >= pixels.Length || index < 0)
+                int originalIndex = y * (actualTextureSize.x) + x;
+                List<int> neighboringPixels = GetNeighborPixelIndexes(x, y, actualTextureSize, pixels.Length);
+                foreach(int index in neighboringPixels)
                 {
-                    Debug.LogWarning("INDEX MATH WRONG");
-                    return;
+                    pixels[index] = Color.magenta;
                 }
-                pixels[index] = Color.magenta;
             }
             texture.SetPixels(pixels);
-            //texture.Apply(false);
+        }
+
+        private static void DrawConnections( List<RegionConnectionData> connections, Texture2D texture, Vector2Int actualTextureSize, Camera camera)
+        {
+            
+            Color[] pixels = texture.GetPixels();
+            //texture.
+            //List<Vector2Int> newSpawnPositions = new();
+            Vector3 worldMin3D = camera.ScreenToWorldPoint(new Vector3(0, 0, 10));
+            Vector3 worldMax3D = camera.ScreenToWorldPoint(new Vector3(actualTextureSize.x - 1, actualTextureSize.y - 1, 10));
+
+            Vector2 worldMin = new Vector2(worldMin3D.x, worldMin3D.z);
+            Vector2 worldMax = new Vector2(worldMax3D.x, worldMax3D.z);
+
+            foreach (RegionConnectionData connection in connections)
+            {
+                Vector2 position = new Vector2(connection.Position.x, connection.Position.z);
+
+                position = RemapVector2(position, worldMin/*bounds.MinPoint*/, worldMax/*bounds.MaxPoint*/, new Vector2(0.0f, 0.0f), new Vector2(actualTextureSize.x - 1, actualTextureSize.y - 1));
+
+                int x = Mathf.FloorToInt(position.x);
+                int y = Mathf.FloorToInt(position.y);
+                int originalIndex = y * (actualTextureSize.x) + x;
+                List<int> neighboringPixels = GetNeighborPixelIndexes(x, y, actualTextureSize, pixels.Length);
+                foreach (int index in neighboringPixels)
+                {
+                    pixels[index] = Color.greenYellow;
+                }
+            }
+            texture.SetPixels(pixels);
+        }
+
+        private static List<int> GetNeighborPixelIndexes(int x, int y, Vector2Int size, int ArrayLength)
+        {
+            List<int> indexes = new();
+            for(int i = y-1; i <= y+1 && i < size.y; i++)
+            {
+                if(i< 0)
+                {
+                    continue;
+                }
+                
+                
+                for(int j = x - 1; j <= x+ 1 && j < size.x; j++)
+                {
+                    if (j < 0)
+                    {
+                        continue;
+                    }
+                    int index = i * size.x + j;
+
+                    if (index >= ArrayLength)
+                    {
+                        break;
+                    }
+
+                    indexes.Add(index);
+                }
+            }
+
+            return indexes;
         }
 
         public static float Remap(float input, float inputRangeMin, float inputRangeMax, float outputRangeMin, float outputRangeMax)

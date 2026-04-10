@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -50,17 +51,21 @@ namespace NGAME.Editor
             m_Container.style.alignItems = Align.Center;
             m_Container.style.justifyContent = Justify.Center;
 
-            m_RegionBG = new VisualElement();
-            m_RegionBG.style.flexShrink = 0;
-            m_RegionBG.style.flexGrow = 0;
+            
             SetPreviewBG();
 
             m_Container.RegisterCallback<GeometryChangedEvent>(GeometryChangedCallback);
-            m_Container.Add(m_RegionBG);
+            
         }
 
         private void SetPreviewBG()
         {
+            if (m_RegionBG != null)
+                m_RegionBG.RemoveFromHierarchy();
+            m_RegionBG = new VisualElement();
+            m_RegionBG.style.flexShrink = 0;
+            m_RegionBG.style.flexGrow = 0;
+
             if (m_ParentNode == null || m_ParentNode.Node == null)
             {
                 m_RegionBG.style.backgroundColor = Color.magenta;
@@ -87,11 +92,12 @@ namespace NGAME.Editor
                     m_RegionAspectRatio = data.Bounds.AspectRatio;
                 }
             }
+            m_Container.Add(m_RegionBG);
         }
 
         public void UpdateBounds()
         {
-            if(m_ParentNode == null || m_ParentNode.Node == null)
+            if(m_ParentNode == null || m_ParentNode.Node == null || m_ParentNode.CurrentSceneConnections == null)
             {
                 return;
             }
@@ -107,12 +113,19 @@ namespace NGAME.Editor
             m_RegionSize = data.Bounds.GetWidthAndHeight();
             m_RegionAspectRatio = data.Bounds.AspectRatio;
             SetPreviewBG();
+            EditorApplication.delayCall += DelayedSetHeight;
         }
 
         private void GeometryChangedCallback(GeometryChangedEvent evt)
         {
             m_Container.UnregisterCallback<GeometryChangedEvent>(GeometryChangedCallback);
             // Do what you need to do here, as geometry should be calculated.
+            SetHeight(300.0f);
+        }
+
+        private void DelayedSetHeight()
+        {
+            EditorApplication.delayCall -= DelayedSetHeight;
             SetHeight(300.0f);
         }
 

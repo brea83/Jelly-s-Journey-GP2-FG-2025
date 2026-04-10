@@ -94,7 +94,7 @@ MonoBehaviour:
   IncomingEdges: []
   Waves: []
   m_Guid: ae1bb77545505b349944775de86fdcfc
-  m_Position: {x: 121, y: 35}
+  m_Position: {x: 39.99997, y: 34.506683}
   _isStartNode: 1
   NumberOfWaves: 0
 --- !u!114 &11400000

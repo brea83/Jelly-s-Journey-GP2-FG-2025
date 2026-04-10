@@ -120,7 +120,7 @@ MonoBehaviour:
   Waves:
   - {fileID: 11400000, guid: db11945bdb46fb6488d5063ffffe68ea, type: 2}
   m_Guid: 1054876d2df8d40468fb28efd97ed6fb
-  m_Position: {x: 158.66666, y: -60}
+  m_Position: {x: 159, y: -69}
   _isStartNode: 0
   NumberOfWaves: 0
 --- !u!114 &-2616417663063570396
@@ -172,7 +172,7 @@ MonoBehaviour:
   Waves:
   - {fileID: 11400000, guid: 0a28601bacdd7dc41a36736438b7df58, type: 2}
   m_Guid: 12a949ba26042a74abf34edb089dd911
-  m_Position: {x: -196, y: -68.87999}
+  m_Position: {x: -196, y: -69.000015}
   _isStartNode: 1
   NumberOfWaves: 0
 --- !u!114 &-522332987697937984
