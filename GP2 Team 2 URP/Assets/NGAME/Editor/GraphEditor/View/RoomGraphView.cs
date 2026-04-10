@@ -275,7 +275,18 @@ namespace NGAME.Editor
                 SceneConnectionsData connections = new(sceneData);
                 ValidScenes.Add(connections);
                 SceneSpawnData spawnData = new(sceneData);
-                SpawnersByScene.Add(spawnData); 
+                SpawnersByScene.Add(spawnData);
+
+                Texture2D previewImage = ScenePreviewRenderer.WriteTexture(aScene, sceneData, 100);
+                previewImage.filterMode = FilterMode.Point;
+                if (ScenePreviewLookup.ContainsKey(sceneGuid))
+                {
+                    ScenePreviewLookup[sceneGuid] = previewImage;
+                }
+                else
+                {
+                    ScenePreviewLookup.Add(sceneGuid, previewImage);
+                }
 
                 EditorSceneManager.ClosePreviewScene(aScene);
             }

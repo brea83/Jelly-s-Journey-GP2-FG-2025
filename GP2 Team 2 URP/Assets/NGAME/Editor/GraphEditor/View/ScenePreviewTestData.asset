@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: ScenePreviewTestData
   m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.NpcSpawnTest
   scenePath: Assets/Scenes/Final/FINAL TEST/SampleScene 2.unity
-  RenderTextureHeight: 10
+  RenderTextureHeight: 100

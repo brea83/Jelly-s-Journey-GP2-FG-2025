@@ -7,7 +7,6 @@ namespace NGAME.Editor
     public class RegionPreview
     {
         public VisualElement Container { get => m_Container; }
-        public SceneBounds Bounds { get; private set; }
 
         private VisualElement m_Container = new();
         private VisualElement m_RegionBG = new();
@@ -23,85 +22,105 @@ namespace NGAME.Editor
         private List<VisualElement> m_DoorMarkers = new();
 
         private NodeView m_ParentNode;
+        private Sprite m_PreviewImage;
 
         public RegionPreview(NodeView parentNode)
         {
             m_ParentNode = parentNode;
-            Bounds = new(parentNode.CurrentSceneConnections, parentNode.CurrentSpawnData);
-            //if
+            CreateUiElements();
+        }
+        public RegionPreview(Vector2 newRegionSize)
+        {
+            m_RegionSize = newRegionSize;
+            m_RegionAspectRatio = newRegionSize.x / newRegionSize.y;
             CreateUiElements();
         }
 
         public RegionPreview()
         {
             CreateUiElements();
-            Bounds = new();
-            //m_RegionBG.style.position = Position.Absolute;
-            //SetHeight(50.0f);
-
         }
 
         private void CreateUiElements()
         {
             m_Container = new VisualElement();
             m_Container.style.flexShrink = 0;
-
-            m_Container.style.backgroundColor = Color.white;
+            m_Container.AddToClassList("PreviewBackground");
+            //m_Container.style.backgroundColor = Color.navyBlue;
             m_Container.style.alignItems = Align.Center;
             m_Container.style.justifyContent = Justify.Center;
 
             m_RegionBG = new VisualElement();
             m_RegionBG.style.flexShrink = 0;
             m_RegionBG.style.flexGrow = 0;
-            //m_RegionBG.text = "Test";
-            m_RegionBG.style.backgroundColor = Color.blue;
+            SetPreviewBG();
 
-            m_Container.Add(m_RegionBG);
             m_Container.RegisterCallback<GeometryChangedEvent>(GeometryChangedCallback);
+            m_Container.Add(m_RegionBG);
+        }
+
+        private void SetPreviewBG()
+        {
+            if (m_ParentNode == null || m_ParentNode.Node == null)
+            {
+                m_RegionBG.style.backgroundColor = Color.magenta;
+            }
+            else if (m_ParentNode.CurrentSceneConnections == null)
+            {
+                m_RegionBG.style.backgroundColor = Color.blue;
+            }
+            else
+            {
+                string guid = m_ParentNode.CurrentSceneConnections.SceneGuid;
+
+                Texture2D texture = null;
+                m_ParentNode.m_RoomGraphView.ScenePreviewLookup.TryGetValue(guid, out texture);
+                if (texture != null)
+                {
+                    //Rect rect = new Rect(0, 0, 100, 100);
+                    //Vector2 pivot = Vector2.zero;
+
+                    //m_PreviewImage = Sprite.Create(texture, rect, pivot);
+                    m_RegionBG.style.backgroundImage = new StyleBackground(texture);
+                    SceneData data = m_ParentNode.m_RoomGraphView.SceneLookup[guid];
+                    m_RegionSize = data.Bounds.GetWidthAndHeight();
+                    m_RegionAspectRatio = data.Bounds.AspectRatio;
+                }
+            }
         }
 
         public void UpdateBounds()
         {
-            if(m_ParentNode == null)
+            if(m_ParentNode == null || m_ParentNode.Node == null)
             {
                 return;
             }
+
+            string guid = m_ParentNode.CurrentSceneConnections.SceneGuid;
+
+            if (!m_ParentNode.m_RoomGraphView.SceneLookup.ContainsKey(guid))
+            {
+                return;
+            }
+
+            SceneData data = m_ParentNode.m_RoomGraphView.SceneLookup[guid];
+            m_RegionSize = data.Bounds.GetWidthAndHeight();
+            m_RegionAspectRatio = data.Bounds.AspectRatio;
+            SetPreviewBG();
         }
 
-        public RegionPreview(Vector2 newRegionSize)
-        {
-            m_RegionSize = newRegionSize;
-            m_RegionAspectRatio = newRegionSize.x / newRegionSize.y;
-
-            m_Container = new VisualElement();
-            m_Container.style.flexShrink = 0;
-
-            m_Container.style.backgroundColor = Color.white;
-            m_Container.style.alignItems = Align.Center;
-            m_Container.style.justifyContent = Justify.Center;
-
-            m_RegionBG = new VisualElement();
-            m_RegionBG.style.flexShrink = 0;
-            m_RegionBG.style.flexGrow = 0;
-            //m_RegionBG.text = "Test";
-            m_RegionBG.style.backgroundColor = Color.blue;
-
-            m_Container.Add(m_RegionBG);
-            m_Container.RegisterCallback<GeometryChangedEvent>(GeometryChangedCallback);
-            //m_RegionBG.style.position = Position.Absolute;
-            //SetHeight(50.0f);
-
-        }
         private void GeometryChangedCallback(GeometryChangedEvent evt)
         {
             m_Container.UnregisterCallback<GeometryChangedEvent>(GeometryChangedCallback);
             // Do what you need to do here, as geometry should be calculated.
-            SetHeight(100.0f);
+            SetHeight(300.0f);
         }
+
         public void SetHeight(float height)
         {
             m_Container.style.height = height;
-            Vector2 newSize = new Vector2(m_Container.resolvedStyle.width, height);
+            m_Container.style.width = height;
+            Vector2 newSize = new Vector2(/*m_Container.resolvedStyle.width*/ height, height);
             m_ContainerSize = newSize;
             m_ContainerAspectRatio = newSize.x / newSize.y;
 
@@ -110,8 +129,8 @@ namespace NGAME.Editor
             
         private void ResizeToFit()
         {
-            //80 % of actual container size
-            Vector2 paddedContainerSize = m_ContainerSize * 0.8f;
+            //95 % of actual container size
+            Vector2 paddedContainerSize = m_ContainerSize;// * 0.95f;
 
             if (m_ContainerAspectRatio > m_RegionAspectRatio)
             {

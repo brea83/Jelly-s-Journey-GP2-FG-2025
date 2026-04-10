@@ -40,32 +40,28 @@ namespace NGAME.Editor
 
         private RegionPreview m_RegionPreview;
         
-        public NodeView(RoomGraphView graph, RoomNode node, List<NGAME.SceneConnectionsData> roomDataObjects = null) 
+        public NodeView(RoomGraphView graph, RoomNode node, List<SceneConnectionsData> roomDataObjects = null) 
         {
             this.m_RoomGraphView = graph;
             this.Node = node;
+            CurrentSceneConnections = Node.SceneData;
             this.title = node.name;
             this.viewDataKey = node.Guid;
 
             style.left = node.Position.x;
             style.top = node.Position.y;
+            
+            _roomDataObjects = roomDataObjects;
 
-            if(Node.SceneData != null)
-            {
-                m_RegionPreview = new RegionPreview(Node.SceneData.WidthByHeight);
-            }
-            else
-            {
-                m_RegionPreview = new RegionPreview();
-            }
+            m_RegionPreview = new RegionPreview(this);
+            
             extensionContainer.Add(m_RegionPreview.Container);
             //m_RegionPreview.SetHeight(50.0f);
             //Add(new Button());
             
             
-            if (roomDataObjects != null )
+            if (_roomDataObjects != null )
             {
-                _roomDataObjects = roomDataObjects;
                 CreateRoomSelector( roomDataObjects );
             }
 
@@ -152,7 +148,7 @@ namespace NGAME.Editor
                 SceneConnectionsData room = roomDataObjects[i];
 
                 choices.Add(room.SceneName);
-                room.UpdateBounds();
+                //room.UpdateBounds();
                 //if (room.MinPoint == Vector2.zero && room.MaxPoint == Vector2.zero)
                 //{
                 //}

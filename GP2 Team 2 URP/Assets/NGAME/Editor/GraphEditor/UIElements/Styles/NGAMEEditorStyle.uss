@@ -50,3 +50,8 @@ GridBackground {
     margin-bottom:  2%;
     padding-bottom:  2%;
 }
+
+.PreviewBackground
+{
+    background-color: rgb(20, 20, 20);
+}
