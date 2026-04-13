@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Unity.Properties;
 using UnityEditor;
@@ -53,9 +54,10 @@ namespace NGAME.Editor
 
             m_RegionPreview = new RegionPreview(this);
             
-            extensionContainer.Add(m_RegionPreview.Container);
-            m_RegionPreview.OnImageDrawn += OnPreviewDrawn;
-
+            inputContainer.parent.Add(m_RegionPreview.Container);
+            outputContainer.BringToFront();
+            //m_RegionPreview.OnImageDrawn += OnPreviewDrawn;
+            m_RegionPreview.OnImageDrawn += OnPreviewDrawn_LabelsOnly;
 
             if (_roomDataObjects != null )
             {
@@ -419,6 +421,48 @@ namespace NGAME.Editor
             }
         }
 
+        private void OnPreviewDrawn_LabelsOnly(VisualElement imageContainer)
+        {
+            if (Node.SceneData == null)
+            {
+                return;
+            }
+
+            string guid = Node.SceneData.SceneGuid;
+            if (!m_RoomGraphView.SceneLookup.ContainsKey(guid))
+            {
+                return;
+            }
+            float imageStyleWidth = imageContainer.style.width.value.value;
+            float imageStyleHeight = imageContainer.style.height.value.value;
+            Vector2 imageSize = new Vector2(imageStyleWidth, imageStyleHeight);
+
+            SceneData data = m_RoomGraphView.SceneLookup[guid];
+            Vector2 swizzledWorldMin = new Vector2(data.Bounds.MinPoint.x, data.Bounds.MaxPoint.y);
+            Vector2 swizzledWorldMax = new Vector2(data.Bounds.MaxPoint.x, data.Bounds.MinPoint.y);
+
+            List<RegionConnectionData> connectionData = data.UniqueConnectionObjects;
+
+            foreach (var connection in connectionData)
+            {
+                Vector2 position = new Vector2(connection.Position.x, connection.Position.z);
+                
+                //this will need to be modified with style font sizes
+                Vector2 offset = new Vector2(connection.Name.Length * -3.0f, -15.0f);
+                Vector2 relativePosition = ScenePreviewRenderer.RemapVector2(position, swizzledWorldMin, swizzledWorldMax, Vector2.zero, imageSize);
+
+                Label connectionLabel = new();
+                connectionLabel.text = connection.Name;
+                
+                connectionLabel.style.position = Position.Absolute;
+                connectionLabel.style.left = relativePosition.x + offset.x;
+                connectionLabel.style.top = relativePosition.y + offset.y;
+                connectionLabel.style.backgroundColor = new Color(0.0f, 0.0f, 0.0f, 0.5f);
+
+                imageContainer.Add(connectionLabel);
+            }
+        }
+
         private void OnPreviewDrawn(VisualElement imageContainer)
         {
             if(Node.SceneData == null)
@@ -466,8 +510,6 @@ namespace NGAME.Editor
                 }
 
                 Vector2 position = new Vector2(connection.Position.x, connection.Position.z);
-                //float imageStyleTop = m_RegionPreview.ImageContainer.resolvedStyle.top;
-                //float imageStyleLeft = m_RegionPreview.ImageContainer.resolvedStyle.left;
                 
                 Vector2 relativePosition = ScenePreviewRenderer.RemapVector2(position, swizzledWorldMin, swizzledWorldMax, Vector2.zero, imageSize);
 
@@ -642,7 +684,6 @@ namespace NGAME.Editor
             {
                 MarkPortConnectionError(port, null, "", false);
                 SetUsedPortsOtherDirectionEnabled(port, false);
-                
             }
         }
 
@@ -713,6 +754,7 @@ namespace NGAME.Editor
 
         public static void AddEdge(Edge edge)
         {
+            
             // editor view node updates
             NodeView sourceNode = edge.output.node as NodeView;
             sourceNode.OnPortConnected(edge.output);
