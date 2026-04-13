@@ -154,7 +154,7 @@ namespace NGAME.Editor
                         NodeView destinationNode = edge.input.node as NodeView;
                         NodeView.AddEdge(edge);
                         //_graph.AddEdge(sourceNode.Node, destinationNode.Node, edge);
-                        Debug.Log("Edge created between " + edge.input.portName + ", and " + edge.output.portName);
+                        Debug.Log("GRAPHVIEW: Edge created between " + edge.input.portName + ", and " + edge.output.portName);
                     }
                 }
 

@@ -20,6 +20,7 @@ namespace NGAME.Editor
         public List<Port> InputPorts = new List<Port>();
         public List<Port> OutputPorts = new List<Port>();
         public List<Port> OldConnectedPorts = new List<Port>();
+        public List<ConnectionView> Connections = new();
 
         private DropdownField m_RoomSelectDropdown;
         private int m_LastDropDownIndex = 0;
@@ -57,7 +58,8 @@ namespace NGAME.Editor
             inputContainer.parent.Add(m_RegionPreview.Container);
             outputContainer.BringToFront();
             //m_RegionPreview.OnImageDrawn += OnPreviewDrawn;
-            m_RegionPreview.OnImageDrawn += OnPreviewDrawn_LabelsOnly;
+            //m_RegionPreview.OnImageDrawn += OnPreviewDrawn_LabelsOnly;
+            m_RegionPreview.OnImageDrawn += OnPreviewDrawn_CreatePorts;
 
             if (_roomDataObjects != null )
             {
@@ -115,8 +117,8 @@ namespace NGAME.Editor
             RefreshExpandedState();
             
 
-            CreateInputPorts();
-            CreateOutputPorts();
+            //CreateInputPorts();
+            //CreateOutputPorts();
 
             UpdateCurrentSceneSpawnData();
             PopulateEncounterContainer();
@@ -421,6 +423,43 @@ namespace NGAME.Editor
             }
         }
 
+        protected void OnPreviewDrawn_CreatePorts(VisualElement imageContainer)
+        {
+            if (Node.SceneData == null)
+            {
+                return;
+            }
+
+            string guid = Node.SceneData.SceneGuid;
+            if (!m_RoomGraphView.SceneLookup.ContainsKey(guid))
+            {
+                return;
+            }
+            float imageStyleWidth = imageContainer.style.width.value.value;
+            float imageStyleHeight = imageContainer.style.height.value.value;
+            Vector2 imageSize = new Vector2(imageStyleWidth, imageStyleHeight);
+
+            SceneData data = m_RoomGraphView.SceneLookup[guid];
+            Vector2 swizzledWorldMin = new Vector2(data.Bounds.MinPoint.x, data.Bounds.MaxPoint.y);
+            Vector2 swizzledWorldMax = new Vector2(data.Bounds.MaxPoint.x, data.Bounds.MinPoint.y);
+
+            List<RegionConnectionData> connectionData = data.UniqueConnectionObjects;
+            Connections.ForEach((ConnectionView c) => { c.Container.RemoveFromHierarchy(); });
+            Connections.Clear();
+
+            foreach (var connection in connectionData)
+            {
+                Vector2 position = new Vector2(connection.Position.x, connection.Position.z);
+
+                //this will need to be modified with style font sizes
+                Vector2 offset = new Vector2(connection.Name.Length * -3.0f, -15.0f);
+                Vector2 relativePosition = ScenePreviewRenderer.RemapVector2(position, swizzledWorldMin, swizzledWorldMax, Vector2.zero, imageSize);
+
+                ConnectionView connectionView = new(connection, relativePosition, imageSize, this);
+                Connections.Add(connectionView);
+                imageContainer.Add(connectionView.Container);
+            }
+        }
         private void OnPreviewDrawn_LabelsOnly(VisualElement imageContainer)
         {
             if (Node.SceneData == null)
@@ -648,7 +687,7 @@ namespace NGAME.Editor
 
         public override Port InstantiatePort(Orientation orientation, Direction direction, Port.Capacity capacity, Type type)
         {
-            return Port.Create<Edge>(orientation, direction, capacity, type);
+            return ConnectionPort.Create<Edge>(orientation, direction, capacity, type);
         }
 
         protected bool TryRetainConnectedPorts(Port port, List<Port> portCollection)
