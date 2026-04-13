@@ -20,8 +20,6 @@ namespace NGAME.Editor
         public List<Port> OutputPorts = new List<Port>();
         public List<Port> OldConnectedPorts = new List<Port>();
 
-        //public List<Port> WavePorts = new();
-
         private DropdownField m_RoomSelectDropdown;
         private int m_LastDropDownIndex = 0;
         public SceneConnectionsData CurrentSceneConnections { get; private set; }
@@ -56,10 +54,9 @@ namespace NGAME.Editor
             m_RegionPreview = new RegionPreview(this);
             
             extensionContainer.Add(m_RegionPreview.Container);
-            //m_RegionPreview.SetHeight(50.0f);
-            //Add(new Button());
-            
-            
+            m_RegionPreview.OnImageDrawn += OnPreviewDrawn;
+
+
             if (_roomDataObjects != null )
             {
                 CreateRoomSelector( roomDataObjects );
@@ -76,7 +73,6 @@ namespace NGAME.Editor
 
             m_EncountersContainer = new VisualElement();
             m_EncountersContainer.style.minHeight = 50;
-            //m_EncountersContainer.style.maxHeight = 200;
             m_EncountersContainer.AddToClassList("nodeExtension");
 
             Label encountersLabel = new();
@@ -106,13 +102,8 @@ namespace NGAME.Editor
             addWaveButton.text = "+";
             addWaveButton.clicked += AddWave;
 
-            //Button removeWaveButton = new();
-            //removeWaveButton.text = "-";
-            //removeWaveButton.clicked += RemoveWave;
-
             headerPanel.Add(wavesLabel);
             headerPanel.Add(addWaveButton);
-            //headerPanel.Add(removeWaveButton);
             m_WavesContainer.Add(headerPanel);
             m_EncountersContainer.Add(m_WavesContainer);
 
@@ -124,7 +115,7 @@ namespace NGAME.Editor
 
             CreateInputPorts();
             CreateOutputPorts();
-            //CreateWavePorts();
+
             UpdateCurrentSceneSpawnData();
             PopulateEncounterContainer();
         }
@@ -425,26 +416,103 @@ namespace NGAME.Editor
             foreach (var entrance in Node.SceneData.Entrances)
             {
                 Port newPort = CreatePort(InputPorts, /*contentContainer*/ inputContainer, entrance.Name, typeof(bool));
-
-                //Vector2 topDownPosition = new Vector2(entrance.Position.x, entrance.Position.z);
-                //topDownPosition.Normalize();
-                //Vector2 relativePosition = topDownPosition - Node.Room.MinPoint;
-                //newPort.style.position = Position.Absolute;
-                //newPort.style.top = relativePosition.y;
-                //newPort.style.left = relativePosition.x;
             }
         }
 
-        //private void CreateWavePorts()
-        //{
-        //    if (Node.SceneData == null || Node.SceneData.SceneGuid == null) return;
+        private void OnPreviewDrawn(VisualElement imageContainer)
+        {
+            if(Node.SceneData == null)
+            {
+                return;
+            }
+
+            string guid = Node.SceneData.SceneGuid;
+            if (!m_RoomGraphView.SceneLookup.ContainsKey(guid))
+            {
+                return;
+            }
+            float imageStyleWidth = imageContainer.style.width.value.value;
+            float imageStyleHeight = imageContainer.style.height.value.value;
+            Vector2 imageSize = new Vector2(imageStyleWidth, imageStyleHeight);
+
+            SceneData data = m_RoomGraphView.SceneLookup[guid];
+            Vector2 swizzledWorldMin = new Vector2(data.Bounds.MinPoint.x, data.Bounds.MaxPoint.y);
+            Vector2 swizzledWorldMax = new Vector2(data.Bounds.MaxPoint.x, data.Bounds.MinPoint.y);
             
-        //    for(int i = 0; i < Node.NumberOfWaves; i++)
-        //    {
-        //        string portName = "Wave " + (i + 1).ToString();
-        //        Port newPort = CreatePort(WavePorts, m_WavesContainer, portName, typeof(int));
-        //    }
-        //}
+            List<RegionConnectionData> connectionData = data.UniqueConnectionObjects;
+
+            foreach(var connection in connectionData)
+            {
+                string name = connection.Name;
+                Port inputPort = null;
+                Port outputPort = null;
+
+                if(connection.ConnectionType == RegionConnectionType.EntranceOnly 
+                    || connection.ConnectionType == RegionConnectionType.ExitAndEntrance)
+                {
+                    inputPort = GetPortByName(name, InputPorts);
+                }
+
+                if (connection.ConnectionType == RegionConnectionType.ExitOnly
+                    || connection.ConnectionType == RegionConnectionType.ExitAndEntrance)
+                {
+                    outputPort = GetPortByName(name, OutputPorts);
+                }
+
+
+                if (inputPort == null && outputPort == null)
+                {
+                    continue;
+                }
+
+                Vector2 position = new Vector2(connection.Position.x, connection.Position.z);
+                //float imageStyleTop = m_RegionPreview.ImageContainer.resolvedStyle.top;
+                //float imageStyleLeft = m_RegionPreview.ImageContainer.resolvedStyle.left;
+                
+                Vector2 relativePosition = ScenePreviewRenderer.RemapVector2(position, swizzledWorldMin, swizzledWorldMax, Vector2.zero, imageSize);
+
+                SetPortPosition(inputPort, imageContainer, relativePosition);
+                SetPortPosition(outputPort, imageContainer, relativePosition);
+
+            }
+        }
+
+        private void SetPortPosition(Port port, VisualElement destinationContainer, Vector2 newPosition)
+        {
+            if (port == null)
+            { 
+                return; 
+            }
+
+            float offset = 10;
+            if(port.direction == Direction.Input)
+            {
+                offset *= -1;
+            }
+
+             port.style.position = Position.Absolute;
+            port.style.left = newPosition.x;
+            port.style.top = newPosition.y + offset;
+
+            VisualElement parentElement = port.parent;
+            if(parentElement == destinationContainer)
+            {
+                return;
+            }
+
+            if (parentElement != null )
+            {
+                int indexInParent = parentElement.IndexOf(port);
+
+                if (indexInParent >= 0 && indexInParent < parentElement.childCount)
+                {
+                    parentElement.RemoveAt(indexInParent);
+                }
+            }
+
+            destinationContainer.Add(port);
+            
+        }
 
         private void CreateWaveItem(SOWaveData wave, int index) 
         { 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -7,23 +8,20 @@ namespace NGAME.Editor
 {
     public class RegionPreview
     {
+        public Action<VisualElement> OnImageDrawn;
         public VisualElement Container { get => m_Container; }
+        public VisualElement ImageContainer { get => m_RegionBG; }
 
         private VisualElement m_Container = new();
         private VisualElement m_RegionBG = new();
 
-        //private Vector2 m_RegionMinPoint = Vector2.zero;
-        //private Vector2 m_RegionMaxPoint = Vector2.one;
         private Vector2 m_RegionSize = Vector2.one;
         private float m_RegionAspectRatio = 1.0f;
 
         private Vector2 m_ContainerSize = Vector2.one;
         private float m_ContainerAspectRatio = 1.0f;
 
-        private List<VisualElement> m_DoorMarkers = new();
-
         private NodeView m_ParentNode;
-        private Sprite m_PreviewImage;
 
         public RegionPreview(NodeView parentNode)
         {
@@ -47,15 +45,13 @@ namespace NGAME.Editor
             m_Container = new VisualElement();
             m_Container.style.flexShrink = 0;
             m_Container.AddToClassList("PreviewBackground");
-            //m_Container.style.backgroundColor = Color.navyBlue;
             m_Container.style.alignItems = Align.Center;
             m_Container.style.justifyContent = Justify.Center;
 
             
             SetPreviewBG();
+            EditorApplication.delayCall += DelayedSetHeight;
 
-            m_Container.RegisterCallback<GeometryChangedEvent>(GeometryChangedCallback);
-            
         }
 
         private void SetPreviewBG()
@@ -82,10 +78,6 @@ namespace NGAME.Editor
                 m_ParentNode.m_RoomGraphView.ScenePreviewLookup.TryGetValue(guid, out texture);
                 if (texture != null)
                 {
-                    //Rect rect = new Rect(0, 0, 100, 100);
-                    //Vector2 pivot = Vector2.zero;
-
-                    //m_PreviewImage = Sprite.Create(texture, rect, pivot);
                     m_RegionBG.style.backgroundImage = new StyleBackground(texture);
                     SceneData data = m_ParentNode.m_RoomGraphView.SceneLookup[guid];
                     m_RegionSize = data.Bounds.GetWidthAndHeight();
@@ -116,17 +108,15 @@ namespace NGAME.Editor
             EditorApplication.delayCall += DelayedSetHeight;
         }
 
-        private void GeometryChangedCallback(GeometryChangedEvent evt)
-        {
-            m_Container.UnregisterCallback<GeometryChangedEvent>(GeometryChangedCallback);
-            // Do what you need to do here, as geometry should be calculated.
-            SetHeight(300.0f);
-        }
-
         private void DelayedSetHeight()
         {
             EditorApplication.delayCall -= DelayedSetHeight;
             SetHeight(300.0f);
+
+            if(OnImageDrawn != null)
+            {
+                OnImageDrawn.Invoke(m_RegionBG);
+            }
         }
 
         public void SetHeight(float height)
@@ -155,14 +145,6 @@ namespace NGAME.Editor
                 m_RegionBG.style.width = paddedContainerSize.x;
                 m_RegionBG.style.height = m_RegionSize.y * (paddedContainerSize.x / m_RegionSize.x);
             }
-        }
-
-        public void SetRegionSize(Vector2 newSize)
-        {
-            m_RegionSize = newSize;
-            m_RegionAspectRatio = newSize.x / newSize.y;
-
-            ResizeToFit();
         }
 
     }
