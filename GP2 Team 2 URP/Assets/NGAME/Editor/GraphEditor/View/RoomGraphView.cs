@@ -230,6 +230,11 @@ namespace NGAME.Editor
             ).ToList();
         }
 
+        internal void RefreshSceneData()
+        {
+            GetRoomDataObjects();
+        }
+
         private void GetRoomDataObjects()
         {
             string[] settingsGuid = AssetDatabase.FindAssets("t:SO_Settings");

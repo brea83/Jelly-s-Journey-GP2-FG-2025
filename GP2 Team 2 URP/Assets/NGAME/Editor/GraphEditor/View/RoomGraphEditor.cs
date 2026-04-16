@@ -4,6 +4,7 @@ using UnityEngine.UIElements;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.Overlays;
+using UnityEditor.UIElements;
 
 namespace NGAME.Editor
 {
@@ -30,6 +31,7 @@ namespace NGAME.Editor
         //toolbar buttons
         private UnityEngine.UIElements.Button _newGraphButton;
         private UnityEngine.UIElements.Button _saveGraphButton;
+        private UnityEditor.UIElements.ToolbarMenu _RefreshMenu;
         //[SerializeField]
         //private VisualTreeAsset _VisualTreeAsset = default;
 
@@ -56,6 +58,8 @@ namespace NGAME.Editor
                 editor._inspectorView.SelectGraphViewFromWindow(editor, editor._graphView);
             }
             editor._inspectorView.ShowTab();
+
+            editor.saveChangesMessage = "This Window has unsaved changes. Would you like to save?";
 
         }
 
@@ -104,6 +108,12 @@ namespace NGAME.Editor
             _newGraphButton.clicked += OnNewGraphClicked;
             _saveGraphButton = root.Q<Button>("SaveGraphButton");
             _saveGraphButton.clicked += OnSaveGraphClicked;
+
+            _RefreshMenu = root.Q<ToolbarMenu>("RefreshMenu");
+            _RefreshMenu.menu.AppendAction("Refresh Scene Data", (a) => { OnRefreshScenes(); });
+            _RefreshMenu.menu.AppendAction("Discard Changes", (a) => { DiscardChanges(); });
+            _RefreshMenu.menu.AppendAction("Load Graph...", (a) => { OnLoadGraph(); });
+
         }
 
         private void OnSelectionChange()
@@ -130,6 +140,8 @@ namespace NGAME.Editor
         private void OnNodeValuesChanged(NodeView nodeView)
         {
             _inspectorView.Repaint(nodeView);
+            EditorUtility.SetDirty(this);
+            hasUnsavedChanges = true;
         }
 
         private void OnNewGraphClicked()
@@ -144,9 +156,59 @@ namespace NGAME.Editor
             }
         }
 
+        public override void SaveChanges()
+        {
+            AssetDatabase.SaveAssetIfDirty(_graph);
+            AssetDatabase.SaveAssetIfDirty(this);
+            base.SaveChanges();
+        }
+
         private void OnSaveGraphClicked()
         {
             AssetDatabase.SaveAssets();
+        }
+
+        private void OnRefreshScenes()
+        {
+            Debug.Log("Refresh scene data clicked");
+            _graphView.RefreshSceneData();
+        }
+
+        public override void DiscardChanges()
+        {
+            Debug.Log("discard changes clicked, will reload graph file");
+            base.DiscardChanges();
+            
+        }
+
+        private void OnLoadGraph()
+        {
+            Debug.Log("Load graph clicked");
+
+            if (hasUnsavedChanges)
+            {
+                if(EditorUtility.DisplayDialog("Unsaved Changes", this.saveChangesMessage, "Save", "Discard"))
+                {
+                    // returns true if ok/save is pressed
+                    SaveChanges();
+                }
+                else
+                {
+                    DiscardChanges();
+                }
+            }
+
+            string path = EditorUtility.OpenFilePanelWithFilters("Open Graph", "Assets", new string[] { "Asset files", "asset" });
+            path = path.Replace(Application.dataPath, "Assets");
+            Debug.Log("Found path: " + path);
+
+            if(path == "")
+            {
+                return;
+            }
+
+            _graph = AssetDatabase.LoadAssetAtPath<RoomGraph>(path);
+            _graphView.PopulateView(_graph);
         }
     }
 }

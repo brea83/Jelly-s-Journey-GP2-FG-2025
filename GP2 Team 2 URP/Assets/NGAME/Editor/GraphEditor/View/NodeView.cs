@@ -234,6 +234,8 @@ namespace NGAME.Editor
 
             m_RegionPreview.UpdateBounds();
             EditorUtility.SetDirty(Node);
+            if(OnNodeValuesChanged != null)
+                OnNodeValuesChanged.Invoke(this);
         }
 
         //private void UpdateWavePorts()
@@ -659,12 +661,11 @@ namespace NGAME.Editor
 
         private void PatchWaveData(ChangeEvent<UnityEngine.Object> evt, int index)
         {
-            //Node.PatchWaveData(evt.newValue as SOWaveData, index);
             OnValuesChanged();
         }
         private void AddWave()
         {
-            SOWaveData wave = null;// ScriptableObject.CreateInstance(typeof(SOWaveData)) as SOWaveData;
+            SOWaveData wave = null;
             Node.AddWave(wave);
             CreateWaveItem(wave, Node.Waves.Count -1);
             OnValuesChanged();

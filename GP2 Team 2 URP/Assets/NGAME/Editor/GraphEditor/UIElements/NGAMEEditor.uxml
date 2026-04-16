@@ -3,7 +3,7 @@
     <editor:Toolbar>
         <editor:ToolbarButton text="New" name="NewGraphButton"/>
         <editor:ToolbarButton text="Save" name="SaveGraphButton"/>
-        <editor:ToolbarMenu text="Add Room"/>
+        <editor:ToolbarMenu text="Refresh" name="RefreshMenu"/>
     </editor:Toolbar>
     <NGAME.Editor.RoomGraphView style="flex-grow: 1;"/>
 </engine:UXML>

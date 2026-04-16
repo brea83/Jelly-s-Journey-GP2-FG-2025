@@ -44,7 +44,7 @@ MonoBehaviour:
   Waves:
   - {fileID: 11400000, guid: 3e39ffcdb3a8614409ba2a251a694d8f, type: 2}
   m_Guid: 272932770eef6de45a37535ebaa79d4f
-  m_Position: {x: 821, y: -66}
+  m_Position: {x: 1263.988, y: -68.999985}
   _isStartNode: 0
   NumberOfWaves: 0
 --- !u!114 &-5005448368373161328
@@ -60,47 +60,37 @@ MonoBehaviour:
   m_Name: RoomNode
   m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
   SceneData:
-    SceneName: SampleScene 1
-    SceneGuid: 7a3963fe7029e1540abdb3d88a000b52
+    SceneName: SampleScene 2
+    SceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
     Entrances:
     - TypeName: RoomSystem.Door
-      Name: Door South
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -8.25, y: 0, z: -20.5}
-    - TypeName: RoomSystem.Door
       Name: Door West
       ConnectionType: 2
       IsLockable: 1
-      Position: {x: -25.239712, y: 0, z: -1.75}
+      Position: {x: -9.32, y: 0.5000038, z: -49.78}
     - TypeName: RoomSystem.Door
       Name: Door East
       ConnectionType: 2
       IsLockable: 1
-      Position: {x: 16.203, y: 0, z: 7.54}
+      Position: {x: 29.93, y: 0.5000038, z: -16.44}
     Exits:
     - TypeName: RoomSystem.Door
-      Name: Door South
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -8.25, y: 0, z: -20.5}
-    - TypeName: RoomSystem.Door
       Name: Door West
       ConnectionType: 2
       IsLockable: 1
-      Position: {x: -25.239712, y: 0, z: -1.75}
+      Position: {x: -9.32, y: 0.5000038, z: -49.78}
     - TypeName: RoomSystem.Door
       Name: Door East
       ConnectionType: 2
       IsLockable: 1
-      Position: {x: 16.203, y: 0, z: 7.54}
-    MinPoint: {x: -25.239712, y: -20.5}
-    MaxPoint: {x: 16.203, y: 7.54}
-    WidthByHeight: {x: 41.44271, y: 28.04}
+      Position: {x: 29.93, y: 0.5000038, z: -16.44}
+    MinPoint: {x: -9.32, y: -49.78}
+    MaxPoint: {x: 29.93, y: 0}
+    WidthByHeight: {x: 39.25, y: 49.78}
   OutgoingEdges:
   - SourceNodeGuid: 1054876d2df8d40468fb28efd97ed6fb
-    SourceSceneGuid: 7a3963fe7029e1540abdb3d88a000b52
-    SourceSceneName: SampleScene 1
+    SourceSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
+    SourceSceneName: SampleScene 2
     SourcePortName: Door West
     DestinationNodeGuid: 698460677e992524081c2b471b135283
     DestinationSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
@@ -113,8 +103,8 @@ MonoBehaviour:
     SourceSceneName: SampleScene
     SourcePortName: Door North
     DestinationNodeGuid: 1054876d2df8d40468fb28efd97ed6fb
-    DestinationSceneGuid: 7a3963fe7029e1540abdb3d88a000b52
-    DestinationSceneName: SampleScene 1
+    DestinationSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
+    DestinationSceneName: SampleScene 2
     DestinationPortName: Door East
     m_bIsValid: 1
   Waves:
@@ -172,7 +162,7 @@ MonoBehaviour:
   Waves:
   - {fileID: 11400000, guid: 0a28601bacdd7dc41a36736438b7df58, type: 2}
   m_Guid: 12a949ba26042a74abf34edb089dd911
-  m_Position: {x: -196, y: -69.000015}
+  m_Position: {x: -410.5825, y: -20.435387}
   _isStartNode: 1
   NumberOfWaves: 0
 --- !u!114 &-522332987697937984
@@ -239,7 +229,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3e39ffcdb3a8614409ba2a251a694d8f, type: 2}
   - {fileID: 11400000, guid: db11945bdb46fb6488d5063ffffe68ea, type: 2}
   m_Guid: 698460677e992524081c2b471b135283
-  m_Position: {x: 486.6667, y: -20.881664}
+  m_Position: {x: 700.1588, y: -68.999985}
   _isStartNode: 0
   NumberOfWaves: 0
 --- !u!114 &11400000
