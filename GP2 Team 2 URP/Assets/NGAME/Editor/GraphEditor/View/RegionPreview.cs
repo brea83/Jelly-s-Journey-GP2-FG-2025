@@ -47,7 +47,6 @@ namespace NGAME.Editor
             m_Container.AddToClassList("PreviewBackground");
             m_Container.style.alignItems = Align.Center;
             m_Container.style.justifyContent = Justify.Center;
-
             
             SetPreviewBG();
             EditorApplication.delayCall += DelayedSetHeight;
@@ -61,6 +60,7 @@ namespace NGAME.Editor
             m_RegionBG = new VisualElement();
             m_RegionBG.style.flexShrink = 0;
             m_RegionBG.style.flexGrow = 0;
+            m_RegionBG.style.opacity = 1.0f;
 
             if (m_ParentNode == null || m_ParentNode.Node == null)
             {
@@ -79,6 +79,7 @@ namespace NGAME.Editor
                 if (texture != null)
                 {
                     m_RegionBG.style.backgroundImage = new StyleBackground(texture);
+                    
                     SceneData data = m_ParentNode.m_RoomGraphView.SceneLookup[guid];
                     m_RegionSize = data.Bounds.GetWidthAndHeight();
                     m_RegionAspectRatio = data.Bounds.AspectRatio;

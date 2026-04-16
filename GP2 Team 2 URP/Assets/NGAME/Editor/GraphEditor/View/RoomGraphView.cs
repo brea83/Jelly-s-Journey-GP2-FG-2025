@@ -98,7 +98,13 @@ namespace NGAME.Editor
                 }
             }
 
-            foreach(RoomNode node in _graph.nodes)
+            EditorApplication.delayCall += OnDelayValidateGraph;
+        }
+
+        private void OnDelayValidateGraph()
+        {
+            EditorApplication.delayCall -= OnDelayValidateGraph;
+            foreach (RoomNode node in _graph.nodes)
             {
                 NodeView currentView = FindNodeView(node);
 

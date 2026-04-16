@@ -19,19 +19,16 @@ namespace NGAME.Editor
         {
             Container = new VisualElement();
             Container.style.position = Position.Absolute;
-            Vector2 offset = new Vector2(data.Name.Length * -3.0f, 15.0f);
-            Container.style.left = position.x;
-            Container.style.top = position.y;
+            Vector2 offset = new Vector2(data.Name.Length * -3.0f, 10.0f);
             Container.style.backgroundColor = new Color(0.0f, 0.0f, 0.0f, 0.5f);
 
             Title = new Label();
             Title.text = data.Name;
 
             VisualElement row = new();
-            row.style.flexDirection = FlexDirection.Row;
 
 
-            float verticalThreshold = containerSize.y * 0.25f;
+            float verticalThreshold = containerSize.y * 0.3f;
             float horizontalThreshold = containerSize.x * 0.5f;
 
             bool bTop = position.y <= verticalThreshold;
@@ -41,13 +38,24 @@ namespace NGAME.Editor
             
             bool bInVerticalZone = bTop || bBottom;
 
+
             Type type = typeof(RegionConnectionData);
             Orientation orientation = bInVerticalZone ? Orientation.Vertical : Orientation.Horizontal;
-            Container.style.flexDirection = bInVerticalZone ? FlexDirection.Column : FlexDirection.Row;
+            row.style.flexDirection = bInVerticalZone ? FlexDirection.Row : FlexDirection.Column;
+            //Container.style.flexDirection = bInVerticalZone ? FlexDirection.Column : FlexDirection.Row;
             if (bTop)
-                offset.y *= -1.0f;
-            if (bLeft)
-                offset.x *= -1.0f;
+                offset.y *= -4.0f;
+            else if (!bBottom)
+            {
+                offset.y *= -2.0f;
+                if (bLeft)
+                    offset.x += offset.x - 5.0f;
+                else
+                    offset.x -= offset.x - 5.0f;
+            }
+
+            Container.style.left = position.x + offset.x;
+            Container.style.top = position.y + offset.y;
 
 
             CreatePorts(data.ConnectionType, orientation, type);
@@ -57,26 +65,30 @@ namespace NGAME.Editor
             {
                 row.Add(Entrance);
                 node.InputPorts.Add(Entrance);
+                Entrance.OrientCap(bInVerticalZone, bLeft);
             }
 
             if (Exit != null)
             {
                 row.Add(Exit);
                 node.InputPorts.Add(Exit);
+
+                Exit.OrientCap(bInVerticalZone, bLeft);
             }
 
 
-            if (bTop || bLeft) 
+            if (bTop) 
             { 
                 Container.Add(row);
                 Container.Add(Title);
                 
             }
-            else if(bBottom || bRight)
+            else
             {
                 Container.Add(Title);
                 Container.Add(row);
             }
+           
 
         }
 
@@ -86,8 +98,10 @@ namespace NGAME.Editor
             {
                 case RegionConnectionType.EntranceOnly:
                     Entrance = ConnectionPort.Create<Edge>(orientation, Direction.Input, Port.Capacity.Multi, type);
+                    Exit = null;
                     break;
                 case RegionConnectionType.ExitOnly:
+                    Entrance = null;
                     Exit = ConnectionPort.Create<Edge>(orientation, Direction.Output, Port.Capacity.Single, type);
                     break;
                 case RegionConnectionType.ExitAndEntrance:

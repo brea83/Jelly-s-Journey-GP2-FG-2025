@@ -1,5 +1,62 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-1901756194611695046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
+  m_Name: RoomNode
+  m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
+  SceneData:
+    SceneName: SampleScene 1
+    SceneGuid: 7a3963fe7029e1540abdb3d88a000b52
+    Entrances:
+    - TypeName: RoomSystem.Door
+      Name: Door South
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -8.25, y: 0, z: -20.5}
+    - TypeName: RoomSystem.Door
+      Name: Door West
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -25.239712, y: 0, z: -1.75}
+    - TypeName: RoomSystem.Door
+      Name: Door East
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: 16.203, y: 0, z: 7.54}
+    Exits:
+    - TypeName: RoomSystem.Door
+      Name: Door South
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -8.25, y: 0, z: -20.5}
+    - TypeName: RoomSystem.Door
+      Name: Door West
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -25.239712, y: 0, z: -1.75}
+    - TypeName: RoomSystem.Door
+      Name: Door East
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: 16.203, y: 0, z: 7.54}
+    MinPoint: {x: -25.239712, y: -20.5}
+    MaxPoint: {x: 16.203, y: 7.54}
+    WidthByHeight: {x: 41.44271, y: 28.04}
+  OutgoingEdges: []
+  IncomingEdges: []
+  Waves: []
+  m_Guid: a5c7e428af0409641b72acf8cf9c38ea
+  m_Position: {x: 229.50003, y: 493.00006}
+  _isStartNode: 0
+  NumberOfWaves: 0
 --- !u!114 &-1604239483407982519
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -43,7 +100,7 @@ MonoBehaviour:
     m_bIsValid: 1
   Waves: []
   m_Guid: 45bd88e56f4e8104da07d9a946e51424
-  m_Position: {x: 421, y: 24}
+  m_Position: {x: 475, y: 25.880005}
   _isStartNode: 0
   NumberOfWaves: 0
 --- !u!114 &-58743701835840933
@@ -113,3 +170,4 @@ MonoBehaviour:
   nodes:
   - {fileID: -58743701835840933}
   - {fileID: -1604239483407982519}
+  - {fileID: -1901756194611695046}

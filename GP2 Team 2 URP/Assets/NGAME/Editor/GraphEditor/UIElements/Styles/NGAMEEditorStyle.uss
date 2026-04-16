@@ -54,4 +54,5 @@ GridBackground {
 .PreviewBackground
 {
     background-color: rgb(20, 20, 20);
+    opacity: 0.75;
 }

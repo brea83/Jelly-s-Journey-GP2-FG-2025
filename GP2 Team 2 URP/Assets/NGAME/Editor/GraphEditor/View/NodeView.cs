@@ -58,8 +58,8 @@ namespace NGAME.Editor
             inputContainer.parent.Add(m_RegionPreview.Container);
             outputContainer.BringToFront();
             //m_RegionPreview.OnImageDrawn += OnPreviewDrawn;
-            //m_RegionPreview.OnImageDrawn += OnPreviewDrawn_LabelsOnly;
-            m_RegionPreview.OnImageDrawn += OnPreviewDrawn_CreatePorts;
+            m_RegionPreview.OnImageDrawn += OnPreviewDrawn_LabelsOnly;
+            //m_RegionPreview.OnImageDrawn += OnPreviewDrawn_CreatePorts;
 
             if (_roomDataObjects != null )
             {
@@ -117,8 +117,8 @@ namespace NGAME.Editor
             RefreshExpandedState();
             
 
-            //CreateInputPorts();
-            //CreateOutputPorts();
+            CreateInputPorts();
+            CreateOutputPorts();
 
             UpdateCurrentSceneSpawnData();
             PopulateEncounterContainer();
@@ -456,8 +456,18 @@ namespace NGAME.Editor
                 Vector2 relativePosition = ScenePreviewRenderer.RemapVector2(position, swizzledWorldMin, swizzledWorldMax, Vector2.zero, imageSize);
 
                 ConnectionView connectionView = new(connection, relativePosition, imageSize, this);
-                Connections.Add(connectionView);
                 imageContainer.Add(connectionView.Container);
+                Connections.Add(connectionView);
+
+                if (connectionView.Entrance != null)
+                {
+                    InputPorts.Add(connectionView.Entrance);
+                }
+
+                if(connectionView.Exit != null)
+                {
+                    OutputPorts.Add(connectionView.Exit);
+                }
             }
         }
         private void OnPreviewDrawn_LabelsOnly(VisualElement imageContainer)
@@ -905,7 +915,11 @@ namespace NGAME.Editor
             for (int i = 0; i < Node.OutgoingEdges.Count; i++)
             {
                 EdgeData serializedEdge = Node.OutgoingEdges[i];
-                Port sourcePort = GetPortByName(serializedEdge.SourcePortName, OutputPorts);
+                Port sourcePort = GetPortByName(serializedEdge.SourcePortName, OutputPorts);  
+                // NOTE REMEMBER TO UNCOMMENT THE ABOVE AND COMMENT OUT THE CONNECTIONVIEW STUFF IF SWAPPING TO OTHER DISPLAY STYLE
+
+                //ConnectionView connection = Connections.FirstOrDefault((ConnectionView c) => c.Title.text == serializedEdge.SourcePortName);
+                //Port sourcePort = connection.Exit;
 
                 NodeView destinationView = m_RoomGraphView.GetNodeByGuid(serializedEdge.DestinationNodeGuid) as NodeView;
                 if (destinationView == null)
@@ -920,6 +934,9 @@ namespace NGAME.Editor
                 }
 
                 Port destinationPort = destinationView.GetPortByName(serializedEdge.DestinationPortName, destinationView.InputPorts);
+                //ConnectionView destinationPortContainer = destinationView.Connections.FirstOrDefault((ConnectionView c) => c.Title.text == serializedEdge.DestinationPortName);
+                //Port destinationPort = destinationPortContainer.Entrance;
+
                 if (sourcePort != null)
                 {
                     if (destinationPort != null)

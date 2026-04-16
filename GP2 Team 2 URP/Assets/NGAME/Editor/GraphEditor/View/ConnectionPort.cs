@@ -124,5 +124,37 @@ namespace NGAME.Editor
         {
             base.DisconnectAll();
         }
+
+        public void OrientCap(bool bInRow, bool bOnLeftOfNode)
+        {
+            if (bInRow)
+            {
+                SetLabelFront();
+            }
+            else if (bOnLeftOfNode)
+            {
+                if (direction == Direction.Input)
+                    SetLabelFront();
+                else
+                    SetCapFront();
+            }
+            else
+            {
+                if (direction == Direction.Input)
+                    SetCapFront();
+                else
+                    SetLabelFront();
+            }
+        }
+
+        public void SetCapFront()
+        {
+            m_ConnectorBox.BringToFront();
+        }
+
+        public void SetLabelFront()
+        {
+            m_ConnectorText.BringToFront();
+        }
     }
 }
