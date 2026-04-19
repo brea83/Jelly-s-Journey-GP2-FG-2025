@@ -16,6 +16,8 @@ namespace NGAME.Editor
     {
         public Action<NodeView> OnNodeSelected;
         public Action<NodeView> OnNodeValuesChanged;
+        public Action OnGraphChanged;
+
         public List<SceneInclusionData> IncludedScenes = new List<SceneInclusionData>();
         public List<SceneConnectionsData> ValidScenes = new List<SceneConnectionsData>();
         public List<SceneSpawnData> SpawnersByScene = new List<SceneSpawnData>();
@@ -119,6 +121,7 @@ namespace NGAME.Editor
 
         private GraphViewChange OnGraphViewChanged(GraphViewChange viewChange) 
         {
+            bool bSendChanges = false;
             if (viewChange.elementsToRemove != null)
             {
                 foreach (GraphElement element in viewChange.elementsToRemove)
@@ -130,7 +133,7 @@ namespace NGAME.Editor
 
                         AssetDatabase.RemoveObjectFromAsset(nodeView.Node);
                         EditorUtility.SetDirty(_graph);
-                        AssetDatabase.SaveAssetIfDirty(_graph);
+                        bSendChanges = true;
                     }
 
                     Edge edge = element as Edge;
@@ -139,7 +142,7 @@ namespace NGAME.Editor
                         NodeView sourceNode = edge.output.node as NodeView;
                         NodeView destinationNode = edge.input.node as NodeView;
                         NodeView.RemoveEdge(edge);
-                        //_graph.RemoveEdge(sourceNode.Node, destinationNode.Node, edge);
+                        bSendChanges = true;
                     }
                 }
             }
@@ -151,7 +154,6 @@ namespace NGAME.Editor
                 {
                     if(!edge.output.enabledSelf || !edge.input.enabledSelf)
                     {
-                        //this.RemoveElement(edge);
                         invalidEdges.Add(edge);
                     }
                     else
@@ -159,8 +161,8 @@ namespace NGAME.Editor
                         NodeView sourceNode = edge.output.node as NodeView;
                         NodeView destinationNode = edge.input.node as NodeView;
                         NodeView.AddEdge(edge);
-                        //_graph.AddEdge(sourceNode.Node, destinationNode.Node, edge);
-                        Debug.Log("GRAPHVIEW: Edge created between " + edge.input.portName + ", and " + edge.output.portName);
+                        bSendChanges = true;
+                        //Debug.Log("GRAPHVIEW: Edge created between " + edge.input.portName + ", and " + edge.output.portName);
                     }
                 }
 
@@ -170,18 +172,22 @@ namespace NGAME.Editor
                 }
             }
 
-            if(viewChange.movedElements != null)
-            {
-                foreach (GraphElement element in viewChange.movedElements)
-                {
-                    Edge edge = element as Edge;
-                    if( edge != null )
-                    {
-                        Debug.Log("Edge between " + edge.input.portName + ", and " + edge.output.portName + ". MOVED");
+            //if(viewChange.movedElements != null)
+            //{
+            //    foreach (GraphElement element in viewChange.movedElements)
+            //    {
+            //        Edge edge = element as Edge;
+            //        if( edge != null )
+            //        {
+            //            Debug.Log("Edge between " + edge.input.portName + ", and " + edge.output.portName + ". MOVED");
 
-                    }
-                }
-            }
+            //        }
+            //    }
+            //}
+
+            if (bSendChanges && OnGraphChanged != null)
+                OnGraphChanged.Invoke();
+
             return viewChange;
         }
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
@@ -212,6 +218,9 @@ namespace NGAME.Editor
             AssetDatabase.SaveAssetIfDirty(_graph);
             AssetDatabase.SaveAssetIfDirty(node);
             CreateNodeView(node);
+
+            if (OnGraphChanged != null)
+                OnGraphChanged.Invoke();
         }
         void CreateNodeView(RoomNode roomNode)
         {
@@ -270,17 +279,6 @@ namespace NGAME.Editor
                 }
                 string sceneGuid = settings.Guids[i];
 
-                //(SceneConnectionsData connections, SceneSpawnData spawners) componentData = GetScenesRegionConnectionData(aScene, sceneGuid);
-                //if (componentData.Item1 != null)
-                //{
-                //    ValidScenes.Add(componentData.Item1);
-                //}
-
-                //if (componentData.Item2 != null) 
-                //{
-                //    SpawnersByScene.Add(componentData.Item2);
-                //}
-
                 SceneData sceneData = CreateSceneData(aScene, sceneGuid, data.FilePath);
                 SceneLookup.Add(sceneGuid, sceneData);
                 SceneConnectionsData connections = new(sceneData);
@@ -304,88 +302,7 @@ namespace NGAME.Editor
 
         }
 
-        private (SceneConnectionsData connections, SceneSpawnData spawners) GetScenesRegionConnectionData(Scene aScene, string sceneGuid)
-        {
-            //short hands for comparisons later
-            RegionConnectionType twoWay = RegionConnectionType.ExitAndEntrance;
-            RegionConnectionType entranceOnly = RegionConnectionType.EntranceOnly;
-            RegionConnectionType exitOnly = RegionConnectionType.ExitOnly;
-
-            List<RegionConnectionData> entrances = new List<RegionConnectionData>();
-            List<RegionConnectionData> exits = new List<RegionConnectionData>();
-
-            List<SpawnerData> spawners = new();
-
-
-            bool bConnectionsFound = false;
-            bool bSpawnersFound = false;
-
-            GameObject[] rootObjects = aScene.GetRootGameObjects();
-
-
-            foreach (GameObject obj in rootObjects)
-            {
-                // connection data
-                IEncounterRegionConnector[] connectorComponent = obj.GetComponentsInChildren<IEncounterRegionConnector>();
-                if (connectorComponent.Length > 0) bConnectionsFound = true;
-
-                foreach (IEncounterRegionConnector connection in connectorComponent)
-                {
-                    //connections.Add(component.GetRegionConnectionData());
-                    RegionConnectionData data = connection.GetRegionConnectionData();
-                    if (data.ConnectionType == twoWay || data.ConnectionType == entranceOnly)
-                    {
-                        entrances.Add(data);
-                    }
-                    if(data.ConnectionType == twoWay || data.ConnectionType == exitOnly)
-                    {
-                        exits.Add(data);
-                    }
-                }
-
-                // spawner data
-
-                ISpawnPoint[] spawnerComponents = obj.GetComponentsInChildren<ISpawnPoint>();
-                if(spawnerComponents.Length > 0) bSpawnersFound = true;
-
-                foreach (ISpawnPoint spawner in spawnerComponents)
-                {
-                    spawners.Add(spawner.GetSpawnerData());
-                }
-
-            }
-
-            if (!bConnectionsFound && !bSpawnersFound)
-            {
-                Debug.Log("No IEncounterRegionConnector or ISpawnPoint components found in scene: " + aScene.name);
-            }
-            else
-            {
-                Debug.Log("Scene: " + aScene.name + " contains target data types");
-            }
-
-            SceneConnectionsData connectionData = null;
-            if (bConnectionsFound) 
-            {
-                connectionData = new SceneConnectionsData();
-                connectionData.SceneName = aScene.name;
-                connectionData.SceneGuid = sceneGuid;
-                connectionData.Entrances = entrances;
-                connectionData.Exits = exits;
-            }
-            
-
-            SceneSpawnData spawnData = null;
-            if (bSpawnersFound) 
-            {
-                spawnData = new SceneSpawnData();
-                spawnData.SpawnPoints = spawners;
-                spawnData.SceneGUID = sceneGuid;
-            }
-            
-            return (connectionData, spawnData);
-        }
-
+        
         private SceneData CreateSceneData(Scene aScene, string sceneGuid, string filePath)
         {
             SceneData result = new();

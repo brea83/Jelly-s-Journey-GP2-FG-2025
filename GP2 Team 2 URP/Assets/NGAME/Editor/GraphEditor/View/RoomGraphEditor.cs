@@ -137,30 +137,47 @@ namespace NGAME.Editor
             _inspectorView.UpdateSelection(nodeView);
         }
 
+        private void OnGraphChanged()
+        {
+            EditorUtility.SetDirty(_graph);
+            hasUnsavedChanges = true;
+        }
         private void OnNodeValuesChanged(NodeView nodeView)
         {
             _inspectorView.Repaint(nodeView);
-            EditorUtility.SetDirty(this);
+            EditorUtility.SetDirty(_graph);
             hasUnsavedChanges = true;
         }
 
         private void OnNewGraphClicked()
         {
-            _graph = CreateInstance< RoomGraph>();
-            _graphView.PopulateView(_graph);
+            if (hasUnsavedChanges)
+            {
+                ShowSaveDialogue();
+            }
+
             string path = EditorUtility.SaveFilePanelInProject("New Graph Asset", "NewGraph", "asset",
             "Please enter a file name");
             if (path.Length != 0)
             {
+                _graph = CreateInstance< RoomGraph>();
+                _graphView.PopulateView(_graph);
                 AssetDatabase.CreateAsset(_graph, path);
             }
         }
 
         public override void SaveChanges()
         {
-            AssetDatabase.SaveAssetIfDirty(_graph);
-            AssetDatabase.SaveAssetIfDirty(this);
+            if(_graph != null)
+                AssetDatabase.SaveAssetIfDirty(_graph);
+            
             base.SaveChanges();
+        }
+
+        public override void DiscardChanges()
+        {
+            Debug.Log("discard changes clicked, will reload graph file");
+            base.DiscardChanges();
         }
 
         private void OnSaveGraphClicked()
@@ -174,11 +191,17 @@ namespace NGAME.Editor
             _graphView.RefreshSceneData();
         }
 
-        public override void DiscardChanges()
+        private void ShowSaveDialogue()
         {
-            Debug.Log("discard changes clicked, will reload graph file");
-            base.DiscardChanges();
-            
+                // EditorUtility.DisplayDialog returns true if ok/save is pressed
+            if (EditorUtility.DisplayDialog("Unsaved Changes", this.saveChangesMessage, "Save", "Discard"))
+            {
+                SaveChanges();
+            }
+            else
+            {
+                DiscardChanges();
+            }
         }
 
         private void OnLoadGraph()
@@ -187,15 +210,7 @@ namespace NGAME.Editor
 
             if (hasUnsavedChanges)
             {
-                if(EditorUtility.DisplayDialog("Unsaved Changes", this.saveChangesMessage, "Save", "Discard"))
-                {
-                    // returns true if ok/save is pressed
-                    SaveChanges();
-                }
-                else
-                {
-                    DiscardChanges();
-                }
+                ShowSaveDialogue();
             }
 
             string path = EditorUtility.OpenFilePanelWithFilters("Open Graph", "Assets", new string[] { "Asset files", "asset" });
