@@ -27,7 +27,10 @@ namespace NGAME.Editor
         {
             
             Camera camera = aScene.GetRootGameObjects()[0].GetComponentInChildren<Camera>();
-
+            if(camera == null)
+            {
+                return null;
+            }
             camera.cameraType = CameraType.Preview;
             camera.orthographic = true;
 
@@ -50,6 +53,15 @@ namespace NGAME.Editor
         {
             float aspectRatio = bounds.AspectRatio;
             RenderTexture renderTexture = new RenderTexture(Mathf.RoundToInt(aspectRatio * renderTextureHeight), renderTextureHeight, 16);
+
+            if(camera == null)
+            {
+                
+                Texture2D nullResult = Texture2D.blackTexture;
+                nullResult.Reinitialize(renderTexture.width, renderTexture.height);
+                return nullResult;
+            }
+
             camera.targetTexture = renderTexture;
             camera.Render();
 

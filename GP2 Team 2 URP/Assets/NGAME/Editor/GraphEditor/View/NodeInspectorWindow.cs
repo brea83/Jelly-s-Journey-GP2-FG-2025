@@ -24,12 +24,14 @@ namespace NGAME.Editor
         }
         public void UpdateSelection(NodeView nodeView)
         {
-            m_NodeInspector.UpdateSelection(nodeView);
+            if (m_NodeInspector != null)
+                m_NodeInspector.UpdateSelection(nodeView);
         }
 
         public void Repaint(NodeView nodeView)
         {
-           m_NodeInspector.Repaint(nodeView);
+           if(m_NodeInspector != null)
+                m_NodeInspector.Repaint(nodeView);
         }
 
         protected override void OnGraphViewChanged()

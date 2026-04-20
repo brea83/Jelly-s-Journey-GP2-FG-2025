@@ -1,52 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-3458263532738608261
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
-  m_Name: 'NewGraph: Room 3'
-  m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
-  SceneData:
-    SceneName: SampleScene 2
-    SceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
-    Entrances:
-    - TypeName: RoomSystem.Door
-      Name: Door West
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -9.32, y: 0.5000038, z: -49.78}
-    - TypeName: RoomSystem.Door
-      Name: Door East
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: 29.93, y: 0.5000038, z: -16.44}
-    Exits:
-    - TypeName: RoomSystem.Door
-      Name: Door West
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -9.32, y: 0.5000038, z: -49.78}
-    - TypeName: RoomSystem.Door
-      Name: Door East
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: 29.93, y: 0.5000038, z: -16.44}
-    MinPoint: {x: -9.32, y: -49.78}
-    MaxPoint: {x: 29.93, y: 0}
-    WidthByHeight: {x: 39.25, y: 49.78}
-  OutgoingEdges: []
-  IncomingEdges: []
-  Waves: []
-  m_Guid: 96d925ef61d50c8459bad4cdbf643054
-  m_Position: {x: 749.8686, y: 355.4138}
-  _isStartNode: 0
-  NumberOfWaves: 0
 --- !u!114 &-2698876279662383425
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -97,7 +50,6 @@ MonoBehaviour:
   m_Guid: cd25f63b0da2fa145a28a5e2c7988529
   m_Position: {x: 184.66667, y: -30.000006}
   _isStartNode: 1
-  NumberOfWaves: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -114,7 +66,6 @@ MonoBehaviour:
   nodes:
   - {fileID: -2698876279662383425}
   - {fileID: 8317342436460908751}
-  - {fileID: -3458263532738608261}
 --- !u!114 &8317342436460908751
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,6 +129,5 @@ MonoBehaviour:
     m_bIsValid: 1
   Waves: []
   m_Guid: 79308391f986876448b24dc53daf07c8
-  m_Position: {x: 1237.9452, y: -70.119865}
+  m_Position: {x: 855.3188, y: -41.53334}
   _isStartNode: 0
-  NumberOfWaves: 0

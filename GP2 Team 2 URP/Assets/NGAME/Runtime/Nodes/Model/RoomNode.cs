@@ -29,8 +29,7 @@ namespace NGAME
         [SerializeField]
         private bool _isStartNode = false;
 
-        [SerializeField]
-        public int NumberOfWaves = 0;
+
         //private int _exitCount;
         //private int _entranceCount;
 

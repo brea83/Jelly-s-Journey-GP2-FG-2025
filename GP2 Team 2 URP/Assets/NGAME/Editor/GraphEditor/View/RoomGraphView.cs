@@ -159,6 +159,10 @@ namespace NGAME.Editor
                 if(node is RoomNode)
                 {
                     //RoomNode roomNode = node as RoomNode;
+                    //string guid = node.SceneData != null ? node.SceneData.SceneGuid : "";
+                    //SceneConnectionsData data = ValidScenes.FirstOrDefault((SceneConnectionsData data) => data.SceneGuid == guid);
+                    //if (data != null)
+                    //    node.SceneData = data.DeepCopy();
                     CreateNodeView(node);
                 }
             }
@@ -367,6 +371,7 @@ namespace NGAME.Editor
         internal void RefreshSceneData()
         {
             GetRoomDataObjects();
+            PopulateView(_graph);
         }
 
         private void GetRoomDataObjects()
@@ -384,6 +389,11 @@ namespace NGAME.Editor
             {
                 return;
             }
+
+            SceneLookup.Clear();
+            ValidScenes.Clear();
+            SpawnersByScene.Clear();
+            ScenePreviewLookup.Clear();
 
             for (int i = 0; i < settings.Scenes.Count; i++)
             {

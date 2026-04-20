@@ -410,6 +410,7 @@ namespace NGAME.Editor
         private void CreateOutputPorts()
         {
             if (Node.SceneData == null || Node.SceneData.SceneGuid == null) return;
+            
             foreach(var exit in Node.SceneData.Exits)
             {
                 Port output = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Single, typeof(bool));
@@ -425,6 +426,7 @@ namespace NGAME.Editor
         private void CreateInputPorts()
         {
             if (Node.SceneData == null || Node.SceneData.SceneGuid == null) return;
+           
             foreach (var entrance in Node.SceneData.Entrances)
             {
                 Port newPort = CreatePort(InputPorts, /*contentContainer*/ inputContainer, entrance.Name, typeof(bool));
@@ -924,11 +926,16 @@ namespace NGAME.Editor
         internal void ValidateOutputEdges(List<NGAME.SceneConnectionsData> mostRecentlyFetchedSceneData, bool bDeleteInvalidEdges = true)
         {
             List<int> indexOfInvalidEdges = new();
+            SceneConnectionsData data = mostRecentlyFetchedSceneData.FirstOrDefault((SceneConnectionsData data) => data.SceneGuid == Node.SceneData.SceneGuid);
+            List<RegionConnectionData> exits = data.Exits;
+            
 
             for (int i = 0; i < Node.OutgoingEdges.Count; i++)
             {
                 EdgeData serializedEdge = Node.OutgoingEdges[i];
-                Port sourcePort = GetPortByName(serializedEdge.SourcePortName, OutputPorts);  
+                Port sourcePort = GetPortByName(serializedEdge.SourcePortName, OutputPorts);
+
+                
                 // NOTE REMEMBER TO UNCOMMENT THE ABOVE AND COMMENT OUT THE CONNECTIONVIEW STUFF IF SWAPPING TO OTHER DISPLAY STYLE
 
                 //ConnectionView connection = Connections.FirstOrDefault((ConnectionView c) => c.Title.text == serializedEdge.SourcePortName);
@@ -954,10 +961,40 @@ namespace NGAME.Editor
                 {
                     if (destinationPort != null)
                     {
+                        SceneConnectionsData destinationData = mostRecentlyFetchedSceneData.FirstOrDefault((SceneConnectionsData data) => data.SceneGuid == destinationView.Node.SceneData.SceneGuid);
+                        List<RegionConnectionData> entrances = destinationData.Entrances;
                         Edge newEdge = sourcePort.ConnectTo(destinationPort);
                         m_RoomGraphView.AddElement(newEdge);
-                        SetUsedPortsOtherDirectionEnabled(sourcePort, false);
-                        SetUsedPortsOtherDirectionEnabled(destinationPort, false);
+
+                        RegionConnectionData sourceExit = exits.FirstOrDefault((RegionConnectionData connection) => connection.Name == sourcePort.portName);
+                        RegionConnectionData destinationEntrance = entrances.FirstOrDefault((RegionConnectionData connection) => connection.Name == destinationPort.portName);
+                        bool error = sourceExit == null || destinationEntrance == null;
+
+
+                        if (error)
+                        {
+                            if (sourceExit == null)
+                            {
+                                StringBuilder errorText = new();
+                                errorText.Append(sourcePort.portName);
+                                errorText.Append(", no longer valid Exit in scene: " + data.SceneName);
+                                errorText.Append(". Check if its entrance/exit type has been changed, or if the object has been removed.");
+                                MarkPortConnectionError(sourcePort, newEdge, errorText.ToString());
+                            }
+
+                            if( destinationEntrance == null)
+                            {
+                                StringBuilder errorText = new();
+                                errorText.Append(destinationPort.portName);
+                                errorText.Append(", no longer valid Entrance in scene: " + destinationData.SceneName);
+                                errorText.Append(". Check if its entrance/exit type has been changed, or if the object has been removed.");
+                                MarkPortConnectionError(destinationPort, null, errorText.ToString());
+                            }
+
+                        }
+
+                            SetUsedPortsOtherDirectionEnabled(sourcePort, false);
+                            SetUsedPortsOtherDirectionEnabled(destinationPort, false);
                     }
                     else
                     {
@@ -970,7 +1007,7 @@ namespace NGAME.Editor
                         MarkPortConnectionError(sourcePort, newEdge, errorTooltip);
                         MarkPortConnectionError(newDestination, null, destinationTooltip);
                         SetUsedPortsOtherDirectionEnabled(sourcePort, false);
-                        SetUsedPortsOtherDirectionEnabled(destinationPort, false);
+                        SetUsedPortsOtherDirectionEnabled(newDestination, false);
                         //Debug.LogWarning("Node " + node.Room.SceneName + ", has a connection to a missing port named " + edge.DestinationPortName + ", this is probably because the node this port was connected to had its scene changed.");
                     }
                 }
