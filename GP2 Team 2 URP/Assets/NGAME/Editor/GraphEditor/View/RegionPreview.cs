@@ -66,13 +66,13 @@ namespace NGAME.Editor
             {
                 m_RegionBG.style.backgroundColor = Color.magenta;
             }
-            else if (m_ParentNode.CurrentSceneConnections == null)
+            else if (m_ParentNode.CurrentSceneGuid == null )
             {
                 m_RegionBG.style.backgroundColor = Color.blue;
             }
             else
             {
-                string guid = m_ParentNode.CurrentSceneConnections.SceneGuid;
+                string guid = m_ParentNode.CurrentSceneGuid;
 
                 Texture2D texture = null;
                 m_ParentNode.m_RoomGraphView.ScenePreviewLookup.TryGetValue(guid, out texture);
@@ -84,21 +84,23 @@ namespace NGAME.Editor
                     m_RegionSize = data.Bounds.GetWidthAndHeight();
                     m_RegionAspectRatio = data.Bounds.AspectRatio;
                 }
+
             }
             m_Container.Add(m_RegionBG);
         }
 
         public void UpdateBounds()
         {
-            if(m_ParentNode == null || m_ParentNode.Node == null || m_ParentNode.CurrentSceneConnections == null)
+            if(m_ParentNode == null || m_ParentNode.Node == null || m_ParentNode.CurrentSceneGuid == null)
             {
                 return;
             }
 
-            string guid = m_ParentNode.CurrentSceneConnections.SceneGuid;
+            string guid = m_ParentNode.CurrentSceneGuid;
 
             if (!m_ParentNode.m_RoomGraphView.SceneLookup.ContainsKey(guid))
             {
+                SetPreviewBG();
                 return;
             }
 

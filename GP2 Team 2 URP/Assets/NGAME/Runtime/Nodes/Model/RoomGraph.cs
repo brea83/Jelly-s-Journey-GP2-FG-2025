@@ -13,24 +13,21 @@ namespace NGAME
         public RoomNode rootNode;
         public List<RoomNode> nodes = new List<RoomNode>();
         //public List<Edge> Edges = new List<Edge>();
-        
-        
-        public RoomNode CreateNode(System.Type type, string guid)
+
+        public void AddNode(RoomNode node)
         {
-            RoomNode node = ScriptableObject.CreateInstance(type) as RoomNode;
-            node.name = type.Name;
-            node.Guid  = guid;
-            
-            if(nodes.Count <= 0)
+            if (nodes.Contains(node))
+            {
+                return;
+            }
+
+            if (nodes.Count <= 0)
             {
                 SetStartNode(node);
             }
 
             nodes.Add(node);
-
-
-
-            return node;
+            
         }
         
         public void DeleteNode(RoomNode node)

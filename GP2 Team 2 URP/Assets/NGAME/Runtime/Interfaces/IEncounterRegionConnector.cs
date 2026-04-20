@@ -65,6 +65,23 @@ namespace NGAME
             UpdateBounds();
         }
 
+        public SceneConnectionsData ShallowCopy()
+        {
+            return (SceneConnectionsData)MemberwiseClone();
+        }
+
+        public SceneConnectionsData DeepCopy()
+        {
+            SceneConnectionsData other = (SceneConnectionsData)MemberwiseClone();
+            other.Exits = new List<RegionConnectionData>(Exits);
+            other.Entrances = new List<RegionConnectionData>(Entrances);
+            other.MinPoint = MinPoint;
+            other.MaxPoint = MaxPoint;
+            other.WidthByHeight = WidthByHeight;
+
+            return other;
+        }
+
         public void UpdateBounds()
         {
             Vector3 min = CalculateMinBounds();

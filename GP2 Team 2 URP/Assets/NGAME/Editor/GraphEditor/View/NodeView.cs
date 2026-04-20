@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using Unity.Properties;
 using UnityEditor;
@@ -9,6 +8,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+
 namespace NGAME.Editor
 {
     public class NodeView : UnityEditor.Experimental.GraphView.Node
@@ -24,8 +24,8 @@ namespace NGAME.Editor
 
         private DropdownField m_RoomSelectDropdown;
         private int m_LastDropDownIndex = 0;
-        public SceneConnectionsData CurrentSceneConnections { get; private set; }
-        private List<SceneConnectionsData> _roomDataObjects;
+        public string CurrentSceneGuid { get; private set; }
+        //private List<SceneConnectionsData> _roomDataObjects;
         private Color m_ValidPortColor = new();
 
         // container that input and output containers are in is called  topContainer on the parent class
@@ -44,14 +44,14 @@ namespace NGAME.Editor
         {
             this.m_RoomGraphView = graph;
             this.Node = node;
-            CurrentSceneConnections = Node.SceneData;
+            CurrentSceneGuid = Node.SceneData != null ? Node.SceneData.SceneGuid : "";
             this.title = node.name;
             this.viewDataKey = node.Guid;
 
             style.left = node.Position.x;
             style.top = node.Position.y;
             
-            _roomDataObjects = roomDataObjects;
+            //_roomDataObjects = roomDataObjects;
 
             m_RegionPreview = new RegionPreview(this);
             
@@ -61,7 +61,7 @@ namespace NGAME.Editor
             m_RegionPreview.OnImageDrawn += OnPreviewDrawn_LabelsOnly;
             //m_RegionPreview.OnImageDrawn += OnPreviewDrawn_CreatePorts;
 
-            if (_roomDataObjects != null )
+            if (roomDataObjects != null )
             {
                 CreateRoomSelector( roomDataObjects );
             }
@@ -164,7 +164,7 @@ namespace NGAME.Editor
             m_RoomSelectDropdown = new DropdownField(choices, defaultIndex);
             titleContainer.Add(m_RoomSelectDropdown);
             
-            m_RoomSelectDropdown.RegisterValueChangedCallback(OnValueChanged);
+            m_RoomSelectDropdown.RegisterValueChangedCallback(OnSceneDropdownChanged);
         }
         
         private void PopulateEncounterContainer()
@@ -207,24 +207,30 @@ namespace NGAME.Editor
         }
 
 
-        private void OnValueChanged(ChangeEvent<string> change) 
+        private void OnSceneDropdownChanged(ChangeEvent<string> change) 
         {
             if (change.newValue == change.previousValue) return;
 
             m_LastDropDownIndex = m_RoomSelectDropdown.index;
             //Node.LastDropdownIndex = m_RoomSelectDropdown.index;
 
-            CurrentSceneConnections = null;
-            foreach(SceneConnectionsData room in _roomDataObjects )
+            //CurrentSceneConnections = null;
+            SceneConnectionsData selectedRoom = null;
+            foreach (SceneConnectionsData room in m_RoomGraphView.ValidScenes )
             {
                 if( room.SceneName == change.newValue )
                 {
                     //newData = room;
-                    CurrentSceneConnections = room;
+                    CurrentSceneGuid = room.SceneGuid;
+                    selectedRoom = room.DeepCopy();
                     break;
                 }
             }
-            Node.UpdateRoomData(CurrentSceneConnections);
+
+            Undo.RecordObject(Node, "NGAME - Scene Change on " + Node.name);
+            Node.UpdateRoomData(selectedRoom);
+            if (selectedRoom == null)
+                CurrentSceneGuid = "";
 
             UpdatePorts();
             MarkMissingSceneError("", false);
@@ -795,10 +801,13 @@ namespace NGAME.Editor
                 newEdgeData.SourceSceneName = sourceNode.Node.SceneData.SceneName;
                 newEdgeData.DestinationSceneName = destinationNode.Node.SceneData.SceneName;
 
+                Undo.IncrementCurrentGroup();
+                Undo.RecordObjects(new UnityEngine.Object[]{ sourceNode.Node, destinationNode.Node}, "NGAME - disconnect nodes");
                 sourceNode.Node.RemoveEdge(destinationNode.Node, newEdgeData);
                 destinationNode.Node.RemoveEdge(sourceNode.Node, newEdgeData);
-                EditorUtility.SetDirty(sourceNode.Node);
-                EditorUtility.SetDirty(destinationNode.Node);
+
+                if (sourceNode.OnNodeValuesChanged != null)
+                    sourceNode.OnNodeValuesChanged.Invoke(sourceNode);
             } 
         }
 
@@ -819,10 +828,13 @@ namespace NGAME.Editor
             newEdgeData.SourceSceneName = sourceNode.Node.SceneData.SceneName;
             newEdgeData.DestinationSceneName = destinationNode.Node.SceneData.SceneName;
 
+            Undo.IncrementCurrentGroup();
+            Undo.RecordObjects(new UnityEngine.Object[] { sourceNode.Node, destinationNode.Node }, "NGAME - connect nodes");
             sourceNode.Node.AddEdge(destinationNode.Node, newEdgeData);
             destinationNode.Node.AddEdge(sourceNode.Node, newEdgeData);
-            EditorUtility.SetDirty(sourceNode.Node);
-            EditorUtility.SetDirty(destinationNode.Node);
+
+            if (sourceNode.OnNodeValuesChanged != null)
+                sourceNode.OnNodeValuesChanged.Invoke(sourceNode);
         }
 
         private void MarkPortConnectionError(Port port, Edge edge, string tooltip = "", bool bShowError = true)
@@ -983,7 +995,10 @@ namespace NGAME.Editor
         {
             base.SetPosition(newPos);
 
+            Undo.RecordObject(Node, "NGAME - Move Node");
             Node.Position = new Vector2(newPos.xMin, newPos.yMin);
+            if (OnNodeValuesChanged != null)
+                OnNodeValuesChanged.Invoke(this);
         }
 
         public Port GetPortByName(string name, List<Port> portCollection)
@@ -997,6 +1012,15 @@ namespace NGAME.Editor
             if(OnNodeSelected != null)
             {
                 OnNodeSelected.Invoke(this);
+            }
+        }
+
+        public override void OnUnselected()
+        {
+            base.OnUnselected();
+            if (OnNodeSelected != null)
+            {
+                OnNodeSelected.Invoke(null);
             }
         }
 

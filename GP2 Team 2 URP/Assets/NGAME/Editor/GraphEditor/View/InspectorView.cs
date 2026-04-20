@@ -278,9 +278,20 @@ namespace NGAME.Editor
         // CUSTOM BEHAVIOR
         public void UpdateSelection(NodeView nodeView)
         {
-            Clear();
-            Object.DestroyImmediate(_editor);
-             _editor = UnityEditor.Editor.CreateEditor(nodeView.Node);
+            if(m_CachedNode != null)
+            {
+                Clear();
+                Object.DestroyImmediate(_editor);
+            }
+            
+            m_CachedNode = nodeView;
+
+            if (nodeView == null)
+            {
+                return;
+            }
+
+             _editor = UnityEditor.Editor.CreateEditor(m_CachedNode.Node);
             
             var container = _editor.CreateInspectorGUI();
 
@@ -293,7 +304,7 @@ namespace NGAME.Editor
 
         public void Repaint(NodeView nodeView)
         {
-            m_CachedNode = nodeView;
+            m_CachedNode =  m_CachedNode == null ? nodeView : m_CachedNode;
             EditorApplication.delayCall += DelayedRepaint;
         }
 

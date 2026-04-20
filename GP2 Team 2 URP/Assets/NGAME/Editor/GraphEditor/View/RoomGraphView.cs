@@ -11,6 +11,55 @@ using UnityEngine.SceneManagement;
 
 namespace NGAME.Editor
 {
+    public class UndoableGraphChanges : ScriptableObject
+    {
+        public List<RoomNode> UnsavedNodes {get => m_UnsavedNodes;}
+        public List<RoomNode> NodesToDelete { get => m_NodesToDelete; }
+
+        private List<RoomNode> m_UnsavedNodes = new();
+        private List<RoomNode> m_NodesToDelete = new();
+
+        public static  UndoableGraphChanges CreateNew() 
+        {
+            return ScriptableObject.CreateInstance<UndoableGraphChanges>();
+        }
+
+        public void AddNode(RoomNode node)
+        {
+            if (!m_UnsavedNodes.Contains(node))
+            {
+                Undo.RegisterCompleteObjectUndo(this, "Add node to unsaved nodes");
+                m_UnsavedNodes.Remove(node);
+            }
+
+            if (m_NodesToDelete.Contains(node))
+            {
+                Undo.RegisterCompleteObjectUndo(this, "remove node from nodes to delete");
+                m_NodesToDelete.Add(node);
+            }
+        }
+        public void RemoveNode(RoomNode node)
+        {
+            if (m_UnsavedNodes.Contains(node))
+            {
+                Undo.RegisterCompleteObjectUndo(this, "Remove node from unsaved nodes");
+                m_UnsavedNodes.Remove(node);
+            }
+
+            if(!m_NodesToDelete.Contains(node))
+            {
+                Undo.RegisterCompleteObjectUndo(this, "add node to nodes to delete");
+                m_NodesToDelete.Add(node);
+            }
+        }
+
+        public void Reset()
+        {
+            m_UnsavedNodes.Clear();
+            m_NodesToDelete.Clear();
+        }
+    }
+
     [UxmlElement]
     public partial class RoomGraphView : GraphView
     {
@@ -24,6 +73,9 @@ namespace NGAME.Editor
         public Dictionary<string, SceneData> SceneLookup = new();
         public Dictionary<string, Texture2D> ScenePreviewLookup = new();
         //public StyleSheet Style;
+
+        private UndoableGraphChanges m_UndoableGraphChanges;
+        
         
         private RoomGraph _graph;
         private Blackboard m_Blackboard;
@@ -40,11 +92,22 @@ namespace NGAME.Editor
             this.AddManipulator(new SelectionDragger());
             this.AddManipulator(new RectangleSelector());
 
+            m_UndoableGraphChanges = UndoableGraphChanges.CreateNew();
 
             GetRoomDataObjects();
 
             //var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI Toolkit/Styles/Editor/RoomGraphEditor.uss");
             //styleSheets.Add(styleSheet);
+            Undo.undoRedoPerformed += OnUndoRedo;
+
+
+        }
+
+        protected void OnUndoRedo()
+        {
+            PopulateView(_graph);
+            if (OnGraphChanged != null)
+                OnGraphChanged.Invoke();
         }
 
         public override bool supportsWindowedBlackboard => true;
@@ -114,6 +177,35 @@ namespace NGAME.Editor
             }
         }
 
+        public void SaveGraph()
+        {
+            if (_graph == null)
+                return;
+
+            foreach(RoomNode node in _graph.nodes)
+            {
+                string path = AssetDatabase.GetAssetPath(node);
+                if (path.Contains(_graph.name + ".asset"))
+                {
+                    continue;
+                }
+                AssetDatabase.AddObjectToAsset(node, _graph);
+                EditorUtility.SetDirty(_graph);
+                EditorUtility.SetDirty(node);
+            }
+
+            foreach(RoomNode nodeToDelete in m_UndoableGraphChanges.NodesToDelete)
+            {
+                AssetDatabase.RemoveObjectFromAsset(nodeToDelete);
+                EditorUtility.SetDirty(_graph);
+                EditorUtility.SetDirty(nodeToDelete);
+            }
+
+            m_UndoableGraphChanges.Reset();
+
+            AssetDatabase.SaveAssetIfDirty(_graph);
+        }
+
         private NodeView FindNodeView(IMapNode roomNode)
         {
             return GetNodeByGuid(roomNode.Guid) as NodeView;
@@ -129,10 +221,24 @@ namespace NGAME.Editor
                     NodeView nodeView =  element as NodeView;
                     if(nodeView != null)
                     {
-                        _graph.DeleteNode(nodeView.Node);
+                        Undo.IncrementCurrentGroup();
 
-                        AssetDatabase.RemoveObjectFromAsset(nodeView.Node);
+                        Undo.RegisterCompleteObjectUndo(new UnityEngine.Object[] { _graph, nodeView.Node }, "remove node from asset");
+                        _graph.DeleteNode(nodeView.Node);
+                        m_UndoableGraphChanges.RemoveNode(nodeView.Node);
+
+                        //AssetDatabase.RemoveObjectFromAsset(nodeView.Node);
+                        EditorUtility.SetDirty(nodeView.Node);
+                        //AssetDatabase.SaveAssetIfDirty(nodeView.Node);
                         EditorUtility.SetDirty(_graph);
+                        //AssetDatabase.SaveAssetIfDirty(_graph);
+
+                        //Undo.DestroyObjectImmediate(nodeView.Node);
+                        nodeView.Node = null;
+
+                        Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
+                        Undo.SetCurrentGroupName("NGAME - Delete Node");
+                        
                         bSendChanges = true;
                     }
 
@@ -199,26 +305,45 @@ namespace NGAME.Editor
             {
                 evt.menu.AppendAction($"[{type.BaseType.Name}] {type.Name}", (a) => OnContextMenuCreateNode(a, type));
             }
+
         }
         protected void OnContextMenuCreateNode(DropdownMenuAction a, System.Type type)
         {
             
             Vector2 screenMousePosition = a.eventInfo.localMousePosition;
-            CreateNode(type, screenMousePosition);
+            CreateNewNode(type, screenMousePosition);
         }
-        void CreateNode(System.Type type, Vector2 position)
+        void CreateNewNode(System.Type type, Vector2 position)
         {
-            string newGuid = GUID.Generate().ToString();
-            RoomNode node = _graph.CreateNode(type, newGuid);
-            node.Position = position;
+            Undo.IncrementCurrentGroup();
 
-            AssetDatabase.AddObjectToAsset(node, _graph);
+            string newGuid = GUID.Generate().ToString();
+            RoomNode node = RoomNode.CreateNode(type, newGuid);
+
+            node.Position = position;
+            Undo.RegisterCreatedObjectUndo(node, "node created");
+
+            Undo.RegisterCompleteObjectUndo(_graph, "NGAME - Add new Node to graph");
+            _graph.AddNode(node);
+
+            Undo.RecordObject(node, "rename node");
+            node.name = _graph.name + ": Room " + _graph.nodes.Count.ToString();
+
+            Undo.RegisterCompleteObjectUndo(new UnityEngine.Object[] { _graph, node }, "add node to asset");
+            //AssetDatabase.AddObjectToAsset(node, _graph);
+
             EditorUtility.SetDirty(_graph);
             EditorUtility.SetDirty(node);
-            AssetDatabase.SaveAssetIfDirty(_graph);
-            AssetDatabase.SaveAssetIfDirty(node);
-            CreateNodeView(node);
+            //AssetDatabase.SaveAssetIfDirty(_graph);
+            //AssetDatabase.SaveAssetIfDirty(node);
 
+            
+            CreateNodeView(node);
+            Undo.SetCurrentGroupName("NGAME - Create New Node in graph");
+            Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
+
+            
+            m_UndoableGraphChanges.AddNode(node);
             if (OnGraphChanged != null)
                 OnGraphChanged.Invoke();
         }

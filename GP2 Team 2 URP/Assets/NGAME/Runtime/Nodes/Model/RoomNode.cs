@@ -34,6 +34,14 @@ namespace NGAME
         //private int _exitCount;
         //private int _entranceCount;
 
+        public static RoomNode CreateNode(System.Type type, string guid)
+        {
+            RoomNode node = ScriptableObject.CreateInstance(type) as RoomNode;
+            node.name = type.Name;
+            node.Guid = guid;
+
+            return node;
+        }
 
         public List<EdgeData> GetOutgoingEdges()
         {

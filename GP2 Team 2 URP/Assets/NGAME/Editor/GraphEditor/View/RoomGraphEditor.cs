@@ -96,6 +96,7 @@ namespace NGAME.Editor
 
             _graphView.OnNodeSelected = OnNodeSelectionChanged;
             _graphView.OnNodeValuesChanged = OnNodeValuesChanged;
+            _graphView.OnGraphChanged += OnGraphChanged;
             OnSelectionChange();
 
             if(m_Style != null)
@@ -124,9 +125,10 @@ namespace NGAME.Editor
                 return;
             }
 
-            if (_graph != null)
+            if (_graph != null && hasUnsavedChanges)
             {
-                AssetDatabase.SaveAssetIfDirty(_graph);
+                ShowSaveDialogue();
+                //AssetDatabase.SaveAssetIfDirty(_graph);
             }
             _graph = roomGraph;
             _graphView.PopulateView(roomGraph);
@@ -134,7 +136,8 @@ namespace NGAME.Editor
 
         private void OnNodeSelectionChanged(NodeView nodeView)
         {
-            _inspectorView.UpdateSelection(nodeView);
+            if(_inspectorView != null)
+                _inspectorView.UpdateSelection(nodeView);
         }
 
         private void OnGraphChanged()
@@ -144,7 +147,8 @@ namespace NGAME.Editor
         }
         private void OnNodeValuesChanged(NodeView nodeView)
         {
-            _inspectorView.Repaint(nodeView);
+            if(nodeView != null && _inspectorView != null)
+                _inspectorView.Repaint(nodeView);
             EditorUtility.SetDirty(_graph);
             hasUnsavedChanges = true;
         }
@@ -168,8 +172,8 @@ namespace NGAME.Editor
 
         public override void SaveChanges()
         {
-            if(_graph != null)
-                AssetDatabase.SaveAssetIfDirty(_graph);
+            if (_graphView != null)
+                _graphView.SaveGraph();
             
             base.SaveChanges();
         }
@@ -182,7 +186,8 @@ namespace NGAME.Editor
 
         private void OnSaveGraphClicked()
         {
-            AssetDatabase.SaveAssets();
+            //AssetDatabase.SaveAssets();
+            SaveChanges();
         }
 
         private void OnRefreshScenes()

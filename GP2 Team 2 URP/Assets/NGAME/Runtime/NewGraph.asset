@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-1901756194611695046
+--- !u!114 &-3458263532738608261
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -10,7 +10,122 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
-  m_Name: RoomNode
+  m_Name: 'NewGraph: Room 3'
+  m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
+  SceneData:
+    SceneName: SampleScene 2
+    SceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
+    Entrances:
+    - TypeName: RoomSystem.Door
+      Name: Door West
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -9.32, y: 0.5000038, z: -49.78}
+    - TypeName: RoomSystem.Door
+      Name: Door East
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: 29.93, y: 0.5000038, z: -16.44}
+    Exits:
+    - TypeName: RoomSystem.Door
+      Name: Door West
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -9.32, y: 0.5000038, z: -49.78}
+    - TypeName: RoomSystem.Door
+      Name: Door East
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: 29.93, y: 0.5000038, z: -16.44}
+    MinPoint: {x: -9.32, y: -49.78}
+    MaxPoint: {x: 29.93, y: 0}
+    WidthByHeight: {x: 39.25, y: 49.78}
+  OutgoingEdges: []
+  IncomingEdges: []
+  Waves: []
+  m_Guid: 96d925ef61d50c8459bad4cdbf643054
+  m_Position: {x: 749.8686, y: 355.4138}
+  _isStartNode: 0
+  NumberOfWaves: 0
+--- !u!114 &-2698876279662383425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
+  m_Name: 'NewGraph: Room 1'
+  m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
+  SceneData:
+    SceneName: SampleScene
+    SceneGuid: 99c9720ab356a0642a771bea13969a05
+    Entrances:
+    - TypeName: RoomSystem.Door
+      Name: Door North
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -28.000906, y: 0, z: 26.98}
+    - TypeName: RoomSystem.Door
+      Name: Entrance Only
+      ConnectionType: 0
+      IsLockable: 1
+      Position: {x: 9.329598, y: 0, z: 12.48}
+    Exits:
+    - TypeName: RoomSystem.Door
+      Name: Door North
+      ConnectionType: 2
+      IsLockable: 1
+      Position: {x: -28.000906, y: 0, z: 26.98}
+    MinPoint: {x: -28.000906, y: 0}
+    MaxPoint: {x: 9.329598, y: 26.98}
+    WidthByHeight: {x: 37.330505, y: 26.98}
+  OutgoingEdges:
+  - SourceNodeGuid: cd25f63b0da2fa145a28a5e2c7988529
+    SourceSceneGuid: 99c9720ab356a0642a771bea13969a05
+    SourceSceneName: SampleScene
+    SourcePortName: Door North
+    DestinationNodeGuid: 79308391f986876448b24dc53daf07c8
+    DestinationSceneGuid: 7a3963fe7029e1540abdb3d88a000b52
+    DestinationSceneName: SampleScene 1
+    DestinationPortName: Door South
+    m_bIsValid: 1
+  IncomingEdges: []
+  Waves: []
+  m_Guid: cd25f63b0da2fa145a28a5e2c7988529
+  m_Position: {x: 184.66667, y: -30.000006}
+  _isStartNode: 1
+  NumberOfWaves: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18896188af12d0a41a178d67d66c5b78, type: 3}
+  m_Name: NewGraph
+  m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.RoomGraph
+  rootNode: {fileID: -2698876279662383425}
+  nodes:
+  - {fileID: -2698876279662383425}
+  - {fileID: 8317342436460908751}
+  - {fileID: -3458263532738608261}
+--- !u!114 &8317342436460908751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
+  m_Name: 'NewGraph: Room 2'
   m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
   SceneData:
     SceneName: SampleScene 1
@@ -51,123 +166,18 @@ MonoBehaviour:
     MaxPoint: {x: 16.203, y: 7.54}
     WidthByHeight: {x: 41.44271, y: 28.04}
   OutgoingEdges: []
-  IncomingEdges: []
-  Waves: []
-  m_Guid: a5c7e428af0409641b72acf8cf9c38ea
-  m_Position: {x: 229.50003, y: 493.00006}
-  _isStartNode: 0
-  NumberOfWaves: 0
---- !u!114 &-1604239483407982519
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
-  m_Name: RoomNode
-  m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
-  SceneData:
-    SceneName: SampleScene 3
-    SceneGuid: 7cb8c6b0027761a46b600f3b69174403
-    Entrances:
-    - TypeName: RoomSystem.Door
-      Name: Door South
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: 0.22, y: 0, z: -12.46}
-    Exits:
-    - TypeName: RoomSystem.Door
-      Name: Door South
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: 0.22, y: 0, z: -12.46}
-    MinPoint: {x: 0.22, y: -12.46}
-    MaxPoint: {x: 0.22, y: 0}
-    WidthByHeight: {x: 0, y: 12.46}
-  OutgoingEdges: []
   IncomingEdges:
-  - SourceNodeGuid: ae1bb77545505b349944775de86fdcfc
+  - SourceNodeGuid: cd25f63b0da2fa145a28a5e2c7988529
     SourceSceneGuid: 99c9720ab356a0642a771bea13969a05
     SourceSceneName: SampleScene
     SourcePortName: Door North
-    DestinationNodeGuid: 45bd88e56f4e8104da07d9a946e51424
-    DestinationSceneGuid: 7cb8c6b0027761a46b600f3b69174403
-    DestinationSceneName: SampleScene 3
+    DestinationNodeGuid: 79308391f986876448b24dc53daf07c8
+    DestinationSceneGuid: 7a3963fe7029e1540abdb3d88a000b52
+    DestinationSceneName: SampleScene 1
     DestinationPortName: Door South
     m_bIsValid: 1
   Waves: []
-  m_Guid: 45bd88e56f4e8104da07d9a946e51424
-  m_Position: {x: 529.0501, y: 7.8760033}
+  m_Guid: 79308391f986876448b24dc53daf07c8
+  m_Position: {x: 1237.9452, y: -70.119865}
   _isStartNode: 0
   NumberOfWaves: 0
---- !u!114 &-58743701835840933
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
-  m_Name: RoomNode
-  m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
-  SceneData:
-    SceneName: SampleScene
-    SceneGuid: 99c9720ab356a0642a771bea13969a05
-    Entrances:
-    - TypeName: RoomSystem.Door
-      Name: Door North
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -28.000906, y: 0, z: 26.98}
-    - TypeName: RoomSystem.Door
-      Name: Entrance Only
-      ConnectionType: 0
-      IsLockable: 1
-      Position: {x: 9.329598, y: 0, z: 12.48}
-    Exits:
-    - TypeName: RoomSystem.Door
-      Name: Door North
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -28.000906, y: 0, z: 26.98}
-    MinPoint: {x: -28.000906, y: 0}
-    MaxPoint: {x: 9.329598, y: 26.98}
-    WidthByHeight: {x: 37.330505, y: 26.98}
-  OutgoingEdges:
-  - SourceNodeGuid: ae1bb77545505b349944775de86fdcfc
-    SourceSceneGuid: 99c9720ab356a0642a771bea13969a05
-    SourceSceneName: SampleScene
-    SourcePortName: Door North
-    DestinationNodeGuid: 45bd88e56f4e8104da07d9a946e51424
-    DestinationSceneGuid: 7cb8c6b0027761a46b600f3b69174403
-    DestinationSceneName: SampleScene 3
-    DestinationPortName: Door South
-    m_bIsValid: 1
-  IncomingEdges: []
-  Waves: []
-  m_Guid: ae1bb77545505b349944775de86fdcfc
-  m_Position: {x: 0, y: 26}
-  _isStartNode: 1
-  NumberOfWaves: 0
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18896188af12d0a41a178d67d66c5b78, type: 3}
-  m_Name: NewGraph
-  m_EditorClassIdentifier: NGAME.Editor::NGAME.Editor.RoomGraph
-  rootNode: {fileID: -58743701835840933}
-  nodes:
-  - {fileID: -58743701835840933}
-  - {fileID: -1604239483407982519}
-  - {fileID: -1901756194611695046}
