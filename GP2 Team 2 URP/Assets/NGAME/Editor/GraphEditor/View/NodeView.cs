@@ -5,6 +5,7 @@ using System.Text;
 using Unity.Properties;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
+using UnityEditor.SceneManagement;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -22,6 +23,7 @@ namespace NGAME.Editor
         public List<Port> OldConnectedPorts = new List<Port>();
         public List<ConnectionView> Connections = new();
 
+        private Button EditSceneButton;
         private DropdownField m_RoomSelectDropdown;
         private int m_LastDropDownIndex = 0;
         public string CurrentSceneGuid { get; private set; }
@@ -60,6 +62,15 @@ namespace NGAME.Editor
             //m_RegionPreview.OnImageDrawn += OnPreviewDrawn;
             m_RegionPreview.OnImageDrawn += OnPreviewDrawn_LabelsOnly;
             //m_RegionPreview.OnImageDrawn += OnPreviewDrawn_CreatePorts;
+
+            EditSceneButton = new Button()
+            {
+                name = "EditSceneButton",
+                text = "Open Scene",
+            };
+            EditSceneButton.clicked += OnEditSceneButtonClicked;
+            titleButtonContainer.Add(EditSceneButton);
+            
 
             if (roomDataObjects != null )
             {
@@ -133,38 +144,66 @@ namespace NGAME.Editor
             }
             m_CurrentSceneSpawnData = m_RoomGraphView.SpawnersByScene.FirstOrDefault((SceneSpawnData e) => e.SceneGUID == Node.SceneData.SceneGuid);
         }
+
+        private void OnEditSceneButtonClicked()
+        {
+            if (string.IsNullOrEmpty(CurrentSceneGuid))
+            {
+                Debug.Log("Node currently has no scene selected, so it cannot open a scene to edit");
+                return;
+            }
+            string path = AssetDatabase.GUIDToAssetPath(CurrentSceneGuid);
+            if (string.IsNullOrEmpty(path))
+            {
+                Debug.LogWarning("Node currently has an invalid scene guid saved, so it cannot open a scene to edit");
+                return;
+            }
+
+            if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+            {
+                EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
+            }
+            else
+            {
+                StringBuilder message = new();
+                message.Append("You have unsaved changes in this scene (");
+                message.Append(EditorSceneManager.GetActiveScene().name);
+                message.Append(") and chose to neither discard nor save them, so NGAME will not open ");
+                message.Append(Node.SceneData.SceneName);
+                message.Append(" for edits.");
+                Debug.Log( message.ToString());
+            }
+        }
+
         private void CreateRoomSelector(List<NGAME.SceneConnectionsData> roomDataObjects)
         {
+            bool bEditSceneButtonNeedsEnable = false;
             List<string> choices = new List<string>();
             choices.Add("None Selected");
+
             int defaultIndex = 0;
             for (int i = 0; i < roomDataObjects.Count(); i++ )
             {
                 SceneConnectionsData room = roomDataObjects[i];
 
                 choices.Add(room.SceneName);
-                //room.UpdateBounds();
-                //if (room.MinPoint == Vector2.zero && room.MaxPoint == Vector2.zero)
-                //{
-                //}
+
                 if(Node.SceneData != null && Node.SceneData.SceneName == room.SceneName)
                 {
                     defaultIndex = i + 1; // plus 1 because we have the default none at index 0 of the list before this loop starts
+                    bEditSceneButtonNeedsEnable = true;
+                    CurrentSceneGuid = Node.SceneData.SceneGuid;
                 }
             }
 
-            //if(Node.SceneData != null)
-            //{
-            //    string sceneGuid = Node.SceneData.SceneGuid;
-
-
-            //    defaultIndex = Node.LastDropdownIndex;
-            //}
+            EditSceneButton.SetEnabled(bEditSceneButtonNeedsEnable);
 
             m_RoomSelectDropdown = new DropdownField(choices, defaultIndex);
-            titleContainer.Add(m_RoomSelectDropdown);
+            titleButtonContainer.Add(m_RoomSelectDropdown);
             
             m_RoomSelectDropdown.RegisterValueChangedCallback(OnSceneDropdownChanged);
+            m_RoomSelectDropdown.SendToBack();
+            EditSceneButton.SendToBack();
         }
         
         private void PopulateEncounterContainer()
@@ -212,17 +251,15 @@ namespace NGAME.Editor
             if (change.newValue == change.previousValue) return;
 
             m_LastDropDownIndex = m_RoomSelectDropdown.index;
-            //Node.LastDropdownIndex = m_RoomSelectDropdown.index;
-
-            //CurrentSceneConnections = null;
+            
             SceneConnectionsData selectedRoom = null;
             foreach (SceneConnectionsData room in m_RoomGraphView.ValidScenes )
             {
                 if( room.SceneName == change.newValue )
                 {
-                    //newData = room;
                     CurrentSceneGuid = room.SceneGuid;
                     selectedRoom = room.DeepCopy();
+                    EditSceneButton.SetEnabled(true);
                     break;
                 }
             }
@@ -230,9 +267,13 @@ namespace NGAME.Editor
             Undo.RecordObject(Node, "NGAME - Scene Change on " + Node.name);
             Node.UpdateRoomData(selectedRoom);
             if (selectedRoom == null)
+            {
                 CurrentSceneGuid = "";
+                EditSceneButton.SetEnabled(false);
+            }
+            
 
-            UpdatePorts();
+                UpdatePorts();
             MarkMissingSceneError("", false);
 
             UpdateCurrentSceneSpawnData();
@@ -926,8 +967,15 @@ namespace NGAME.Editor
         internal void ValidateOutputEdges(List<NGAME.SceneConnectionsData> mostRecentlyFetchedSceneData, bool bDeleteInvalidEdges = true)
         {
             List<int> indexOfInvalidEdges = new();
-            SceneConnectionsData data = mostRecentlyFetchedSceneData.FirstOrDefault((SceneConnectionsData data) => data.SceneGuid == Node.SceneData.SceneGuid);
-            List<RegionConnectionData> exits = data.Exits;
+            SceneConnectionsData currentSceneData = null;
+            List<RegionConnectionData> exits = null;
+            if(Node != null && Node.SceneData != null)
+            {
+                currentSceneData = mostRecentlyFetchedSceneData.FirstOrDefault((SceneConnectionsData data) => data.SceneGuid == Node.SceneData.SceneGuid);
+
+                if(currentSceneData != null)
+                    exits = currentSceneData.Exits;
+            }
             
 
             for (int i = 0; i < Node.OutgoingEdges.Count; i++)
@@ -961,28 +1009,54 @@ namespace NGAME.Editor
                 {
                     if (destinationPort != null)
                     {
-                        SceneConnectionsData destinationData = mostRecentlyFetchedSceneData.FirstOrDefault((SceneConnectionsData data) => data.SceneGuid == destinationView.Node.SceneData.SceneGuid);
-                        List<RegionConnectionData> entrances = destinationData.Entrances;
+                        SceneConnectionsData destinationData = null;
+                        List<RegionConnectionData> entrances = null;
+                        if (destinationView.Node != null && destinationView.Node.SceneData != null)
+                        {
+                            destinationData = mostRecentlyFetchedSceneData.FirstOrDefault((SceneConnectionsData data) => data.SceneGuid == destinationView.Node.SceneData.SceneGuid);
+                            if(destinationData != null)
+                                entrances = destinationData.Entrances;
+                        }
+
                         Edge newEdge = sourcePort.ConnectTo(destinationPort);
                         m_RoomGraphView.AddElement(newEdge);
 
-                        RegionConnectionData sourceExit = exits.FirstOrDefault((RegionConnectionData connection) => connection.Name == sourcePort.portName);
-                        RegionConnectionData destinationEntrance = entrances.FirstOrDefault((RegionConnectionData connection) => connection.Name == destinationPort.portName);
-                        bool error = sourceExit == null || destinationEntrance == null;
+                        RegionConnectionData sourceExit = null;
+                        RegionConnectionData destinationEntrance = null;
+                        if (exits != null)
+                            sourceExit = exits.FirstOrDefault((RegionConnectionData connection) => connection.Name == sourcePort.portName);
 
+                        if(entrances != null)
+                            destinationEntrance = entrances.FirstOrDefault((RegionConnectionData connection) => connection.Name == destinationPort.portName);
+
+                        bool error = sourceExit == null || destinationEntrance == null;
 
                         if (error)
                         {
-                            if (sourceExit == null)
+                            if(currentSceneData == null)
                             {
                                 StringBuilder errorText = new();
                                 errorText.Append(sourcePort.portName);
-                                errorText.Append(", no longer valid Exit in scene: " + data.SceneName);
+                                errorText.Append(", no longer valid because Node has no valid scene");
+                                MarkPortConnectionError(sourcePort, newEdge, errorText.ToString());
+                            }
+                            else if (sourceExit == null)
+                            {
+                                StringBuilder errorText = new();
+                                errorText.Append(sourcePort.portName);
+                                errorText.Append(", no longer valid Exit in scene: " + currentSceneData.SceneName);
                                 errorText.Append(". Check if its entrance/exit type has been changed, or if the object has been removed.");
                                 MarkPortConnectionError(sourcePort, newEdge, errorText.ToString());
                             }
 
-                            if( destinationEntrance == null)
+                            if(destinationData == null)
+                            {
+                                StringBuilder errorText = new();
+                                errorText.Append(destinationPort.portName);
+                                errorText.Append(", no longer valid because Node has no valid scene");
+                                MarkPortConnectionError(destinationPort, null, errorText.ToString());
+                            }
+                            if (destinationEntrance == null)
                             {
                                 StringBuilder errorText = new();
                                 errorText.Append(destinationPort.portName);
