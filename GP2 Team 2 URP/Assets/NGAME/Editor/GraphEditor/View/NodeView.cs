@@ -152,6 +152,7 @@ namespace NGAME.Editor
                 Debug.Log("Node currently has no scene selected, so it cannot open a scene to edit");
                 return;
             }
+
             string path = AssetDatabase.GUIDToAssetPath(CurrentSceneGuid);
             if (string.IsNullOrEmpty(path))
             {
@@ -272,8 +273,7 @@ namespace NGAME.Editor
                 EditSceneButton.SetEnabled(false);
             }
             
-
-                UpdatePorts();
+            UpdatePorts();
             MarkMissingSceneError("", false);
 
             UpdateCurrentSceneSpawnData();
@@ -284,19 +284,6 @@ namespace NGAME.Editor
             if(OnNodeValuesChanged != null)
                 OnNodeValuesChanged.Invoke(this);
         }
-
-        //private void UpdateWavePorts()
-        //{
-        //    List<string> WaveNames = new();
-        //    for (int i = 0; i < Node.NumberOfWaves; i++)
-        //    {
-        //        string portName = "Wave " + (i + 1).ToString();
-        //        WaveNames.Add(portName);
-        //    }
-
-        //    RemoveExcessPorts(WavePorts, m_WavesContainer, WaveNames);
-        //    AddMissingPorts(WavePorts, m_WavesContainer, WaveNames);
-        //}
 
         private void UpdatePorts()
         {
@@ -375,7 +362,6 @@ namespace NGAME.Editor
                 OldConnectedPorts.RemoveAt(indexesToRemove[i]);
             }
         }
-
 
         private void AddMissingPorts(List<Port> oldPorts, VisualElement portContainer, List<string> newPortNames, bool isInputPort = true)
         {
@@ -686,11 +672,6 @@ namespace NGAME.Editor
             };
             field.SetBinding("value", binding);
 
-            //SerializedObject serializedRoomNode = new SerializedObject(Node);
-            //PropertyField objectInput = new PropertyField(serializedRoomNode.FindProperty("Waves.Array.data[" + index.ToString() +"]"), "Load Scriptable Object");
-            //objectInput.Bind(serializedRoomNode);
-            //objectInput.name = "WaveDataObjectField";
-
             Button removeMe = new Button();
             removeMe.style.flexGrow = 0;
             removeMe.text = "Remove Wave";
@@ -942,7 +923,7 @@ namespace NGAME.Editor
         internal void ValidateNodeScene(List<NGAME.SceneConnectionsData> mostRecentlyFetchedSceneData)
         {
 
-            if (Node.SceneData == null)
+            if (Node.SceneData == null ||  string.IsNullOrEmpty(Node.SceneData.SceneGuid))
             {
                 return;
             }
@@ -969,7 +950,7 @@ namespace NGAME.Editor
             List<int> indexOfInvalidEdges = new();
             SceneConnectionsData currentSceneData = null;
             List<RegionConnectionData> exits = null;
-            if(Node != null && Node.SceneData != null)
+            if(Node != null && Node.SceneData != null && !string.IsNullOrEmpty(Node.SceneData.SceneGuid))
             {
                 currentSceneData = mostRecentlyFetchedSceneData.FirstOrDefault((SceneConnectionsData data) => data.SceneGuid == Node.SceneData.SceneGuid);
 
@@ -1011,7 +992,7 @@ namespace NGAME.Editor
                     {
                         SceneConnectionsData destinationData = null;
                         List<RegionConnectionData> entrances = null;
-                        if (destinationView.Node != null && destinationView.Node.SceneData != null)
+                        if (destinationView.Node != null && destinationView.Node.SceneData != null && !string.IsNullOrEmpty(destinationView.Node.SceneData.SceneGuid))
                         {
                             destinationData = mostRecentlyFetchedSceneData.FirstOrDefault((SceneConnectionsData data) => data.SceneGuid == destinationView.Node.SceneData.SceneGuid);
                             if(destinationData != null)
