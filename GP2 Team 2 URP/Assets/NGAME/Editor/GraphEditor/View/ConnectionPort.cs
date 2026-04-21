@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
@@ -11,6 +10,13 @@ namespace NGAME.Editor
     {
         public Action<ConnectionPort> OnConnectionPortConnect;
         public Action<ConnectionPort> OnConnectionPortDisconnect;
+
+        public bool IsValidInScene { get; private set; }
+        public EdgeData NGAMEData{ get; set;}
+
+        private Color m_ValidPortColor;
+        private Color m_InvalidPortColor;
+        private static string m_CssClassWhenInvalid = "Error1";
 
         public NodeView nodeView => GetFirstAncestorOfType<NodeView>();
         //public ConnectionContainer GetConnectionContainer => GetFirstAncestorOfType<ConnectionContainer>();
@@ -26,12 +32,18 @@ namespace NGAME.Editor
 
             port.AddManipulator(port.m_EdgeConnector);
             port.portName = direction == Direction.Input ? "In" : "Out";
+
             return port;
         }
 
         protected ConnectionPort(Orientation portOrientation, Direction portDirection, 
             Capacity portCapacity, Type type) : base(portOrientation, portDirection, portCapacity, type)
-        { }
+        {
+            m_ValidPortColor = portColor;
+            m_InvalidPortColor = Color.red;
+            IsValidInScene = true;
+            this.AddManipulator(new ContextualMenuManipulator(BuildContextualMenu));
+        }
 
         protected class CustomEdgeConnectorListener : IEdgeConnectorListener
         {
@@ -155,6 +167,43 @@ namespace NGAME.Editor
         public void SetLabelFront()
         {
             m_ConnectorText.BringToFront();
+        }
+
+        public void MarkInvalid(bool bIsInvalid = true, string tooltipText = "")
+        {
+            IsValidInScene = !bIsInvalid;
+            if (bIsInvalid)
+            {
+                AddToClassList(m_CssClassWhenInvalid);
+                tooltip = tooltipText;
+                portColor = m_InvalidPortColor;
+            }
+            else
+            {
+                RemoveFromClassList(m_CssClassWhenInvalid);
+                tooltip = tooltipText;
+                portColor = m_ValidPortColor;
+            }
+        }
+
+
+        //
+        // Summary:
+        //     Add menu items to the connection port's contextual menu.
+        //
+        // Parameters:
+        //   evt:
+        //     The event holding the menu to populate.
+        public virtual void BuildContextualMenu(ContextualMenuPopulateEvent evt)
+        {
+            if (evt.target is ConnectionPort)
+            {
+                evt.menu.AppendAction("Play From Here", delegate
+                {
+                    nodeView.TryPlayFromPort(this);
+                }, (DropdownMenuAction a) => IsValidInScene ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Disabled);
+                evt.menu.AppendSeparator();
+            }
         }
     }
 }

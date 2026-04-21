@@ -12,6 +12,7 @@ namespace NGAME
     {
         public UnityEvent RoomLoadStart;
         public UnityEvent<IEncounterRegionConnector> RoomLoadComplete;
+        public UnityEvent PlaymodeStartedFromGraph;
         //[Header("Room Load Effects")]
         //public CircleWipeControler CircleWipe;
 
@@ -28,7 +29,7 @@ namespace NGAME
         [SerializeField]
         protected RoomGraph m_Graph;
         protected RoomNode m_CurrentRoom;
-        protected EdgeData m_MostRecentlyTraversedEdge;
+        protected EdgeData m_MostRecentlyTraversedEdge = null;
         protected List<EdgeData> m_CurrentRoomExits = new();
         protected List<IEncounterRegionConnector> m_CurrentConnectors = new();
 
@@ -166,6 +167,16 @@ namespace NGAME
             {
                 m_CurrentRoom = nextRoom;
                 m_MostRecentlyTraversedEdge = edge;
+                return true;
+            }
+            return false;
+        }
+
+        public bool TryEnterRoomFromGraph(EdgeData edge)
+        {
+            if (TryEnterRoom(edge) && PlaymodeStartedFromGraph != null)
+            {
+                PlaymodeStartedFromGraph.Invoke();
                 return true;
             }
             return false;

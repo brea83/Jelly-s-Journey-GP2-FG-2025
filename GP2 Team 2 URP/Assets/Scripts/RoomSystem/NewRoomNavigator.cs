@@ -30,10 +30,13 @@ public class NewRoomNavigator : MonoBehaviour
     {
         StringBuilder sb = new StringBuilder();
 
+        //m_Graph.PlaymodeStartedFromGraph.AddListener(OnGraphInitiatedPlaymode);
         SceneManager.sceneLoaded += OnSceneLoaded;
-
     }
-
+    public void OnGraphInitiatedPlaymode()
+    {
+        OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
+    }
     public void EnterFirstRoom()
     {
         RoomNode firstRoom = m_Graph.TryEnterFirstRoom();

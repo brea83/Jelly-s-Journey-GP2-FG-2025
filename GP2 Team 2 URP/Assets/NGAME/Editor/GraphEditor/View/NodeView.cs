@@ -18,10 +18,10 @@ namespace NGAME.Editor
         public Action<NodeView> OnNodeSelected;
         public Action<NodeView> OnNodeValuesChanged;
         public RoomNode Node;
-        public List<Port> InputPorts = new List<Port>();
-        public List<Port> OutputPorts = new List<Port>();
-        public List<Port> OldConnectedPorts = new List<Port>();
-        public List<ConnectionView> Connections = new();
+        public List<ConnectionPort> InputPorts = new();
+        public List<ConnectionPort> OutputPorts = new();
+        public List<ConnectionPort> OldConnectedPorts = new();
+        //public List<ConnectionView> Connections = new();
 
         private Button EditSceneButton;
         private DropdownField m_RoomSelectDropdown;
@@ -41,6 +41,7 @@ namespace NGAME.Editor
         private List<VisualElement> m_WaveItems = new List<VisualElement>();
 
         private RegionPreview m_RegionPreview;
+        private EdgeData m_PlaymodeEntranceRequest = null;
         
         public NodeView(RoomGraphView graph, RoomNode node, List<SceneConnectionsData> roomDataObjects = null) 
         {
@@ -174,6 +175,70 @@ namespace NGAME.Editor
                 message.Append(" for edits.");
                 Debug.Log( message.ToString());
             }
+        }
+
+        internal void TryPlayFromPort(ConnectionPort port)
+        {
+            if (port == null) return;
+            StringBuilder message = new();
+            message.Append("Trying to play from port: ");
+            message.Append(port.portName);
+            message.Append(", in Scene: ");
+            message.Append(Node.SceneData.SceneName);
+            message.Append(", from Node: ");
+            message.Append(Node.name);
+
+            Debug.LogWarning(message.ToString());
+
+            SceneData data = null;
+            m_RoomGraphView.SceneLookup.TryGetValue(CurrentSceneGuid, out data);
+
+
+            if (data == null)
+            {
+                return;
+            }
+
+            m_PlaymodeEntranceRequest = CreateEdgeDataFromPort(port, Direction.Input, true);
+
+            string scenePath = data.FilePath;
+
+            SceneAsset myWantedStartScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(scenePath);
+            if (myWantedStartScene == null)
+            {
+                Debug.Log("Could not start Playmode from graph because could not find Scene " + scenePath);
+                return;
+            }
+
+            EditorSceneManager.playModeStartScene = myWantedStartScene;
+
+            EditorSceneManager.sceneLoaded += OnPlaymodeSceneLoaded;
+            EditorApplication.EnterPlaymode();
+        }
+
+        private void OnPlaymodeSceneLoaded(UnityEngine.SceneManagement.Scene loadedScene, UnityEngine.SceneManagement.LoadSceneMode mode )
+        {
+            if (loadedScene.name != Node.SceneData.SceneName)
+                return;
+
+            EditorSceneManager.sceneLoaded -= OnPlaymodeSceneLoaded;
+            EditorSceneManager.playModeStartScene = null;
+
+            GameObject[] rootObjects = loadedScene.GetRootGameObjects();
+            MapGraphRuntime runtimeGraph = null;
+            foreach (GameObject obj in rootObjects)
+            {
+                runtimeGraph = obj.GetComponentInChildren<MapGraphRuntime>();
+                if (runtimeGraph != null)
+                {
+                    break; 
+                }
+            }
+
+            if (runtimeGraph == null || m_PlaymodeEntranceRequest == null)
+                return;
+
+            runtimeGraph.TryEnterRoomFromGraph(m_PlaymodeEntranceRequest);
         }
 
         private void CreateRoomSelector(List<NGAME.SceneConnectionsData> roomDataObjects)
@@ -327,7 +392,7 @@ namespace NGAME.Editor
 
             for (int i = 0; i < OldConnectedPorts.Count; i++)
             {
-                Port oldPort = OldConnectedPorts[i];
+                ConnectionPort oldPort = OldConnectedPorts[i];
                 if(oldPort.direction != portDirection)
                 {
                     continue;
@@ -347,8 +412,8 @@ namespace NGAME.Editor
                     if (oldPort.connections.Count() >= 1 )
                     {
                         oldEdge = oldPort.connections.First();
-                        MarkPortConnectionError(oldEdge.output, oldEdge, "", false);
-                        MarkPortConnectionError(oldEdge.input, oldEdge, "", false);
+                        MarkPortConnectionError(oldEdge.output as ConnectionPort, oldEdge, "", false);
+                        MarkPortConnectionError(oldEdge.input as ConnectionPort, oldEdge, "", false);
                     }
                     MarkPortConnectionError(oldPort, oldEdge, "", false);
                     indexesToRemove.Add(i);
@@ -363,7 +428,7 @@ namespace NGAME.Editor
             }
         }
 
-        private void AddMissingPorts(List<Port> oldPorts, VisualElement portContainer, List<string> newPortNames, bool isInputPort = true)
+        private void AddMissingPorts(List<ConnectionPort> oldPorts, VisualElement portContainer, List<string> newPortNames, bool isInputPort = true)
         {
             List<string> missingPorts = GetMissingPortNames(oldPorts, newPortNames);
 
@@ -379,11 +444,11 @@ namespace NGAME.Editor
                 }
             }
         }
-        private void RemoveExcessPorts(List<Port> oldPorts, VisualElement portContainer, List<string> newPortNames)
+        private void RemoveExcessPorts(List<ConnectionPort> oldPorts, VisualElement portContainer, List<string> newPortNames)
         {
-            List<Port> excessPorts = GetExcessPorts(oldPorts, newPortNames);
+            List<ConnectionPort> excessPorts = GetExcessPorts(oldPorts, newPortNames);
             
-            foreach(Port port in excessPorts )
+            foreach(ConnectionPort port in excessPorts )
             {
 
                 bool bIsRetained = false;
@@ -400,11 +465,11 @@ namespace NGAME.Editor
             }
         }
 
-        private List<string> GetMissingPortNames(List<Port> ports, List<string> portNames)
+        private List<string> GetMissingPortNames(List<ConnectionPort> ports, List<string> portNames)
         {
             List<string> missingPortNames = new List<string>();
             List<string> existingPortNames = new List<string>();
-            foreach (Port port in ports)
+            foreach (ConnectionPort port in ports)
             {
                 existingPortNames.Add(port.portName);
             }
@@ -420,11 +485,11 @@ namespace NGAME.Editor
             return missingPortNames;
         }
 
-        private List<Port> GetExcessPorts(List<Port> ports, List<string> newPortNames)
+        private List<ConnectionPort> GetExcessPorts(List<ConnectionPort> ports, List<string> newPortNames)
         {
-            List<Port> excessPorts = new List<Port>();
+            List<ConnectionPort> excessPorts = new();
 
-            foreach (Port port in ports)
+            foreach (ConnectionPort port in ports)
             {
                 if (!newPortNames.Contains(port.portName))
                 {
@@ -440,7 +505,7 @@ namespace NGAME.Editor
             
             foreach(var exit in Node.SceneData.Exits)
             {
-                Port output = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Single, typeof(bool));
+                ConnectionPort output = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Single, typeof(bool)) as ConnectionPort;
                 if(output != null)
                 {
                     output.portName = exit.Name;
@@ -456,57 +521,57 @@ namespace NGAME.Editor
            
             foreach (var entrance in Node.SceneData.Entrances)
             {
-                Port newPort = CreatePort(InputPorts, /*contentContainer*/ inputContainer, entrance.Name, typeof(bool));
+                ConnectionPort newPort = CreatePort(InputPorts, /*contentContainer*/ inputContainer, entrance.Name, typeof(bool));
             }
         }
 
-        protected void OnPreviewDrawn_CreatePorts(VisualElement imageContainer)
-        {
-            if (Node.SceneData == null)
-            {
-                return;
-            }
+        //protected void OnPreviewDrawn_CreatePorts(VisualElement imageContainer)
+        //{
+        //    if (Node.SceneData == null)
+        //    {
+        //        return;
+        //    }
 
-            string guid = Node.SceneData.SceneGuid;
-            if (!m_RoomGraphView.SceneLookup.ContainsKey(guid))
-            {
-                return;
-            }
-            float imageStyleWidth = imageContainer.style.width.value.value;
-            float imageStyleHeight = imageContainer.style.height.value.value;
-            Vector2 imageSize = new Vector2(imageStyleWidth, imageStyleHeight);
+        //    string guid = Node.SceneData.SceneGuid;
+        //    if (!m_RoomGraphView.SceneLookup.ContainsKey(guid))
+        //    {
+        //        return;
+        //    }
+        //    float imageStyleWidth = imageContainer.style.width.value.value;
+        //    float imageStyleHeight = imageContainer.style.height.value.value;
+        //    Vector2 imageSize = new Vector2(imageStyleWidth, imageStyleHeight);
 
-            SceneData data = m_RoomGraphView.SceneLookup[guid];
-            Vector2 swizzledWorldMin = new Vector2(data.Bounds.MinPoint.x, data.Bounds.MaxPoint.y);
-            Vector2 swizzledWorldMax = new Vector2(data.Bounds.MaxPoint.x, data.Bounds.MinPoint.y);
+        //    SceneData data = m_RoomGraphView.SceneLookup[guid];
+        //    Vector2 swizzledWorldMin = new Vector2(data.Bounds.MinPoint.x, data.Bounds.MaxPoint.y);
+        //    Vector2 swizzledWorldMax = new Vector2(data.Bounds.MaxPoint.x, data.Bounds.MinPoint.y);
 
-            List<RegionConnectionData> connectionData = data.UniqueConnectionObjects;
-            Connections.ForEach((ConnectionView c) => { c.Container.RemoveFromHierarchy(); });
-            Connections.Clear();
+        //    List<RegionConnectionData> connectionData = data.UniqueConnectionObjects;
+        //    Connections.ForEach((ConnectionView c) => { c.Container.RemoveFromHierarchy(); });
+        //    Connections.Clear();
 
-            foreach (var connection in connectionData)
-            {
-                Vector2 position = new Vector2(connection.Position.x, connection.Position.z);
+        //    foreach (var connection in connectionData)
+        //    {
+        //        Vector2 position = new Vector2(connection.Position.x, connection.Position.z);
 
-                //this will need to be modified with style font sizes
-                Vector2 offset = new Vector2(connection.Name.Length * -3.0f, -15.0f);
-                Vector2 relativePosition = ScenePreviewRenderer.RemapVector2(position, swizzledWorldMin, swizzledWorldMax, Vector2.zero, imageSize);
+        //        //this will need to be modified with style font sizes
+        //        Vector2 offset = new Vector2(connection.Name.Length * -3.0f, -15.0f);
+        //        Vector2 relativePosition = ScenePreviewRenderer.RemapVector2(position, swizzledWorldMin, swizzledWorldMax, Vector2.zero, imageSize);
 
-                ConnectionView connectionView = new(connection, relativePosition, imageSize, this);
-                imageContainer.Add(connectionView.Container);
-                Connections.Add(connectionView);
+        //        ConnectionView connectionView = new(connection, relativePosition, imageSize, this);
+        //        imageContainer.Add(connectionView.Container);
+        //        Connections.Add(connectionView);
 
-                if (connectionView.Entrance != null)
-                {
-                    InputPorts.Add(connectionView.Entrance);
-                }
+        //        if (connectionView.Entrance != null)
+        //        {
+        //            InputPorts.Add(connectionView.Entrance);
+        //        }
 
-                if(connectionView.Exit != null)
-                {
-                    OutputPorts.Add(connectionView.Exit);
-                }
-            }
-        }
+        //        if(connectionView.Exit != null)
+        //        {
+        //            OutputPorts.Add(connectionView.Exit);
+        //        }
+        //    }
+        //}
         private void OnPreviewDrawn_LabelsOnly(VisualElement imageContainer)
         {
             if (Node.SceneData == null)
@@ -710,11 +775,11 @@ namespace NGAME.Editor
             OnValuesChanged();
         }
 
-        private Port CreatePort(List<Port> portList, VisualElement portContainer, string portName, System.Type passedDataType, 
+        private ConnectionPort CreatePort(List<ConnectionPort> portList, VisualElement portContainer, string portName, System.Type passedDataType, 
             Direction flowDirection = Direction.Input, Port.Capacity portCapacity = Port.Capacity.Multi, 
             Orientation orientation = Orientation.Horizontal)
         {
-            Port newPort = InstantiatePort(orientation, flowDirection, portCapacity, passedDataType);
+            ConnectionPort newPort = InstantiatePort(orientation, flowDirection, portCapacity, passedDataType) as ConnectionPort;
             if (newPort != null)
             {
                 //newPort.conn
@@ -731,7 +796,7 @@ namespace NGAME.Editor
             return ConnectionPort.Create<Edge>(orientation, direction, capacity, type);
         }
 
-        protected bool TryRetainConnectedPorts(Port port, List<Port> portCollection)
+        protected bool TryRetainConnectedPorts(ConnectionPort port, List<ConnectionPort> portCollection)
         {
             if (port.connected)
             {
@@ -749,7 +814,7 @@ namespace NGAME.Editor
                         continue;
                     }
                 }
-                MarkPortConnectionError(otherPort, edge, sourceTooltip);
+                MarkPortConnectionError(otherPort as ConnectionPort, edge, sourceTooltip);
                 MarkPortConnectionError(port, null, destinationTooltip);
                 OldConnectedPorts.Add(port);
                 portCollection.Remove(port);
@@ -758,7 +823,7 @@ namespace NGAME.Editor
             return false;
         }
 
-        private void OnPortConnected(Port port)
+        private void OnPortConnected(ConnectionPort port)
         {
             if(port != null)
             {
@@ -786,7 +851,7 @@ namespace NGAME.Editor
             }
         }
 
-        private void OnPortDisconnected(Port port, Edge edge)
+        private void OnPortDisconnected(ConnectionPort port, Edge edge)
         {
             if(port != null)
             {
@@ -807,23 +872,20 @@ namespace NGAME.Editor
             NodeView sourceNode = edge.output.node as NodeView;
             if(sourceNode != null)
             {
-                sourceNode.OnPortDisconnected(edge.output, edge);
+                sourceNode.OnPortDisconnected(edge.output as ConnectionPort, edge);
             }
 
             NodeView destinationNode = edge.input.node as NodeView;
             if(destinationNode != null)
             {
-                destinationNode.OnPortDisconnected(edge.input, edge);
+                destinationNode.OnPortDisconnected(edge.input as ConnectionPort, edge);
             }
 
             // runtime node updates
              
             if(sourceNode != null && destinationNode != null)
             {
-                EdgeData newEdgeData = new EdgeData(edge.output.portName, sourceNode.Node.SceneData.SceneGuid, destinationNode.Node.Guid, destinationNode.Node.SceneData.SceneGuid, edge.input.portName);
-                newEdgeData.SourceSceneGuid = sourceNode.Node.Guid;
-                newEdgeData.SourceSceneName = sourceNode.Node.SceneData.SceneName;
-                newEdgeData.DestinationSceneName = destinationNode.Node.SceneData.SceneName;
+                EdgeData newEdgeData = CreateEdgeDataFromEdge(edge);
 
                 Undo.IncrementCurrentGroup();
                 Undo.RecordObjects(new UnityEngine.Object[]{ sourceNode.Node, destinationNode.Node}, "NGAME - disconnect nodes");
@@ -835,22 +897,106 @@ namespace NGAME.Editor
             } 
         }
 
+        protected static EdgeData CreateEdgeDataFromEdge(Edge edge)
+        {
+            EdgeData result;
+            NodeView sourceNode = edge.output.node as NodeView;
+            NodeView destinationNode = edge.input.node as NodeView;
+            SceneConnectionsData sourceScene = sourceNode != null && sourceNode.Node != null ? sourceNode.Node.SceneData : null;
+            SceneConnectionsData destinationScene = destinationNode != null && destinationNode.Node != null ? destinationNode.Node.SceneData : null; 
+
+            string outputName = edge.output != null ? edge.output.portName : "";
+            string inputName = edge.input != null ? edge.input.portName : "";
+
+            if (sourceScene != null && destinationScene != null)
+            {
+                 result = new EdgeData(sourceNode.Node.Guid, sourceScene.SceneGuid, sourceScene.SceneName, outputName, 
+                    destinationNode.Node.Guid, destinationScene.SceneGuid, destinationScene.SceneName, inputName);
+            }
+            else if(sourceScene != null)
+            {
+                result = new EdgeData(sourceNode.Node.Guid, sourceScene.SceneGuid, sourceScene.SceneName, outputName,
+                    "", "", "", inputName);
+            }
+            else if (destinationScene != null)
+            {
+                result = new EdgeData("", "", "", outputName,
+                    destinationNode.Node.Guid, destinationScene.SceneGuid, destinationScene.SceneName, inputName);
+            }
+            else
+            {
+                result = new EdgeData();
+            }
+
+                return result;
+        }
+
+        protected EdgeData CreateEdgeDataFromPort(ConnectionPort port , Direction portDirectionOverride = Direction.Input, bool bUsePortDirectionOverride = false)
+        {
+            if (port.NGAMEData != null && bUsePortDirectionOverride == false)
+                return port.NGAMEData;
+
+            if(port.NGAMEData != null)
+            {
+                if(portDirectionOverride == port.direction)
+                    return port.NGAMEData;
+
+                return EdgeData.Invert(port.NGAMEData);
+            }
+            
+            Direction usedDirection = bUsePortDirectionOverride ? portDirectionOverride : port.direction;
+
+            if (port.connected)
+            {
+                Edge connection = port.connections.First();
+                if (connection != null && port.direction == usedDirection)
+                    return CreateEdgeDataFromEdge(connection);
+
+                if(connection != null && port.direction != usedDirection)
+                {
+                    return EdgeData.Invert(CreateEdgeDataFromEdge(connection));
+                }
+            }
+
+            EdgeData result = new();
+
+            if(usedDirection == Direction.Input)
+            {
+                result.DestinationNodeGuid = Node.Guid;
+                result.DestinationSceneGuid = CurrentSceneGuid;
+                result.DestinationSceneName = Node.SceneData.SceneName;
+                result.DestinationPortName = port.portName;
+            }
+            else
+            {
+                result.SourceNodeGuid = Node.Guid;
+                result.SourceSceneGuid = CurrentSceneGuid;
+                result.SourceSceneName = Node.SceneData.SceneName;
+                result.SourcePortName = port.portName;
+            }
+
+                return result;
+        }
         public static void AddEdge(Edge edge)
         {
             
             // editor view node updates
             NodeView sourceNode = edge.output.node as NodeView;
-            sourceNode.OnPortConnected(edge.output);
+            ConnectionPort outputPort = edge.output as ConnectionPort;
+            sourceNode.OnPortConnected(outputPort);
 
             NodeView destinationNode = edge.input.node as NodeView;
-            destinationNode.OnPortConnected(edge.input);
+            ConnectionPort inputPort = edge.input as ConnectionPort;
+            destinationNode.OnPortConnected(inputPort);
 
             // runtime node updates
 
-            EdgeData newEdgeData = new EdgeData(edge.output.portName, sourceNode.Node.SceneData.SceneGuid, destinationNode.Node.Guid, destinationNode.Node.SceneData.SceneGuid, edge.input.portName);
-            newEdgeData.SourceNodeGuid = sourceNode.Node.Guid;
-            newEdgeData.SourceSceneName = sourceNode.Node.SceneData.SceneName;
-            newEdgeData.DestinationSceneName = destinationNode.Node.SceneData.SceneName;
+            EdgeData newEdgeData = CreateEdgeDataFromEdge(edge);
+
+            if (inputPort != null)
+                inputPort.NGAMEData = newEdgeData;
+            if (outputPort != null)
+                outputPort.NGAMEData = newEdgeData;
 
             Undo.IncrementCurrentGroup();
             Undo.RecordObjects(new UnityEngine.Object[] { sourceNode.Node, destinationNode.Node }, "NGAME - connect nodes");
@@ -861,15 +1007,13 @@ namespace NGAME.Editor
                 sourceNode.OnNodeValuesChanged.Invoke(sourceNode);
         }
 
-        private void MarkPortConnectionError(Port port, Edge edge, string tooltip = "", bool bShowError = true)
+        private void MarkPortConnectionError(ConnectionPort port, Edge edge, string tooltip = "", bool bShowError = true)
         {
             if (bShowError)
             {
                 if (port != null)
                 {
-                    port.AddToClassList("Error1");
-                    port.tooltip = tooltip;
-                    port.portColor = Color.red;
+                    port.MarkInvalid(bShowError, tooltip);
                 }
 
                 if (edge != null)
@@ -883,9 +1027,7 @@ namespace NGAME.Editor
             {
                 if (port != null)
                 {
-                    port.RemoveFromClassList("Error1");
-                    port.tooltip = tooltip;
-                    port.portColor = m_ValidPortColor;
+                    port.MarkInvalid(bShowError, tooltip);
                 }
 
                 if (edge != null)
@@ -962,7 +1104,7 @@ namespace NGAME.Editor
             for (int i = 0; i < Node.OutgoingEdges.Count; i++)
             {
                 EdgeData serializedEdge = Node.OutgoingEdges[i];
-                Port sourcePort = GetPortByName(serializedEdge.SourcePortName, OutputPorts);
+                ConnectionPort sourcePort = GetPortByName(serializedEdge.SourcePortName, OutputPorts);
 
                 
                 // NOTE REMEMBER TO UNCOMMENT THE ABOVE AND COMMENT OUT THE CONNECTIONVIEW STUFF IF SWAPPING TO OTHER DISPLAY STYLE
@@ -982,7 +1124,7 @@ namespace NGAME.Editor
                     continue;
                 }
 
-                Port destinationPort = destinationView.GetPortByName(serializedEdge.DestinationPortName, destinationView.InputPorts);
+                ConnectionPort destinationPort = destinationView.GetPortByName(serializedEdge.DestinationPortName, destinationView.InputPorts);
                 //ConnectionView destinationPortContainer = destinationView.Connections.FirstOrDefault((ConnectionView c) => c.Title.text == serializedEdge.DestinationPortName);
                 //Port destinationPort = destinationPortContainer.Entrance;
 
@@ -1055,7 +1197,7 @@ namespace NGAME.Editor
                     {
                         string errorTooltip = "Missing connection to port named " + serializedEdge.DestinationPortName;
                         string destinationTooltip = "Connecetion named " + serializedEdge.DestinationPortName + ", doesn't exist in scene.";
-                        Port newDestination = destinationView.AddErrorInputPort(serializedEdge.DestinationPortName);
+                        ConnectionPort newDestination = destinationView.AddErrorInputPort(serializedEdge.DestinationPortName);
 
                         Edge newEdge = sourcePort.ConnectTo(newDestination);
                         m_RoomGraphView.AddElement(newEdge);
@@ -1078,7 +1220,7 @@ namespace NGAME.Editor
             }
         }
 
-        protected Port AddErrorInputPort( string portName)
+        protected ConnectionPort AddErrorInputPort( string portName)
         {
             return CreatePort(OldConnectedPorts, inputContainer, portName, typeof(bool)) ;
         }
@@ -1093,9 +1235,9 @@ namespace NGAME.Editor
                 OnNodeValuesChanged.Invoke(this);
         }
 
-        public Port GetPortByName(string name, List<Port> portCollection)
+        public ConnectionPort GetPortByName(string name, List<ConnectionPort> portCollection)
         {
-            return portCollection.FirstOrDefault((Port e) => e.portName == name);
+            return portCollection.FirstOrDefault((ConnectionPort e) => e.portName == name);
         }
 
         public override void OnSelected()

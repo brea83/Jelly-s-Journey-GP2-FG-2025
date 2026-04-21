@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
 namespace NGAME
 {
     [System.Serializable]
@@ -40,16 +42,20 @@ namespace NGAME
 
             return result;
         }
-        public EdgeData(string sourcePortName, string sourceSceneGuid, string destinationNodeGuid, string destinationSceneGuid, string destinationPortName)
+        public EdgeData(string sourceNodeGuid, string sourceSceneGuid, string sourceSceneName, string sourcePortName,
+            string destinationNodeGuid, string destinationSceneGuid, string destinationSceneName, string destinationPortName)
         {
-
-            SourcePortName = sourcePortName;
+            SourceNodeGuid = sourceNodeGuid;
             SourceSceneGuid = sourceSceneGuid;
+            SourceSceneName = sourceSceneName;
+            SourcePortName = sourcePortName;
 
             DestinationNodeGuid = destinationNodeGuid;
             DestinationSceneGuid = destinationSceneGuid;
+            DestinationSceneName = destinationSceneName;
             DestinationPortName = destinationPortName;
         }
+
 
         // intended to be called by a node when its scene connections change
         public bool ReplaceSceneAtNodeGuid(string changedNodeGuid, SceneConnectionsData sceneData)
