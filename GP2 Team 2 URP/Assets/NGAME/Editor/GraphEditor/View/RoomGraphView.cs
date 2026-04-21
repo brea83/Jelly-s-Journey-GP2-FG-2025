@@ -158,11 +158,6 @@ namespace NGAME.Editor
             {
                 if(node is RoomNode)
                 {
-                    //RoomNode roomNode = node as RoomNode;
-                    //string guid = node.SceneData != null ? node.SceneData.SceneGuid : "";
-                    //SceneConnectionsData data = ValidScenes.FirstOrDefault((SceneConnectionsData data) => data.SceneGuid == guid);
-                    //if (data != null)
-                    //    node.SceneData = data.DeepCopy();
                     CreateNodeView(node);
                 }
             }
@@ -208,6 +203,20 @@ namespace NGAME.Editor
             m_UndoableGraphChanges.Reset();
 
             AssetDatabase.SaveAssetIfDirty(_graph);
+        }
+
+        public void DiscardChanges()
+        {
+            if(_graph == null) return;
+
+            List<string> paths = new();
+
+            paths.Add(AssetDatabase.GetAssetPath(_graph));
+            AssetDatabase.ForceReserializeAssets(paths);
+            AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(_graph), ImportAssetOptions.ForceUpdate);
+            AssetDatabase.Refresh();
+
+            PopulateView(_graph);
         }
 
         private NodeView FindNodeView(IMapNode roomNode)

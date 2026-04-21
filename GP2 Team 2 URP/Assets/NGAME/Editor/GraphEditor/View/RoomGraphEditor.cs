@@ -1,10 +1,13 @@
-using UnityEditor;
-using UnityEngine;
-using UnityEngine.UIElements;
+using NUnit.Framework;
 using System.Collections.Generic;
+using System.IO;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.Overlays;
 using UnityEditor.UIElements;
+using UnityEditor.VersionControl;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace NGAME.Editor
 {
@@ -147,9 +150,16 @@ namespace NGAME.Editor
         }
         private void OnNodeValuesChanged(NodeView nodeView)
         {
-            if(nodeView != null && _inspectorView != null)
-                _inspectorView.Repaint(nodeView);
-            EditorUtility.SetDirty(_graph);
+            if (nodeView != null) 
+            {
+                if (_inspectorView != null)
+                    _inspectorView.Repaint(nodeView);
+                if(nodeView.Node != null)
+                    EditorUtility.SetDirty(nodeView.Node);
+            } 
+
+            if(_graph != null)
+                EditorUtility.SetDirty(_graph);
             hasUnsavedChanges = true;
         }
 
@@ -181,6 +191,8 @@ namespace NGAME.Editor
         public override void DiscardChanges()
         {
             Debug.Log("discard changes clicked, will reload graph file");
+            _graphView.DiscardChanges();
+
             base.DiscardChanges();
         }
 
