@@ -112,7 +112,7 @@ namespace NGAME.Editor
         public override void Connect(Edge edge)
         {
             base.Connect(edge);
-            Debug.Log("Port.Connect on" + this.portName + ": Edge created between " + edge.input.portName + ", and " + edge.output.portName);
+            //Debug.Log("Port.Connect on" + this.portName + ": Edge created between " + edge.input.portName + ", and " + edge.output.portName);
         }
 
         public override void Disconnect(Edge edge)

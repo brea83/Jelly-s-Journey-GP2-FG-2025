@@ -487,14 +487,14 @@ namespace NGAME.Editor
 
             }
 
-            if (!bConnectionsFound && !bSpawnersFound)
-            {
-                Debug.Log("No IEncounterRegionConnector or ISpawnPoint components found in scene: " + aScene.name);
-            }
-            else
-            {
-                Debug.Log("Scene: " + aScene.name + " contains target data types");
-            }
+            //if (!bConnectionsFound && !bSpawnersFound)
+            //{
+            //    Debug.Log("No IEncounterRegionConnector or ISpawnPoint components found in scene: " + aScene.name);
+            //}
+            //else
+            //{
+            //    Debug.Log("Scene: " + aScene.name + " contains target data types");
+            //}
 
             result.UniqueConnectionObjects = conectionObjects;
             result.SpawnPoints = spawners;
