@@ -457,8 +457,8 @@ namespace NGAME.Editor
             List<RegionConnectionData> conectionObjects = new();
             List<SpawnerData> spawners = new();
 
-            bool bConnectionsFound = false;
-            bool bSpawnersFound = false;
+            //bool bConnectionsFound = false;
+            //bool bSpawnersFound = false;
 
             GameObject[] rootObjects = aScene.GetRootGameObjects();
 
@@ -466,7 +466,7 @@ namespace NGAME.Editor
             {
                 // connection data
                 IEncounterRegionConnector[] connectorComponent = obj.GetComponentsInChildren<IEncounterRegionConnector>();
-                if (connectorComponent.Length > 0) bConnectionsFound = true;
+                //if (connectorComponent.Length > 0) bConnectionsFound = true;
 
                 foreach (IEncounterRegionConnector connection in connectorComponent)
                 {
@@ -478,7 +478,7 @@ namespace NGAME.Editor
                 // spawner data
 
                 ISpawnPoint[] spawnerComponents = obj.GetComponentsInChildren<ISpawnPoint>();
-                if (spawnerComponents.Length > 0) bSpawnersFound = true;
+                //if (spawnerComponents.Length > 0) bSpawnersFound = true;
 
                 foreach (ISpawnPoint spawner in spawnerComponents)
                 {
