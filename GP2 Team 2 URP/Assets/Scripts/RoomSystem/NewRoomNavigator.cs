@@ -7,6 +7,7 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using NGAME;
 using FMODUnity;
+using RoomSystem;
 
 public class NewRoomNavigator : MonoBehaviour
 {
@@ -26,16 +27,30 @@ public class NewRoomNavigator : MonoBehaviour
     public bool NavigationEnabled = true;
     public bool PrintDebugLogs = false;
 
+    private bool m_LoadFromGraphNeeded;
+
     private void Start()
     {
         StringBuilder sb = new StringBuilder();
 
         //m_Graph.PlaymodeStartedFromGraph.AddListener(OnGraphInitiatedPlaymode);
+        SceneManager.sceneLoaded -= OnSceneLoaded;
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
-    public void OnGraphInitiatedPlaymode()
+
+    private void Update()
     {
-        OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
+        if (m_LoadFromGraphNeeded)
+        {
+            m_LoadFromGraphNeeded = false;
+            LoadScene(m_Graph.CurrentRoom.SceneData.SceneName, false);
+        }
+    }
+    public void OnGraphInitiatedPlaymode(MapGraphRuntime runtimeGraph)
+    {
+        m_Graph = runtimeGraph;
+        m_LoadFromGraphNeeded = true;
+
     }
     public void EnterFirstRoom()
     {
@@ -104,7 +119,8 @@ public class NewRoomNavigator : MonoBehaviour
             foreach (IEncounterRegionConnector connector in m_Graph.CurrentConnectors)
             {
                 ConnectExit(connector);
-                if (connector.GetRegionConnectionData().Name == arrivalName)
+                Door thisDoor = connector as Door;
+                if (thisDoor != null && thisDoor.name == arrivalName)
                 {
                     arrivalObject = connector;
                 }

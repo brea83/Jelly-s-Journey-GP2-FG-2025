@@ -1,7 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
+
+
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -10,9 +12,10 @@ namespace NGAME
 {
     public class MapGraphRuntime : MonoBehaviour
     {
-        public UnityEvent RoomLoadStart;
-        public UnityEvent<IEncounterRegionConnector> RoomLoadComplete;
-        public UnityEvent PlaymodeStartedFromGraph;
+        //public UnityEvent RoomLoadStart;
+        //public UnityEvent<IEncounterRegionConnector> RoomLoadComplete;
+        public UnityEvent<MapGraphRuntime> PlaymodeStartedFromGraph;
+        private bool m_PlaymodeFromGraphInvoked = false;
         //[Header("Room Load Effects")]
         //public CircleWipeControler CircleWipe;
 
@@ -46,8 +49,8 @@ namespace NGAME
                 m_Graph.PrintGraph();
             }
 
-
-            m_CurrentRoom = m_Graph.rootNode;
+            if(m_CurrentRoom == null)
+                m_CurrentRoom = m_Graph.rootNode;
 
             if (!EnableNavigation)
             {
@@ -172,13 +175,21 @@ namespace NGAME
             return false;
         }
 
-        public bool TryEnterRoomFromGraph(EdgeData edge)
+        public bool TryEnterRoomFromGraph(EdgeData edge, RoomGraph graph)
         {
+            if (graph == null || m_PlaymodeFromGraphInvoked)
+                return false;
+
+            RoomGraph oldGraph = m_Graph;
+            m_Graph = graph;
+
             if (TryEnterRoom(edge) && PlaymodeStartedFromGraph != null)
             {
-                PlaymodeStartedFromGraph.Invoke();
+                m_PlaymodeFromGraphInvoked = true;
+                PlaymodeStartedFromGraph.Invoke(this);
                 return true;
             }
+            m_Graph = oldGraph;
             return false;
         }
 

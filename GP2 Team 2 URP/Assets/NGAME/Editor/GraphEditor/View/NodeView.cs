@@ -8,6 +8,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEditor.SceneManagement;
 using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 namespace NGAME.Editor
@@ -17,11 +18,15 @@ namespace NGAME.Editor
         public RoomGraphView m_RoomGraphView;
         public Action<NodeView> OnNodeSelected;
         public Action<NodeView> OnNodeValuesChanged;
+        public Action<EdgeData> RequestPlayMode;
         public RoomNode Node;
         public List<ConnectionPort> InputPorts = new();
         public List<ConnectionPort> OutputPorts = new();
         public List<ConnectionPort> OldConnectedPorts = new();
         //public List<ConnectionView> Connections = new();
+
+        private static int m_InstanceCounter = 0;
+        private int m_MyInstanceNumber;
 
         private Button EditSceneButton;
         private DropdownField m_RoomSelectDropdown;
@@ -45,6 +50,7 @@ namespace NGAME.Editor
         
         public NodeView(RoomGraphView graph, RoomNode node, List<SceneConnectionsData> roomDataObjects = null) 
         {
+            m_MyInstanceNumber = ++m_InstanceCounter;
             this.m_RoomGraphView = graph;
             this.Node = node;
             CurrentSceneGuid = Node.SceneData != null ? Node.SceneData.SceneGuid : "";
@@ -134,8 +140,20 @@ namespace NGAME.Editor
 
             UpdateCurrentSceneSpawnData();
             PopulateEncounterContainer();
+
+            //RegisterCallback<AttachToPanelEvent>(evt =>
+            //{
+            //    Debug.Log($"I am NodeView {m_MyInstanceNumber} and I " +
+            //        $"just got attached to panel '{evt.destinationPanel.visualTree.name}'");
+            //});
+            //RegisterCallback<DetachFromPanelEvent>(evt =>
+            //{
+            //    Debug.Log($"I am NodeView {m_MyInstanceNumber} and I " +
+            //        $"just got detached from panel '{evt.originPanel.visualTree.name}'");
+            //});
         }
 
+        
         private void UpdateCurrentSceneSpawnData()
         {
             if(Node.SceneData == null)
@@ -181,65 +199,19 @@ namespace NGAME.Editor
         {
             if (port == null) return;
             StringBuilder message = new();
-            message.Append("Trying to play from port: ");
-            message.Append(port.portName);
-            message.Append(", in Scene: ");
-            message.Append(Node.SceneData.SceneName);
-            message.Append(", from Node: ");
-            message.Append(Node.name);
+            message.Append("Trying to play from port: " + port.portName);
+            message.Append(", in Scene: " + Node.SceneData.SceneName);
+            message.Append(", from Node: " + Node.name);
 
             Debug.LogWarning(message.ToString());
 
-            SceneData data = null;
-            m_RoomGraphView.SceneLookup.TryGetValue(CurrentSceneGuid, out data);
-
-
-            if (data == null)
-            {
-                return;
-            }
-
             m_PlaymodeEntranceRequest = CreateEdgeDataFromPort(port, Direction.Input, true);
+            if (RequestPlayMode != null)
+                RequestPlayMode.Invoke(m_PlaymodeEntranceRequest);
 
-            string scenePath = data.FilePath;
-
-            SceneAsset myWantedStartScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(scenePath);
-            if (myWantedStartScene == null)
-            {
-                Debug.Log("Could not start Playmode from graph because could not find Scene " + scenePath);
-                return;
-            }
-
-            EditorSceneManager.playModeStartScene = myWantedStartScene;
-
-            EditorSceneManager.sceneLoaded += OnPlaymodeSceneLoaded;
-            EditorApplication.EnterPlaymode();
+            Debug.Log("NodeView after RequestPlaymode called, but before leaving try play from port function");
         }
-
-        private void OnPlaymodeSceneLoaded(UnityEngine.SceneManagement.Scene loadedScene, UnityEngine.SceneManagement.LoadSceneMode mode )
-        {
-            if (loadedScene.name != Node.SceneData.SceneName)
-                return;
-
-            EditorSceneManager.sceneLoaded -= OnPlaymodeSceneLoaded;
-            EditorSceneManager.playModeStartScene = null;
-
-            GameObject[] rootObjects = loadedScene.GetRootGameObjects();
-            MapGraphRuntime runtimeGraph = null;
-            foreach (GameObject obj in rootObjects)
-            {
-                runtimeGraph = obj.GetComponentInChildren<MapGraphRuntime>();
-                if (runtimeGraph != null)
-                {
-                    break; 
-                }
-            }
-
-            if (runtimeGraph == null || m_PlaymodeEntranceRequest == null)
-                return;
-
-            runtimeGraph.TryEnterRoomFromGraph(m_PlaymodeEntranceRequest);
-        }
+        
 
         private void CreateRoomSelector(List<NGAME.SceneConnectionsData> roomDataObjects)
         {

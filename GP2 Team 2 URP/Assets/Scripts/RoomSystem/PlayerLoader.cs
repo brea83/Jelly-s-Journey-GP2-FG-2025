@@ -27,6 +27,8 @@ public class PlayerLoader : MonoBehaviour
             if (PrintDebugLogs) Debug.Log($" room navigator is trying to disable  current actionmap {_PlayerInputMapSwapper.Input.currentActionMap?.name}");
             _PlayerInputMapSwapper.ToggleInputsEnabled(false);
         }
+        if (_Player == null)
+            return;
         _Player.GetComponent<PlayerController>().ChangeDash();
         _Player.SetActive(false);
         if (PrintDebugLogs) Debug.Log($"disabling player to leave current room");
@@ -34,6 +36,13 @@ public class PlayerLoader : MonoBehaviour
 
     public void OnSceneLoadComplete(IEncounterRegionConnector traversedConnector)
     {
+        if (_Player == null)
+        {
+            _Player = GameManager.Instance.player;
+            _PlayerInputMapSwapper = _Player.GetComponent<PlayerInputMapSwapper>();
+            if (_Player == null)
+                return;
+        }
 
         if(traversedConnector == null)
         {
@@ -52,7 +61,7 @@ public class PlayerLoader : MonoBehaviour
             }
         }
         //PlayerInputMapSwapper _playerInputMapSwapper = _player.GetComponent<PlayerInputMapSwapper>();//<PlayerInput>();
-        if (_PlayerInputMapSwapper != null)
+        if (_PlayerInputMapSwapper != null && _PlayerInputMapSwapper.Input != null)
         {
             if (PrintDebugLogs) Debug.Log($"room navigator is trying to enable current actionmap {_PlayerInputMapSwapper.Input.currentActionMap?.name}");
             _PlayerInputMapSwapper.ToggleInputsEnabled();

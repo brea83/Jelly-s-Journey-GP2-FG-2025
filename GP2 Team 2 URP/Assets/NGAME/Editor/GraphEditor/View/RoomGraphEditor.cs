@@ -1,12 +1,11 @@
-using NUnit.Framework;
 using System.Collections.Generic;
-using System.IO;
+using System.Text;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
-using UnityEditor.Overlays;
+using UnityEditor.SceneManagement;
 using UnityEditor.UIElements;
-using UnityEditor.VersionControl;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 namespace NGAME.Editor
@@ -40,6 +39,10 @@ namespace NGAME.Editor
 
         private StyleSheet m_Style;
 
+        private EdgeData m_PlaymodeEntranceRequest;
+        private string m_PlaymodeGraphPath;
+        private bool m_PlaymodeRequestSent;
+
 
         [MenuItem("NGAME/Editor")]
         public static void OpenWindow()
@@ -64,6 +67,101 @@ namespace NGAME.Editor
 
             editor.saveChangesMessage = "This Window has unsaved changes. Would you like to save?";
 
+        }
+
+        private void OnEnable()
+        {
+            Debug.Log("NGAME Window OnEnable");
+            EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            SceneManager.activeSceneChanged -= OnActiveSceneChanged;
+
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+            SceneManager.sceneLoaded += OnSceneLoaded;
+            SceneManager.activeSceneChanged += OnActiveSceneChanged;
+
+            //Debug.Log("NGAME Editor.m_PlaymodeEntranceRequest: " + m_PlaymodeEntranceRequest);
+        }
+        private void OnDisable()
+        {
+            EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            SceneManager.activeSceneChanged -= OnActiveSceneChanged;
+            //Debug.Log("NGAME Editor.m_PlaymodeEntranceRequest: " + m_PlaymodeEntranceRequest);
+            Debug.Log("NGAME Window OnDisable");
+        }
+
+        private void OnDestroy()
+        {
+            //Debug.Log("NGAME Editor.m_PlaymodeEntranceRequest: " + m_PlaymodeEntranceRequest);
+            Debug.Log("NGAME Window OnDestroy");
+        }
+
+        private void OnActiveSceneChanged(Scene currentScene, Scene nextScene)
+        {
+            StringBuilder message = new();
+            message.Append("SceneManager.activeSceneChanged: curent scene (" + currentScene.name + "), ");
+            message.Append("next scene (" + nextScene.name + ")");
+            Debug.Log(message.ToString());
+           // Debug.Log("NGAME Editor.m_PlaymodeEntranceRequest: " + m_PlaymodeEntranceRequest);
+            if(m_PlaymodeEntranceRequest != null && nextScene.name == m_PlaymodeEntranceRequest.DestinationSceneName)
+                InitRuntimeGraph(nextScene);
+        }
+        private void OnSceneLoaded(Scene loadedScene, LoadSceneMode mode)
+        {
+            Debug.Log("SceneManager.sceneLoaded: " + loadedScene.name);
+        }
+        private void OnPlayModeStateChanged(PlayModeStateChange stateChange)
+        {
+            Debug.Log("PlayMode State Change: " + stateChange.ToString());
+            //Debug.Log("NGAME Editor.m_PlaymodeEntranceRequest: " + m_PlaymodeEntranceRequest);
+        }
+
+        public void RegisterPlayModeRequest(SceneAsset requestedScene, EdgeData entrance)
+        {
+            m_PlaymodeEntranceRequest = entrance;
+            m_PlaymodeGraphPath = AssetDatabase.GetAssetPath(_graph);
+            m_PlaymodeRequestSent = false;
+            Debug.Log("NGAME Editor recieved request to enter: " + entrance);
+
+            if (requestedScene == null)
+            {
+                Debug.Log("Could not start Playmode from graph because could not find Scene " + entrance.DestinationSceneName);
+                return;
+            }
+
+            EditorSceneManager.playModeStartScene = requestedScene;
+
+            //EditorSceneManager.sceneLoaded += OnPlaymodeSceneLoaded;
+            //SceneManager.sceneLoaded += OnPlaymodeSceneLoaded;
+
+            EditorApplication.EnterPlaymode();
+        }
+
+        protected void InitRuntimeGraph(Scene loadedScene)
+        {
+            GameObject[] rootObjects = loadedScene.GetRootGameObjects();
+            MapGraphRuntime runtimeGraph = FindFirstObjectByType<MapGraphRuntime>();
+            //foreach (GameObject obj in rootObjects)
+            //{
+            //    runtimeGraph = obj.GetComponentInChildren<MapGraphRuntime>();
+            //    if (runtimeGraph != null)
+            //    {
+            //        break;
+            //    }
+            //}
+
+            if (runtimeGraph == null || m_PlaymodeEntranceRequest == null)
+                return;
+
+            
+            if(!m_PlaymodeRequestSent)
+            {
+                m_PlaymodeRequestSent = true;
+                EditorSceneManager.playModeStartScene = null;
+                runtimeGraph.TryEnterRoomFromGraph(m_PlaymodeEntranceRequest, _graph);
+                m_PlaymodeEntranceRequest = null;
+            }
         }
 
         public void CreateGUI()
@@ -99,6 +197,7 @@ namespace NGAME.Editor
 
             _graphView.OnNodeSelected = OnNodeSelectionChanged;
             _graphView.OnNodeValuesChanged = OnNodeValuesChanged;
+            _graphView.RegisterPlayModeRequest = RegisterPlayModeRequest;
             _graphView.OnGraphChanged += OnGraphChanged;
             OnSelectionChange();
 

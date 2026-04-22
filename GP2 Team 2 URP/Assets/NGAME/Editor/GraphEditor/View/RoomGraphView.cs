@@ -65,6 +65,7 @@ namespace NGAME.Editor
     {
         public Action<NodeView> OnNodeSelected;
         public Action<NodeView> OnNodeValuesChanged;
+        public Action<SceneAsset, EdgeData> RegisterPlayModeRequest;
         public Action OnGraphChanged;
 
         public List<SceneInclusionData> IncludedScenes = new List<SceneInclusionData>();
@@ -365,6 +366,7 @@ namespace NGAME.Editor
             NodeView nodeView = new NodeView(this, roomNode, ValidScenes);
             nodeView.OnNodeSelected = OnNodeSelected;
             nodeView.OnNodeValuesChanged = OnNodeValuesChanged;
+            nodeView.RequestPlayMode = OnPlayModeRequest;
             AddElement(nodeView);
         }
 
@@ -381,6 +383,22 @@ namespace NGAME.Editor
         {
             GetRoomDataObjects();
             PopulateView(_graph);
+        }
+
+        private void OnPlayModeRequest(EdgeData edge)
+        {
+            SceneData data = null;
+            SceneLookup.TryGetValue(edge.DestinationSceneGuid, out data);
+
+            if (data == null)
+                return;
+
+            string scenePath = data.FilePath;
+
+            SceneAsset myWantedStartScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(scenePath);
+
+            if (RegisterPlayModeRequest != null)
+                RegisterPlayModeRequest.Invoke(myWantedStartScene, edge);
         }
 
         private void GetRoomDataObjects()
