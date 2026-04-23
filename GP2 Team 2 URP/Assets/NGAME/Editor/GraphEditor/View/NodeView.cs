@@ -37,6 +37,8 @@ namespace NGAME.Editor
 
         // container that input and output containers are in is called  topContainer on the parent class
 
+        public SceneData CurrentSceneData { get => m_CurrentSceneData; }
+        private SceneData m_CurrentSceneData;
         public SceneSpawnData CurrentSpawnData { get => m_CurrentSceneSpawnData; }
         private SceneSpawnData m_CurrentSceneSpawnData;
         private VisualElement m_EncountersContainer;
@@ -73,7 +75,7 @@ namespace NGAME.Editor
             EditSceneButton = new Button()
             {
                 name = "EditSceneButton",
-                text = "Open Scene",
+                text = "Edit Scene",
             };
             EditSceneButton.clicked += OnEditSceneButtonClicked;
             titleButtonContainer.Add(EditSceneButton);
@@ -82,6 +84,11 @@ namespace NGAME.Editor
             if (roomDataObjects != null )
             {
                 CreateRoomSelector( roomDataObjects );
+            }
+
+            if(Node.SceneData != null && !string.IsNullOrEmpty(Node.SceneData.SceneGuid))
+            {
+                m_RoomGraphView.SceneLookup.TryGetValue(Node.SceneData.SceneGuid, out m_CurrentSceneData);
             }
 
             Label entranceLabel = new();
@@ -195,21 +202,50 @@ namespace NGAME.Editor
             }
         }
 
+        public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
+        {
+            if ( (Node.SceneData != null && !string.IsNullOrEmpty(Node.SceneData.SceneName))
+                && evt.target is NodeView || evt.target is ConnectionPort)
+            {
+                evt.menu.AppendAction($"Open Scene ({Node.SceneData.SceneName}) to Edit", delegate
+                {
+                    OnEditSceneButtonClicked();
+                }, (DropdownMenuAction a) => string.IsNullOrEmpty(CurrentSceneGuid) ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal);
+
+            }
+
+            if(evt.target is NodeView)
+            {
+                evt.menu.AppendAction($"Start PlayMode from {title}", delegate
+                {
+                    TryPlayFromNode();
+                }, (DropdownMenuAction a) => string.IsNullOrEmpty(CurrentSceneGuid) ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal);
+            }
+            base.BuildContextualMenu(evt);
+        }
+        internal void TryPlayFromNode()
+        {
+            EdgeData edgeData = new();
+            edgeData.DestinationNodeGuid = Node.Guid;
+            edgeData.DestinationSceneGuid = CurrentSceneGuid;
+            edgeData.DestinationSceneName = Node.SceneData.SceneName;
+
+            edgeData.DestinationPortName = InputPorts.Count > 0 ? InputPorts.First().portName : "";
+
+            m_PlaymodeEntranceRequest = edgeData;
+            if(RequestPlayMode != null) 
+                RequestPlayMode.Invoke(m_PlaymodeEntranceRequest);
+        }
         internal void TryPlayFromPort(ConnectionPort port)
         {
             if (port == null) return;
-            StringBuilder message = new();
-            message.Append("Trying to play from port: " + port.portName);
-            message.Append(", in Scene: " + Node.SceneData.SceneName);
-            message.Append(", from Node: " + Node.name);
-
-            Debug.LogWarning(message.ToString());
+            //Debug.LogWarning($"Trying to play from port: {port.portName},  in Scene: {Node.SceneData.SceneName}, from Node: {Node.name}.");
 
             m_PlaymodeEntranceRequest = CreateEdgeDataFromPort(port, Direction.Input, true);
             if (RequestPlayMode != null)
                 RequestPlayMode.Invoke(m_PlaymodeEntranceRequest);
 
-            Debug.Log("NodeView after RequestPlaymode called, but before leaving try play from port function");
+            //Debug.Log("NodeView after RequestPlaymode called, but before leaving try play from port function");
         }
         
 
@@ -296,6 +332,7 @@ namespace NGAME.Editor
                 if( room.SceneName == change.newValue )
                 {
                     CurrentSceneGuid = room.SceneGuid;
+                    m_RoomGraphView.SceneLookup.TryGetValue(room.SceneGuid, out m_CurrentSceneData);
                     selectedRoom = room.DeepCopy();
                     EditSceneButton.SetEnabled(true);
                     break;
@@ -308,6 +345,7 @@ namespace NGAME.Editor
             {
                 CurrentSceneGuid = "";
                 EditSceneButton.SetEnabled(false);
+                m_CurrentSceneData = null;
             }
             
             UpdatePorts();
@@ -820,6 +858,7 @@ namespace NGAME.Editor
             if (matchingPort != null)
             {
                 matchingPort.SetEnabled(value);
+                matchingPort.tooltip = value ? matchingPort.tooltip : "";
             }
         }
 
@@ -981,13 +1020,13 @@ namespace NGAME.Editor
 
         private void MarkPortConnectionError(ConnectionPort port, Edge edge, string tooltip = "", bool bShowError = true)
         {
+            if (port != null)
+            {
+                port.MarkInvalid(bShowError, tooltip);
+            }
+
             if (bShowError)
             {
-                if (port != null)
-                {
-                    port.MarkInvalid(bShowError, tooltip);
-                }
-
                 if (edge != null)
                 {
                     edge.AddToClassList("Error1");
@@ -997,11 +1036,7 @@ namespace NGAME.Editor
             }
             else
             {
-                if (port != null)
-                {
-                    port.MarkInvalid(bShowError, tooltip);
-                }
-
+               
                 if (edge != null)
                 {
                     edge.RemoveFromClassList("Error1");

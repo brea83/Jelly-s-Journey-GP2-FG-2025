@@ -17,6 +17,7 @@ namespace NGAME.Editor
         private Color m_ValidPortColor;
         private Color m_InvalidPortColor;
         private static string m_CssClassWhenInvalid = "Error1";
+        private static string m_RightClickHint = "Right Click for options";
 
         public NodeView nodeView => GetFirstAncestorOfType<NodeView>();
         //public ConnectionContainer GetConnectionContainer => GetFirstAncestorOfType<ConnectionContainer>();
@@ -30,8 +31,21 @@ namespace NGAME.Editor
                 m_EdgeConnector = new EdgeConnector<TEdge>(listener)
             };
 
+            ContextualMenuManipulator menuManipulator = new ContextualMenuManipulator(port.BuildContextualMenu);
+
+            port.AddManipulator(menuManipulator);
             port.AddManipulator(port.m_EdgeConnector);
             port.portName = direction == Direction.Input ? "In" : "Out";
+            port.tooltip = m_RightClickHint;
+            Label label = port.Q<Label>();
+
+            if (label != null)
+            {
+                //label.AddManipulator(menuManipulator);
+                label.focusable = true;
+                label.pickingMode = PickingMode.Position;
+
+            }
 
             return port;
         }
@@ -42,7 +56,6 @@ namespace NGAME.Editor
             m_ValidPortColor = portColor;
             m_InvalidPortColor = Color.red;
             IsValidInScene = true;
-            this.AddManipulator(new ContextualMenuManipulator(BuildContextualMenu));
         }
 
         protected class CustomEdgeConnectorListener : IEdgeConnectorListener
@@ -175,13 +188,13 @@ namespace NGAME.Editor
             if (bIsInvalid)
             {
                 AddToClassList(m_CssClassWhenInvalid);
-                tooltip = tooltipText;
+                tooltip = tooltipText == "" ? m_RightClickHint : tooltipText;
                 portColor = m_InvalidPortColor;
             }
             else
             {
                 RemoveFromClassList(m_CssClassWhenInvalid);
-                tooltip = tooltipText;
+                tooltip = tooltipText == "" ? m_RightClickHint : tooltipText;
                 portColor = m_ValidPortColor;
             }
         }
@@ -198,7 +211,7 @@ namespace NGAME.Editor
         {
             if (evt.target is ConnectionPort)
             {
-                evt.menu.AppendAction("Play From Here", delegate
+                evt.menu.AppendAction($"Play From {portName}", delegate
                 {
                     nodeView.TryPlayFromPort(this);
                 }, (DropdownMenuAction a) => IsValidInScene ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Disabled);

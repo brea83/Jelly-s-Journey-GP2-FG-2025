@@ -313,11 +313,17 @@ namespace NGAME.Editor
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
             base.BuildContextualMenu(evt);
-            var types = TypeCache.GetTypesDerivedFrom<IMapNode>();
-            Vector2 position = evt.mousePosition;
-            foreach(var type in types)
+
+            
+            if(evt.target is GraphView)
             {
-                evt.menu.AppendAction($"[{type.BaseType.Name}] {type.Name}", (a) => OnContextMenuCreateNode(a, type));
+
+                var types = TypeCache.GetTypesDerivedFrom<IMapNode>();
+                Vector2 position = evt.mousePosition;
+                foreach(var type in types)
+                {
+                    evt.menu.AppendAction($"Add [{type.BaseType.Name}] {type.Name}", (a) => OnContextMenuCreateNode(a, type));
+                }
             }
 
         }
