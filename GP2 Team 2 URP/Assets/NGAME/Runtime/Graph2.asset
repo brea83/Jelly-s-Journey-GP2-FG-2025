@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
-  m_Name: RoomNode
+  m_Name: 'Graph 2: Room 4'
   m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
   SceneData:
     SceneName: SampleScene 3
@@ -46,7 +46,6 @@ MonoBehaviour:
   m_Guid: 272932770eef6de45a37535ebaa79d4f
   m_Position: {x: 1263.988, y: -68.999985}
   _isStartNode: 0
-  NumberOfWaves: 0
 --- !u!114 &-5005448368373161328
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -57,7 +56,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
-  m_Name: RoomNode
+  m_Name: 'Graph2: Room 2'
   m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
   SceneData:
     SceneName: SampleScene 2
@@ -110,9 +109,8 @@ MonoBehaviour:
   Waves:
   - {fileID: 11400000, guid: db11945bdb46fb6488d5063ffffe68ea, type: 2}
   m_Guid: 1054876d2df8d40468fb28efd97ed6fb
-  m_Position: {x: 159, y: -69}
+  m_Position: {x: 143.78978, y: -68.99994}
   _isStartNode: 0
-  NumberOfWaves: 0
 --- !u!114 &-2616417663063570396
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,7 +121,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
-  m_Name: RoomNode
+  m_Name: 'Graph2: Room 1'
   m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
   SceneData:
     SceneName: SampleScene
@@ -162,9 +160,8 @@ MonoBehaviour:
   Waves:
   - {fileID: 11400000, guid: 0a28601bacdd7dc41a36736438b7df58, type: 2}
   m_Guid: 12a949ba26042a74abf34edb089dd911
-  m_Position: {x: -410.5825, y: -20.435387}
+  m_Position: {x: -411, y: -21.74899}
   _isStartNode: 1
-  NumberOfWaves: 0
 --- !u!114 &-522332987697937984
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -175,7 +172,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
-  m_Name: RoomNode
+  m_Name: 'Graph2: Room 3'
   m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
   SceneData:
     SceneName: SampleScene 2
@@ -231,7 +228,6 @@ MonoBehaviour:
   m_Guid: 698460677e992524081c2b471b135283
   m_Position: {x: 700.1588, y: -68.999985}
   _isStartNode: 0
-  NumberOfWaves: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
