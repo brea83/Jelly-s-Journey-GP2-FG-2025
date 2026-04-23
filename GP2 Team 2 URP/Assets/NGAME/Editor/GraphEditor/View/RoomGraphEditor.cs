@@ -31,9 +31,7 @@ namespace NGAME.Editor
         private GraphViewMinimapWindow _minimapWindow;
 
         //toolbar buttons
-        private UnityEngine.UIElements.Button _newGraphButton;
-        private UnityEngine.UIElements.Button _saveGraphButton;
-        private UnityEditor.UIElements.ToolbarMenu _RefreshMenu;
+        private UnityEditor.UIElements.ToolbarMenu m_FileMenu;
         //[SerializeField]
         //private VisualTreeAsset _VisualTreeAsset = default;
 
@@ -207,16 +205,20 @@ namespace NGAME.Editor
                 //_inspectorView.styleSheets.Add(m_Style);
             }
 
-            _newGraphButton = root.Q<Button>("NewGraphButton");
-            _newGraphButton.clicked += OnNewGraphClicked;
-            _saveGraphButton = root.Q<Button>("SaveGraphButton");
-            _saveGraphButton.clicked += OnSaveGraphClicked;
+            m_FileMenu = root.Q<ToolbarMenu>("FileMenu");
+            m_FileMenu.menu.AppendAction("New ...", (a) => OnNewGraphClicked());
+            m_FileMenu.menu.AppendAction("Load Graph...", (a) => { OnLoadGraph(); });
 
-            _RefreshMenu = root.Q<ToolbarMenu>("RefreshMenu");
-            _RefreshMenu.menu.AppendAction("Refresh Scene Data", (a) => { OnRefreshScenes(); });
-            _RefreshMenu.menu.AppendAction("Discard Changes", (a) => { DiscardChanges(); });
-            _RefreshMenu.menu.AppendAction("Load Graph...", (a) => { OnLoadGraph(); });
+            m_FileMenu.menu.AppendSeparator();
 
+            m_FileMenu.menu.AppendAction("Save", (a) => OnSaveGraphClicked());
+            m_FileMenu.menu.AppendAction("Discard Changes", (a) => { DiscardChanges(); });
+
+            Button refreshButton = new();
+            refreshButton.text = "Refresh Scene Data";
+            refreshButton.clicked += OnRefreshScenes;
+            //_RefreshMenu.menu.AppendAction("Refresh Scene Data", (a) => { OnRefreshScenes(); });
+            m_FileMenu.parent.Add(refreshButton);
         }
 
         private void OnSelectionChange()
@@ -303,7 +305,7 @@ namespace NGAME.Editor
 
         private void OnRefreshScenes()
         {
-            Debug.Log("Refresh scene data clicked");
+            //Debug.Log("Refresh scene data clicked");
             _graphView.RefreshSceneData();
         }
 
