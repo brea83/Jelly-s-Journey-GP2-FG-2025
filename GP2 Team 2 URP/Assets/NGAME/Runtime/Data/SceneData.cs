@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace NGAME
 {
     [System.Serializable]
-    public class SceneData
+    public class SceneData : ScriptableObject
     {
         public string Name;
         public string Guid;
@@ -18,5 +19,6 @@ namespace NGAME
         public List<SpawnerData> SpawnPoints;
 
         //public List<RegionConnectionData> GetEntrances();
+
     }
 }

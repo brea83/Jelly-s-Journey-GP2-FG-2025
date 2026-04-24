@@ -63,6 +63,12 @@ namespace NGAME.Editor
     [UxmlElement]
     public partial class RoomGraphView : GraphView
     {
+        public delegate List<SceneData> SceneDataRequestCallback();
+        public SceneDataRequestCallback SceneDataRequested;
+
+        public delegate Dictionary<string, Texture2D> ScenePreviewsRequestCallback();
+        public ScenePreviewsRequestCallback ScenePreviewsRequested;
+
         public Action<NodeView> OnNodeSelected;
         public Action<NodeView> OnNodeValuesChanged;
         public Action<SceneAsset, EdgeData> RegisterPlayModeRequest;
@@ -94,8 +100,6 @@ namespace NGAME.Editor
             this.AddManipulator(new RectangleSelector());
 
             m_UndoableGraphChanges = UndoableGraphChanges.CreateNew();
-
-            GetRoomDataObjects();
 
             //var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI Toolkit/Styles/Editor/RoomGraphEditor.uss");
             //styleSheets.Add(styleSheet);
@@ -385,9 +389,10 @@ namespace NGAME.Editor
             ).ToList();
         }
 
-        internal void RefreshSceneData()
+        internal void RefreshSceneData(List<SceneData> scenes, Dictionary<string, Texture2D> previews)
         {
-            GetRoomDataObjects();
+            UpdateDataObjects(scenes, previews);
+          
             PopulateView(_graph);
         }
 
@@ -405,6 +410,36 @@ namespace NGAME.Editor
 
             if (RegisterPlayModeRequest != null)
                 RegisterPlayModeRequest.Invoke(myWantedStartScene, edge);
+        }
+
+        internal void UpdateDataObjects(List<SceneData> scenes, Dictionary<string, Texture2D> previews)
+        {
+            SceneLookup.Clear();
+            ValidScenes.Clear();
+            SpawnersByScene.Clear();
+
+            ScenePreviewLookup = previews == null ? new() : previews;
+
+            if(scenes == null)
+            {
+                scenes = new List<SceneData>();
+                return;
+            }
+
+            for (int i = 0; i < scenes.Count; i++)
+            {
+                SceneData sceneData = scenes[i];
+
+
+                string sceneGuid = sceneData.Guid;
+
+                SceneLookup.Add(sceneGuid, sceneData);
+                SceneConnectionsData connections = new(sceneData);
+                ValidScenes.Add(connections);
+                SceneSpawnData spawnData = new(sceneData);
+                SpawnersByScene.Add(spawnData);
+
+            }
         }
 
         private void GetRoomDataObjects()
@@ -473,7 +508,7 @@ namespace NGAME.Editor
         
         private SceneData CreateSceneData(Scene aScene, string sceneGuid, string filePath)
         {
-            SceneData result = new();
+            SceneData result = ScriptableObject.CreateInstance<SceneData>();
             result.Name = aScene.name;
             result.Guid = sceneGuid;
             result.FilePath = filePath;

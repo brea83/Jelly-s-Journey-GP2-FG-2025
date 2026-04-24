@@ -24,6 +24,9 @@ namespace NGAME.Editor
             } 
         }
         private RoomGraph _graph;
+        private List<SceneData> m_sceneData = new List<SceneData>();
+        private Dictionary<string, Texture2D> m_ScenePreviewLookup = new();
+
         private RoomGraphView _graphView;
         private NodeInspectorWindow _inspectorView;
 
@@ -32,8 +35,6 @@ namespace NGAME.Editor
 
         //toolbar buttons
         private UnityEditor.UIElements.ToolbarMenu m_FileMenu;
-        //[SerializeField]
-        //private VisualTreeAsset _VisualTreeAsset = default;
 
         private StyleSheet m_Style;
 
@@ -65,6 +66,7 @@ namespace NGAME.Editor
 
             editor.saveChangesMessage = "This Window has unsaved changes. Would you like to save?";
 
+            
         }
 
         private void OnEnable()
@@ -164,6 +166,8 @@ namespace NGAME.Editor
 
         public void CreateGUI()
         {
+            ReadCurrentSceneData();
+
             // Each editor window contains a root VisualElement object
             VisualElement root = rootVisualElement;
             //Import UXML
@@ -190,13 +194,16 @@ namespace NGAME.Editor
             //StyleSheet styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI Toolkit/Styles/Editor/RoomGraphEditor.uss");
 
             
-            _graphView = root.Q<RoomGraphView>();
             
+            _graphView = root.Q<RoomGraphView>();
 
+            _graphView.ScenePreviewsRequested = OnScenePreviewsRequested;
+            _graphView.SceneDataRequested = OnSceneDataRequested;
             _graphView.OnNodeSelected = OnNodeSelectionChanged;
             _graphView.OnNodeValuesChanged = OnNodeValuesChanged;
             _graphView.RegisterPlayModeRequest = RegisterPlayModeRequest;
             _graphView.OnGraphChanged += OnGraphChanged;
+            _graphView.UpdateDataObjects( m_sceneData, m_ScenePreviewLookup);
             OnSelectionChange();
 
             if(m_Style != null)
@@ -306,7 +313,8 @@ namespace NGAME.Editor
         private void OnRefreshScenes()
         {
             //Debug.Log("Refresh scene data clicked");
-            _graphView.RefreshSceneData();
+            ReadCurrentSceneData();
+            _graphView.RefreshSceneData(m_sceneData, m_ScenePreviewLookup);
         }
 
         private void ShowSaveDialogue()
@@ -343,5 +351,118 @@ namespace NGAME.Editor
             _graph = AssetDatabase.LoadAssetAtPath<RoomGraph>(path);
             _graphView.PopulateView(_graph);
         }
+
+        private List<SceneData> OnSceneDataRequested()
+        { 
+            return m_sceneData;
+        }
+
+        private Dictionary<string, Texture2D> OnScenePreviewsRequested() 
+        {
+            return m_ScenePreviewLookup;
+        }
+
+        private void ReadCurrentSceneData()
+        {
+            string[] settingsGuid = AssetDatabase.FindAssets("t:SO_Settings");
+
+            if (settingsGuid.Length <= 0)
+            {
+                return;
+            }
+
+            SO_Settings settings = AssetDatabase.LoadAssetAtPath<SO_Settings>(AssetDatabase.GUIDToAssetPath(settingsGuid[0]));
+
+            if (settings == null || settings.Scenes.Count <= 0)
+            {
+                return;
+            }
+
+            m_sceneData.Clear();
+            m_ScenePreviewLookup.Clear();
+
+            for (int i = 0; i < settings.Scenes.Count; i++)
+            {
+                SceneInclusionData data = settings.Scenes[i];
+
+                if (data.FilePath == "" || !data.IncludeInGraphTool)
+                {
+                    continue;
+                }
+
+                // open the scene to collect data from it
+                Scene aScene = EditorSceneManager.OpenPreviewScene(data.FilePath);
+                if (!aScene.IsValid())
+                {
+                    Debug.Log("Graph tried to include an invalid scene from filepath: " + data.FilePath);
+                    EditorSceneManager.ClosePreviewScene(aScene);
+                    continue;
+                }
+                string sceneGuid = settings.Guids[i];
+
+                SceneData sceneData = CreateSceneDataObject(aScene, sceneGuid, data.FilePath);
+
+                Texture2D previewImage = ScenePreviewRenderer.WriteTexture(aScene, sceneData, 100);
+                previewImage.filterMode = FilterMode.Point;
+                if (m_ScenePreviewLookup.ContainsKey(sceneGuid))
+                {
+                    m_ScenePreviewLookup[sceneGuid] = previewImage;
+                }
+                else
+                {
+                    m_ScenePreviewLookup.Add(sceneGuid, previewImage);
+                }
+
+                EditorSceneManager.ClosePreviewScene(aScene);
+                m_sceneData.Add(sceneData);
+            }
+        }
+
+        private SceneData CreateSceneDataObject(Scene aScene, string sceneGuid, string filePath)
+        {
+            SceneData result = ScriptableObject.CreateInstance<SceneData>();
+            result.Name = aScene.name;
+            result.Guid = sceneGuid;
+            result.FilePath = filePath;
+
+            List<RegionConnectionData> conectionObjects = new();
+            List<SpawnerData> spawners = new();
+
+            //bool bConnectionsFound = false;
+            //bool bSpawnersFound = false;
+
+            GameObject[] rootObjects = aScene.GetRootGameObjects();
+
+            foreach (GameObject obj in rootObjects)
+            {
+                // connection data
+                IEncounterRegionConnector[] connectorComponent = obj.GetComponentsInChildren<IEncounterRegionConnector>();
+                //if (connectorComponent.Length > 0) bConnectionsFound = true;
+
+                foreach (IEncounterRegionConnector connection in connectorComponent)
+                {
+                    //connections.Add(component.GetRegionConnectionData());
+                    RegionConnectionData data = connection.GetRegionConnectionData();
+                    conectionObjects.Add(data);
+                }
+
+                // spawner data
+
+                ISpawnPoint[] spawnerComponents = obj.GetComponentsInChildren<ISpawnPoint>();
+                //if (spawnerComponents.Length > 0) bSpawnersFound = true;
+
+                foreach (ISpawnPoint spawner in spawnerComponents)
+                {
+                    spawners.Add(spawner.GetSpawnerData());
+                }
+            }
+
+            result.UniqueConnectionObjects = conectionObjects;
+            result.SpawnPoints = spawners;
+            result.Bounds = new (conectionObjects, spawners);
+
+            return result;
+        }
+
     }
 }

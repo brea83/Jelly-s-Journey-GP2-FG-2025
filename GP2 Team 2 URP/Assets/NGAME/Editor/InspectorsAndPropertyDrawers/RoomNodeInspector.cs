@@ -24,6 +24,7 @@ namespace NGAME.Editor
             inspector.Add(script);
 
             Label title = new();
+            title.name = "Title";
             title.Bind(serializedObject);
             title.bindingPath = serializedObject.FindProperty("m_Name").propertyPath;
             inspector.Add(title);
@@ -80,18 +81,6 @@ namespace NGAME.Editor
             return inspector;
         }
 
-        //private void OnWavesPropertyChanged(SerializedPropertyChangeEvent evt, VisualElement wavesPanel)
-        //{
-        //    SerializedProperty wavesList = evt.changedProperty;
-        //    VisualElement parentPanel = wavesPanel.parent;
-        //    wavesPanel.RemoveFromHierarchy();
-
-        //    PropertyField waves = new PropertyField(serializedObject.FindProperty("Waves"));
-        //    waves.Bind(serializedObject);
-        //    waves.RegisterValueChangeCallback(
-        //    evt => OnWavesPropertyChanged(evt, waves));
-
-        //    parentPanel.Add(waves);
-        //}
+        
     }
 }

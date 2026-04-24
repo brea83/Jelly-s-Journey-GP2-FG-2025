@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.PackageManager.UI;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 namespace NGAME.Editor
@@ -12,7 +13,8 @@ namespace NGAME.Editor
         private UnityEditor.Editor _editor;
         private NodeView m_CachedNode = null;
 
-        private VisualElement m_MainContainer;
+        //private ScrollView m_MainScrollView;
+        private ScrollView m_MainContainer;
 
         private VisualElement m_Root;
 
@@ -41,7 +43,9 @@ namespace NGAME.Editor
         public NodeInspector(GraphView associatedGraphView = null) : base()
         {
             m_Root = GetFirstAncestorOfType<VisualElement>();
-            m_MainContainer = new VisualElement();
+            m_MainContainer = new ScrollView(ScrollViewMode.VerticalAndHorizontal);
+            
+            //m_MainContainer = m_MainScrollView.contentContainer;
 
             m_HeaderItem = new VisualElement();
             m_HeaderItem.name = "header";
@@ -73,7 +77,7 @@ namespace NGAME.Editor
             };
 
             this.AddManipulator(m_Dragger);
-            Scrollable = false;
+            Scrollable = true;
 
             base.hierarchy.Add(new Resizer());
             
@@ -294,7 +298,7 @@ namespace NGAME.Editor
              _editor = UnityEditor.Editor.CreateEditor(m_CachedNode.Node);
             
             var container = _editor.CreateInspectorGUI();
-
+            CreateSceneDataEditor(container);
             Add(container);
 
 
@@ -319,49 +323,29 @@ namespace NGAME.Editor
 
         }
 
-        //private void BindWaveObjectFieldChanges()
-        //{
-        //    EditorApplication.delayCall -= BindWaveObjectFieldChanges;
-        //    PropertyField wavesField = this.Q<PropertyField>("WavesField");
-        //    if (wavesField == null)
-        //        return;
-        //    ListView wavesList = wavesField.Q<ListView>();
-
-        //    if (wavesList == null)
-        //        return;
-        //    wavesList.itemsSourceChanged += DelayWavesPropertyUpdate;
+        private VisualElement CreateSceneDataEditor(VisualElement roomEditorGui)
+        {
             
+            if(m_CachedNode == null || roomEditorGui == null)    
+                return roomEditorGui;
 
-        //    //foreach (VisualElement child in )
-        //    //{
-        //    //    PropertyField waveDataObjectInputField = child.Q<PropertyField>("WaveDataObjectField");
-        //    //    if (waveDataObjectInputField != null)
-        //    //    {
-        //    //        waveDataObjectInputField.RegisterValueChangeCallback(OnWavesPropertyChanged);
-        //    //    }
-        //    //}
-        //}
+            SceneData data = m_CachedNode.CurrentSceneData;
+            if (data == null)
+                return roomEditorGui;
 
-        //private void DelayWavesPropertyUpdate()
-        //{
-        //    EditorApplication.delayCall += OnWavesPropertyChanged;
-        //}
+            var editor = UnityEditor.Editor.CreateEditor(m_CachedNode.CurrentSceneData);
 
-        //private void OnWavesPropertyChanged()
-        //{
-        //    EditorApplication.delayCall -= OnWavesPropertyChanged;
-        //    SerializedProperty wavesList = _editor.serializedObject.FindProperty("Waves");
-        //    PropertyField oldField = this.Q<PropertyField>("WavesField");
-        //    VisualElement parentPanel = oldField.parent;
-        //    oldField.RemoveFromHierarchy();
+            //SerializedObject sceneData = new SerializedObject(m_CachedNode.CurrentSceneData);
 
-        //    PropertyField waves = new PropertyField(wavesList);
-        //    waves.Bind(_editor.serializedObject);
-        //    waves.name = "WavesField";
+            VisualElement sceneDataGui = editor.CreateInspectorGUI();
 
-        //    parentPanel.Add(waves);
+            Label displayAfterThis = roomEditorGui.Q<Label>("Title");
+            if (displayAfterThis != null)
+                roomEditorGui.Insert(roomEditorGui.IndexOf(displayAfterThis) + 1, sceneDataGui);
+            else
+                roomEditorGui.Add(sceneDataGui);
 
-        //    BindWaveObjectFieldChanges();
-        //}
+            return roomEditorGui;
+        }
     }
 }
