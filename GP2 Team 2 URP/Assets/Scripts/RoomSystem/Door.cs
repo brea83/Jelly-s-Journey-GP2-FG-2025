@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Events;
 using NGAME;
+using System.Xml.Serialization;
 
 namespace RoomSystem
 {
@@ -17,6 +18,8 @@ namespace RoomSystem
         public UnityEvent<EdgeData> DoorUsed;
         public EdgeData OutgoingEdge;
 
+        public bool IsLockable = true;
+        public bool StartsLocked = false;
         public bool LocksDurringCombat = true;
         public bool isDefaultEntrance = false;
         public bool UseOldBarrierAnimation = true;
@@ -248,7 +251,11 @@ namespace RoomSystem
             data.TypeName = this.GetType().FullName;
             data.Name = name;
             data.ConnectionType = _data.Type;
-            data.IsLockable = true;
+
+            data.IsLockable = IsLockable;
+            data.StartsLocked = StartsLocked;
+            data.IsLockedDurringCombat = LocksDurringCombat;
+            
             data.Position = transform.position;
             return data;
         }
@@ -261,23 +268,24 @@ namespace RoomSystem
             OutgoingEdge = edge;
         }
 
-        public void InitializeFromGraphData(EdgeData edge)
+        public void InitializeFromGraphData(RegionConnectionData connectionData, EdgeData edge)
         {
             if(edge == null)
             {
                 LockDoor();
             }
-            else
+            else if(connectionData != null)
             {
-                if(LocksDurringCombat == true)
-                {
-                    //SpawnManager spawnManager = FindFirstObjectByType<SpawnManager>();
-                    //if (spawnManager != null)
-                    //{
-                    //    spawnManager.OnEncounterStart.AddListener(OnEncounterStart);
-                    //    spawnManager.OnEncounterEnd.AddListener(OnEncounterEnd);
-                    //}
+                LocksDurringCombat = connectionData.IsLockedDurringCombat;
 
+                StartsLocked = connectionData.StartsLocked;
+                if ( StartsLocked && !Locked )
+                    LockDoor();
+                else if( !StartsLocked && Locked )
+                    UnlockDoor();
+
+                if (LocksDurringCombat)
+                {
                     NewEncounterManager encounterManager = GameManager.Instance.EncounterManager;
                     if (encounterManager != null)
                     {
@@ -285,7 +293,7 @@ namespace RoomSystem
                         encounterManager.OnEncounterEnd.AddListener(OnEncounterEnd);
                     }
                 }
-
+                
                 SetDestination(edge);
             }
         }

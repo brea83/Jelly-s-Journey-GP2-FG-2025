@@ -1,5 +1,106 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7205378822548495711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc3768443858dad479f2cbca8d56449d, type: 3}
+  m_Name: SampleScene 1
+  m_EditorClassIdentifier: NGAME_Runtime::NGAME.SceneData
+  Guid: 7a3963fe7029e1540abdb3d88a000b52
+  FilePath: Assets/Scenes/Final/FINAL TEST/SampleScene 1.unity
+  Description: 
+  UniqueConnectionObjects:
+  - TypeName: RoomSystem.Door
+    Name: Door South
+    ConnectionType: 2
+    IsLockable: 1
+    IsLockedDurringCombat: 1
+    StartsLocked: 0
+    Position: {x: -8.25, y: 0, z: -20.5}
+  - TypeName: RoomSystem.Door
+    Name: Door West
+    ConnectionType: 2
+    IsLockable: 1
+    IsLockedDurringCombat: 1
+    StartsLocked: 0
+    Position: {x: -25.239712, y: 0, z: -1.75}
+  - TypeName: RoomSystem.Door
+    Name: Door East
+    ConnectionType: 2
+    IsLockable: 1
+    IsLockedDurringCombat: 1
+    StartsLocked: 0
+    Position: {x: 16.203, y: 0, z: 7.54}
+  SpawnPoints:
+  - Name: RangedSpawnPoint
+    ValidTypes:
+    - {fileID: 11400000, guid: 2609c893ef4e26a478f3354078db2cf0, type: 2}
+    Position: {x: -11.28, y: 0.0000019073486, z: 6.3500004}
+  - Name: RangedSpawnPoint (1)
+    ValidTypes:
+    - {fileID: 11400000, guid: 2609c893ef4e26a478f3354078db2cf0, type: 2}
+    Position: {x: 2.58, y: 0.0000019073486, z: 6.3500004}
+  - Name: RangedSpawnPoint (2)
+    ValidTypes:
+    - {fileID: 11400000, guid: 2609c893ef4e26a478f3354078db2cf0, type: 2}
+    Position: {x: -7.38, y: 0.0000019073486, z: 6.3500004}
+  - Name: MeleeSpawnPoint
+    ValidTypes:
+    - {fileID: 11400000, guid: 9ee823ae691a5554b9b7ffbee152cead, type: 2}
+    Position: {x: 3.8399997, y: 0.0000019073486, z: -8.450001}
+  - Name: MeleeSpawnPoint (1)
+    ValidTypes:
+    - {fileID: 11400000, guid: 9ee823ae691a5554b9b7ffbee152cead, type: 2}
+    Position: {x: -15.61, y: 0.0000019073486, z: -8.450001}
+  - Name: MeleeSpawnPoint (2)
+    ValidTypes:
+    - {fileID: 11400000, guid: 9ee823ae691a5554b9b7ffbee152cead, type: 2}
+    Position: {x: -7.670001, y: 0.0000019073486, z: -1.0300007}
+--- !u!114 &-6399066526613139203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc3768443858dad479f2cbca8d56449d, type: 3}
+  m_Name: SampleScene
+  m_EditorClassIdentifier: NGAME_Runtime::NGAME.SceneData
+  Guid: 99c9720ab356a0642a771bea13969a05
+  FilePath: Assets/Scenes/Final/FINAL TEST/SampleScene.unity
+  Description: 
+  UniqueConnectionObjects:
+  - TypeName: RoomSystem.Door
+    Name: Door North
+    ConnectionType: 2
+    IsLockable: 1
+    IsLockedDurringCombat: 1
+    StartsLocked: 0
+    Position: {x: -28.000906, y: 0, z: 26.98}
+  - TypeName: RoomSystem.Door
+    Name: Entrance Only
+    ConnectionType: 0
+    IsLockable: 1
+    IsLockedDurringCombat: 0
+    StartsLocked: 0
+    Position: {x: 9.329598, y: 0, z: 12.48}
+  SpawnPoints:
+  - Name: MeleeSpawnPoint
+    ValidTypes:
+    - {fileID: 11400000, guid: e2d35a20315884a4b852513d92e5e482, type: 2}
+    Position: {x: -16.689999, y: 0.6560161, z: 1.0799999}
+  - Name: MeleeSpawnPoint (1)
+    ValidTypes:
+    - {fileID: 11400000, guid: e2d35a20315884a4b852513d92e5e482, type: 2}
+    Position: {x: -33.66, y: 0.6560161, z: 0.97999954}
 --- !u!114 &-2698876279662383425
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12,29 +113,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
   m_Name: 'NewGraph: Room 1'
   m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
-  SceneData:
-    SceneName: SampleScene
-    SceneGuid: 99c9720ab356a0642a771bea13969a05
-    Entrances:
-    - TypeName: RoomSystem.Door
-      Name: Door North
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -28.000906, y: 0, z: 26.98}
-    - TypeName: RoomSystem.Door
-      Name: Entrance Only
-      ConnectionType: 0
-      IsLockable: 1
-      Position: {x: 9.329598, y: 0, z: 12.48}
-    Exits:
-    - TypeName: RoomSystem.Door
-      Name: Door North
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -28.000906, y: 0, z: 26.98}
-    MinPoint: {x: -28.000906, y: 0}
-    MaxPoint: {x: 9.329598, y: 26.98}
-    WidthByHeight: {x: 37.330505, y: 26.98}
+  SceneData: {fileID: -6399066526613139203}
   OutgoingEdges:
   - SourceNodeGuid: cd25f63b0da2fa145a28a5e2c7988529
     SourceSceneGuid: 99c9720ab356a0642a771bea13969a05
@@ -43,12 +122,12 @@ MonoBehaviour:
     DestinationNodeGuid: 79308391f986876448b24dc53daf07c8
     DestinationSceneGuid: 7a3963fe7029e1540abdb3d88a000b52
     DestinationSceneName: SampleScene 1
-    DestinationPortName: Door South
+    DestinationPortName: Door West
     m_bIsValid: 1
   IncomingEdges: []
   Waves: []
   m_Guid: cd25f63b0da2fa145a28a5e2c7988529
-  m_Position: {x: 184.66667, y: -30.000006}
+  m_Position: {x: 228.66667, y: -12.6666565}
   _isStartNode: 1
 --- !u!114 &11400000
 MonoBehaviour:
@@ -78,44 +157,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
   m_Name: 'NewGraph: Room 2'
   m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
-  SceneData:
-    SceneName: SampleScene 1
-    SceneGuid: 7a3963fe7029e1540abdb3d88a000b52
-    Entrances:
-    - TypeName: RoomSystem.Door
-      Name: Door South
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -8.25, y: 0, z: -20.5}
-    - TypeName: RoomSystem.Door
-      Name: Door West
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -25.239712, y: 0, z: -1.75}
-    - TypeName: RoomSystem.Door
-      Name: Door East
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: 16.203, y: 0, z: 7.54}
-    Exits:
-    - TypeName: RoomSystem.Door
-      Name: Door South
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -8.25, y: 0, z: -20.5}
-    - TypeName: RoomSystem.Door
-      Name: Door West
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: -25.239712, y: 0, z: -1.75}
-    - TypeName: RoomSystem.Door
-      Name: Door East
-      ConnectionType: 2
-      IsLockable: 1
-      Position: {x: 16.203, y: 0, z: 7.54}
-    MinPoint: {x: -25.239712, y: -20.5}
-    MaxPoint: {x: 16.203, y: 7.54}
-    WidthByHeight: {x: 41.44271, y: 28.04}
+  SceneData: {fileID: -7205378822548495711}
   OutgoingEdges: []
   IncomingEdges:
   - SourceNodeGuid: cd25f63b0da2fa145a28a5e2c7988529
@@ -125,7 +167,7 @@ MonoBehaviour:
     DestinationNodeGuid: 79308391f986876448b24dc53daf07c8
     DestinationSceneGuid: 7a3963fe7029e1540abdb3d88a000b52
     DestinationSceneName: SampleScene 1
-    DestinationPortName: Door South
+    DestinationPortName: Door West
     m_bIsValid: 1
   Waves: []
   m_Guid: 79308391f986876448b24dc53daf07c8

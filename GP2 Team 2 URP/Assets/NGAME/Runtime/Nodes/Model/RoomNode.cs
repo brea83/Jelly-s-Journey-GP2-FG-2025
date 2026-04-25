@@ -11,7 +11,8 @@ namespace NGAME
         public string Guid { get => m_Guid; set => m_Guid = value; }
         public Vector2 Position { get => m_Position; set => m_Position = value; }
 
-        public SceneConnectionsData SceneData = null;
+        public SceneData SceneData;
+        public List<RegionConnectionData> OverridenConnectionData = new();
 
         [HideInInspector]
         public List<EdgeData> OutgoingEdges = new List<EdgeData>();
@@ -150,10 +151,13 @@ namespace NGAME
         {
             _isStartNode = isStartNode;
         }
-        public void UpdateRoomData(SceneConnectionsData room)
+        public void UpdateRoomData(SceneData room)
         {
             SceneData = room;
-            
+
+            if (room != null)
+                OverridenConnectionData = new List<RegionConnectionData>(room.UniqueConnectionObjects);
+
             UpdateEdges();
         }
 
@@ -179,7 +183,7 @@ namespace NGAME
             sb.Append("Room Node guid: " + Guid + "\n");
             if (this.SceneData != null) 
             {
-                sb.Append("Scene: " + this.SceneData.SceneName + "\n");
+                sb.Append("Scene: " + this.SceneData.Name + "\n");
             }
             else
             {

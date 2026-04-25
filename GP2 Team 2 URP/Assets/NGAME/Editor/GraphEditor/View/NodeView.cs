@@ -55,7 +55,7 @@ namespace NGAME.Editor
             m_MyInstanceNumber = ++m_InstanceCounter;
             this.m_RoomGraphView = graph;
             this.Node = node;
-            CurrentSceneGuid = Node.SceneData != null ? Node.SceneData.SceneGuid : "";
+            CurrentSceneGuid = Node.SceneData != null ? Node.SceneData.Guid : "";
             this.title = node.name;
             this.viewDataKey = node.Guid;
 
@@ -86,9 +86,9 @@ namespace NGAME.Editor
                 CreateRoomSelector( roomDataObjects );
             }
 
-            if(Node.SceneData != null && !string.IsNullOrEmpty(Node.SceneData.SceneGuid))
+            if(Node.SceneData != null && !string.IsNullOrEmpty(Node.SceneData.Guid))
             {
-                m_RoomGraphView.SceneLookup.TryGetValue(Node.SceneData.SceneGuid, out m_CurrentSceneData);
+                m_RoomGraphView.SceneLookup.TryGetValue(Node.SceneData.Guid, out m_CurrentSceneData);
             }
 
             Label entranceLabel = new();
@@ -168,7 +168,7 @@ namespace NGAME.Editor
                 m_CurrentSceneSpawnData = null;
                 return;
             }
-            m_CurrentSceneSpawnData = m_RoomGraphView.SpawnersByScene.FirstOrDefault((SceneSpawnData e) => e.SceneGUID == Node.SceneData.SceneGuid);
+            m_CurrentSceneSpawnData = m_RoomGraphView.SpawnersByScene.FirstOrDefault((SceneSpawnData e) => e.SceneGUID == Node.SceneData.Guid);
         }
 
         private void OnEditSceneButtonClicked()
@@ -196,7 +196,7 @@ namespace NGAME.Editor
                 message.Append("You have unsaved changes in this scene (");
                 message.Append(EditorSceneManager.GetActiveScene().name);
                 message.Append(") and chose to neither discard nor save them, so NGAME will not open ");
-                message.Append(Node.SceneData.SceneName);
+                message.Append(Node.SceneData.Name);
                 message.Append(" for edits.");
                 Debug.Log( message.ToString());
             }
@@ -204,10 +204,10 @@ namespace NGAME.Editor
 
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
-            if ( (Node.SceneData != null && !string.IsNullOrEmpty(Node.SceneData.SceneName))
+            if ( (Node.SceneData != null && !string.IsNullOrEmpty(Node.SceneData.Name))
                 && evt.target is NodeView || evt.target is ConnectionPort)
             {
-                evt.menu.AppendAction($"Open Scene ({Node.SceneData.SceneName}) to Edit", delegate
+                evt.menu.AppendAction($"Open Scene ({Node.SceneData.Name}) to Edit", delegate
                 {
                     OnEditSceneButtonClicked();
                 }, (DropdownMenuAction a) => string.IsNullOrEmpty(CurrentSceneGuid) ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal);
@@ -228,7 +228,7 @@ namespace NGAME.Editor
             EdgeData edgeData = new();
             edgeData.DestinationNodeGuid = Node.Guid;
             edgeData.DestinationSceneGuid = CurrentSceneGuid;
-            edgeData.DestinationSceneName = Node.SceneData.SceneName;
+            edgeData.DestinationSceneName = Node.SceneData.Name;
 
             edgeData.DestinationPortName = InputPorts.Count > 0 ? InputPorts.First().portName : "";
 
@@ -262,11 +262,11 @@ namespace NGAME.Editor
 
                 choices.Add(room.SceneName);
 
-                if(Node.SceneData != null && Node.SceneData.SceneName == room.SceneName)
+                if(Node.SceneData != null && Node.SceneData.Name == room.SceneName)
                 {
                     defaultIndex = i + 1; // plus 1 because we have the default none at index 0 of the list before this loop starts
                     bEditSceneButtonNeedsEnable = true;
-                    CurrentSceneGuid = Node.SceneData.SceneGuid;
+                    CurrentSceneGuid = Node.SceneData.Guid;
                 }
             }
 
@@ -326,14 +326,14 @@ namespace NGAME.Editor
 
             m_LastDropDownIndex = m_RoomSelectDropdown.index;
             
-            SceneConnectionsData selectedRoom = null;
+            SceneData selectedRoom = null;
             foreach (SceneConnectionsData room in m_RoomGraphView.ValidScenes )
             {
                 if( room.SceneName == change.newValue )
                 {
                     CurrentSceneGuid = room.SceneGuid;
-                    m_RoomGraphView.SceneLookup.TryGetValue(room.SceneGuid, out m_CurrentSceneData);
-                    selectedRoom = room.DeepCopy();
+                    m_RoomGraphView.SceneLookup.TryGetValue(room.SceneGuid, out selectedRoom);
+                    m_CurrentSceneData = selectedRoom.DeepCopy();
                     EditSceneButton.SetEnabled(true);
                     break;
                 }
@@ -511,7 +511,7 @@ namespace NGAME.Editor
         }
         private void CreateOutputPorts()
         {
-            if (Node.SceneData == null || Node.SceneData.SceneGuid == null) return;
+            if (Node.SceneData == null || Node.SceneData.Guid == null) return;
             
             foreach(var exit in Node.SceneData.Exits)
             {
@@ -527,7 +527,7 @@ namespace NGAME.Editor
 
         private void CreateInputPorts()
         {
-            if (Node.SceneData == null || Node.SceneData.SceneGuid == null) return;
+            if (Node.SceneData == null || Node.SceneData.Guid == null) return;
            
             foreach (var entrance in Node.SceneData.Entrances)
             {
@@ -589,7 +589,7 @@ namespace NGAME.Editor
                 return;
             }
 
-            string guid = Node.SceneData.SceneGuid;
+            string guid = Node.SceneData.Guid;
             if (!m_RoomGraphView.SceneLookup.ContainsKey(guid))
             {
                 return;
@@ -631,7 +631,7 @@ namespace NGAME.Editor
                 return;
             }
 
-            string guid = Node.SceneData.SceneGuid;
+            string guid = Node.SceneData.Guid;
             if (!m_RoomGraphView.SceneLookup.ContainsKey(guid))
             {
                 return;
@@ -913,26 +913,26 @@ namespace NGAME.Editor
             EdgeData result;
             NodeView sourceNode = edge.output.node as NodeView;
             NodeView destinationNode = edge.input.node as NodeView;
-            SceneConnectionsData sourceScene = sourceNode != null && sourceNode.Node != null ? sourceNode.Node.SceneData : null;
-            SceneConnectionsData destinationScene = destinationNode != null && destinationNode.Node != null ? destinationNode.Node.SceneData : null; 
+            SceneData sourceScene = sourceNode != null && sourceNode.Node != null ? sourceNode.Node.SceneData : null;
+            SceneData destinationScene = destinationNode != null && destinationNode.Node != null ? destinationNode.Node.SceneData : null; 
 
             string outputName = edge.output != null ? edge.output.portName : "";
             string inputName = edge.input != null ? edge.input.portName : "";
 
             if (sourceScene != null && destinationScene != null)
             {
-                 result = new EdgeData(sourceNode.Node.Guid, sourceScene.SceneGuid, sourceScene.SceneName, outputName, 
-                    destinationNode.Node.Guid, destinationScene.SceneGuid, destinationScene.SceneName, inputName);
+                 result = new EdgeData(sourceNode.Node.Guid, sourceScene.Guid, sourceScene.Name, outputName, 
+                    destinationNode.Node.Guid, destinationScene.Guid, destinationScene.Name, inputName);
             }
             else if(sourceScene != null)
             {
-                result = new EdgeData(sourceNode.Node.Guid, sourceScene.SceneGuid, sourceScene.SceneName, outputName,
+                result = new EdgeData(sourceNode.Node.Guid, sourceScene.Guid, sourceScene.Name, outputName,
                     "", "", "", inputName);
             }
             else if (destinationScene != null)
             {
                 result = new EdgeData("", "", "", outputName,
-                    destinationNode.Node.Guid, destinationScene.SceneGuid, destinationScene.SceneName, inputName);
+                    destinationNode.Node.Guid, destinationScene.Guid, destinationScene.Name, inputName);
             }
             else
             {
@@ -975,14 +975,14 @@ namespace NGAME.Editor
             {
                 result.DestinationNodeGuid = Node.Guid;
                 result.DestinationSceneGuid = CurrentSceneGuid;
-                result.DestinationSceneName = Node.SceneData.SceneName;
+                result.DestinationSceneName = Node.SceneData.Name;
                 result.DestinationPortName = port.portName;
             }
             else
             {
                 result.SourceNodeGuid = Node.Guid;
                 result.SourceSceneGuid = CurrentSceneGuid;
-                result.SourceSceneName = Node.SceneData.SceneName;
+                result.SourceSceneName = Node.SceneData.Name;
                 result.SourcePortName = port.portName;
             }
 
@@ -1072,11 +1072,11 @@ namespace NGAME.Editor
         internal void ValidateNodeScene(List<NGAME.SceneConnectionsData> mostRecentlyFetchedSceneData)
         {
 
-            if (Node.SceneData == null ||  string.IsNullOrEmpty(Node.SceneData.SceneGuid))
+            if (Node.SceneData == null ||  string.IsNullOrEmpty(Node.SceneData.Guid))
             {
                 return;
             }
-            SceneConnectionsData matchingScene = mostRecentlyFetchedSceneData.FirstOrDefault((SceneConnectionsData e) => e.SceneGuid == Node.SceneData.SceneGuid);
+            SceneConnectionsData matchingScene = mostRecentlyFetchedSceneData.FirstOrDefault((SceneConnectionsData e) => e.SceneGuid == Node.SceneData.Guid);
             if (matchingScene == null)
             {
                 StringBuilder sb = new();
@@ -1087,7 +1087,7 @@ namespace NGAME.Editor
                 sb.Append("Or the scene no longer includes NGAME compatible interfaces (Logs for filtering based on that to be added soon).\n");
                 Debug.LogWarning(sb.ToString());
 
-                MarkMissingSceneError("Scene named " + Node.SceneData.SceneName + ", not valid.");
+                MarkMissingSceneError("Scene named " + Node.SceneData.Name + ", not valid.");
                 return;
             }
 
@@ -1099,9 +1099,9 @@ namespace NGAME.Editor
             List<int> indexOfInvalidEdges = new();
             SceneConnectionsData currentSceneData = null;
             List<RegionConnectionData> exits = null;
-            if(Node != null && Node.SceneData != null && !string.IsNullOrEmpty(Node.SceneData.SceneGuid))
+            if(Node != null && Node.SceneData != null && !string.IsNullOrEmpty(Node.SceneData.Guid))
             {
-                currentSceneData = mostRecentlyFetchedSceneData.FirstOrDefault((SceneConnectionsData data) => data.SceneGuid == Node.SceneData.SceneGuid);
+                currentSceneData = mostRecentlyFetchedSceneData.FirstOrDefault((SceneConnectionsData data) => data.SceneGuid == Node.SceneData.Guid);
 
                 if(currentSceneData != null)
                     exits = currentSceneData.Exits;
@@ -1141,9 +1141,9 @@ namespace NGAME.Editor
                     {
                         SceneConnectionsData destinationData = null;
                         List<RegionConnectionData> entrances = null;
-                        if (destinationView.Node != null && destinationView.Node.SceneData != null && !string.IsNullOrEmpty(destinationView.Node.SceneData.SceneGuid))
+                        if (destinationView.Node != null && destinationView.Node.SceneData != null && !string.IsNullOrEmpty(destinationView.Node.SceneData.Guid))
                         {
-                            destinationData = mostRecentlyFetchedSceneData.FirstOrDefault((SceneConnectionsData data) => data.SceneGuid == destinationView.Node.SceneData.SceneGuid);
+                            destinationData = mostRecentlyFetchedSceneData.FirstOrDefault((SceneConnectionsData data) => data.SceneGuid == destinationView.Node.SceneData.Guid);
                             if(destinationData != null)
                                 entrances = destinationData.Entrances;
                         }

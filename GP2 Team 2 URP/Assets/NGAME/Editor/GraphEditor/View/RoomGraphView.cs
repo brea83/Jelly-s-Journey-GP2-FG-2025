@@ -185,15 +185,17 @@ namespace NGAME.Editor
         {
             if (_graph == null)
                 return;
-
+            
             foreach(RoomNode node in _graph.nodes)
             {
                 string path = AssetDatabase.GetAssetPath(node);
-                if (path.Contains(_graph.name + ".asset"))
-                {
-                    continue;
-                }
-                AssetDatabase.AddObjectToAsset(node, _graph);
+                if (!path.Contains(_graph.name + ".asset"))
+                    AssetDatabase.AddObjectToAsset(node, _graph);
+
+                string sceneDataPath = AssetDatabase.GetAssetPath(node.SceneData);
+                if (!sceneDataPath.Contains(_graph.name + ".asset") && !AssetDatabase.Contains(node.SceneData)) 
+                    AssetDatabase.AddObjectToAsset(node.SceneData, _graph);
+
                 EditorUtility.SetDirty(_graph);
                 EditorUtility.SetDirty(node);
             }

@@ -19,6 +19,8 @@ namespace NGAME
         public string Name = "Object Name";
         public RegionConnectionType ConnectionType;
         public bool IsLockable;
+        public bool IsLockedDurringCombat;
+        public bool StartsLocked;
         public Vector3 Position;
     }
     [Serializable]
@@ -135,6 +137,6 @@ namespace NGAME
 
         public UnityEvent<EdgeData> ConnectorActivated { get; }
 
-        public void InitializeFromGraphData(EdgeData edge);
+        public void InitializeFromGraphData(RegionConnectionData connectionData, EdgeData edge);
     }
 }

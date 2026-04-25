@@ -32,7 +32,7 @@ namespace NGAME.Editor
 
             Foldout fold = new();
             fold.name = "FullSceneData";
-            fold.text = "Scene: " + serializedObject.FindProperty("Name").stringValue;
+            fold.text = "Scene: " + serializedObject.FindProperty("m_Name").stringValue;
 
             //TextElement header = new TextElement();
             //header.Bind(sceneData);
@@ -59,7 +59,7 @@ namespace NGAME.Editor
             {
                 PropertyField connection = new PropertyField(connections.GetArrayElementAtIndex(i));
                 connection.Bind(serializedObject);
-                //connectionObjects.
+                connection.SetEnabled(false);
                 header.Add(connection);
             }
 

@@ -58,7 +58,7 @@ namespace NGAME
 
 
         // intended to be called by a node when its scene connections change
-        public bool ReplaceSceneAtNodeGuid(string changedNodeGuid, SceneConnectionsData sceneData)
+        public bool ReplaceSceneAtNodeGuid(string changedNodeGuid, SceneData sceneData)
         {
             if (sceneData == null)
             {
@@ -73,8 +73,8 @@ namespace NGAME
                     m_bIsValid = false;
                 }
 
-                SourceSceneGuid = sceneData.SceneGuid;
-                SourceSceneName = sceneData.SceneName;
+                SourceSceneGuid = sceneData.Guid;
+                SourceSceneName = sceneData.Name;
                 m_bIsValid = true;
             }
             else if(changedNodeGuid == DestinationNodeGuid)
@@ -86,8 +86,8 @@ namespace NGAME
                     m_bIsValid = false;
                 }
 
-                DestinationSceneGuid = sceneData.SceneGuid;
-                DestinationSceneName = sceneData.SceneName;
+                DestinationSceneGuid = sceneData.Guid;
+                DestinationSceneName = sceneData.Name;
                 m_bIsValid = true;
             }
 

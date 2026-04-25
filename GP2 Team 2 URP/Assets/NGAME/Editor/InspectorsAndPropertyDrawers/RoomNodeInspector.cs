@@ -29,11 +29,11 @@ namespace NGAME.Editor
             title.bindingPath = serializedObject.FindProperty("m_Name").propertyPath;
             inspector.Add(title);
 
-            //if (m_InspectorUXML != null)
-            //{
-            //    VisualElement uxmlContent = m_InspectorUXML.CloneTree();
-            //    inspector.Add(uxmlContent);
-            //}
+            PropertyField connectionOverrides = new(serializedObject.FindProperty("OverridenConnectionData"));
+            connectionOverrides.Bind(serializedObject);
+            connectionOverrides.name = "ConnectionOverridesList";
+            inspector.Add(connectionOverrides);
+
 
             PropertyField guidField = new PropertyField(serializedObject.FindProperty("m_Guid"), "Node Guid");
             guidField.Bind(serializedObject);

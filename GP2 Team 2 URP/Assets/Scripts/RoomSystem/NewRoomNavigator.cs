@@ -43,7 +43,7 @@ public class NewRoomNavigator : MonoBehaviour
         if (m_LoadFromGraphNeeded)
         {
             m_LoadFromGraphNeeded = false;
-            LoadScene(m_Graph.CurrentRoom.SceneData.SceneName, false);
+            LoadScene(m_Graph.CurrentRoom.SceneData.Name, false);
         }
     }
     public void OnGraphInitiatedPlaymode(MapGraphRuntime runtimeGraph)
@@ -61,7 +61,7 @@ public class NewRoomNavigator : MonoBehaviour
             Debug.LogError("No RoomNode found, make sure Graph runtime is assigned, and has rooms");
             return;
         }
-        LoadScene(firstRoom.SceneData.SceneName, false);
+        LoadScene(firstRoom.SceneData.Name, false);
 
     }
     private IEnumerator LoadAfterSeconds(float seconds, string sceneName, bool bIsCircleWipe = false)
@@ -138,15 +138,13 @@ public class NewRoomNavigator : MonoBehaviour
     {
         exit.ConnectorActivated.AddListener(OnConnectorActivated);
 
-        RegionConnectionData data = exit.GetRegionConnectionData();
+        RegionConnectionData liveSceneData = exit.GetRegionConnectionData();
 
-        EdgeData edge = m_Graph.CurrentExits.FirstOrDefault((EdgeData e) => e.SourcePortName == data.Name);
+        EdgeData edge = m_Graph.CurrentExits.FirstOrDefault((EdgeData e) => e.SourcePortName == liveSceneData.Name);
+        RegionConnectionData graphConnectionData = m_Graph.CurrentRoom.SceneData.UniqueConnectionObjects.FirstOrDefault(
+            (RegionConnectionData data) => data.Name == liveSceneData.Name);
 
-        exit.InitializeFromGraphData(edge);
-        //if(edge != null)
-        //{
-        //    exit.SetDestination(edge);
-        //}
+        exit.InitializeFromGraphData(graphConnectionData, edge);
     }
 
     protected void OnConnectorActivated(EdgeData edge)
@@ -155,7 +153,7 @@ public class NewRoomNavigator : MonoBehaviour
 
         if (m_Graph.TryEnterRoom(edge))
         {
-            LoadScene(m_Graph.CurrentRoom.SceneData.SceneName);
+            LoadScene(m_Graph.CurrentRoom.SceneData.Name);
         }
         //RoomNode nextRoom = m_Graph.GetRoomByGuid(edge.DestinationNodeGuid);
         //if (nextRoom != null)

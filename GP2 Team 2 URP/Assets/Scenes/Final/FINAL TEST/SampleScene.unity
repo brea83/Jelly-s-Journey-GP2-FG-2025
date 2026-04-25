@@ -1329,6 +1329,14 @@ PrefabInstance:
       propertyPath: StateEnter.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 9137189654461925161, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 9.26
+      objectReference: {fileID: 0}
+    - target: {fileID: 9137189654461925161, guid: 92ae73fde188954449c2df6460ae8e1d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 4.3999996
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -2294,6 +2302,10 @@ PrefabInstance:
     - target: {fileID: 6308764977717918229, guid: 0dd4d4f5647efa44f9773b3691948a03, type: 3}
       propertyPath: m_Name
       value: Entrance Only
+      objectReference: {fileID: 0}
+    - target: {fileID: 7044840544402165401, guid: 0dd4d4f5647efa44f9773b3691948a03, type: 3}
+      propertyPath: IsLockable
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
