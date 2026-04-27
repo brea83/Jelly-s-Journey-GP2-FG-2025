@@ -13,10 +13,10 @@ namespace NGAME
     }
 
     [Serializable]
-    public class RegionConnectionData
+    public struct RegionConnectionData
     {
-        public string TypeName = "IEncounterRegionConnector";
-        public string Name = "Object Name";
+        public string TypeName;// = "IEncounterRegionConnector";
+        public string Name;//= "Object Name";
         public RegionConnectionType ConnectionType;
         public bool IsLockable;
         public bool IsLockedDurringCombat;

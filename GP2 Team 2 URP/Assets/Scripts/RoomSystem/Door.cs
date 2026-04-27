@@ -270,32 +270,32 @@ namespace RoomSystem
 
         public void InitializeFromGraphData(RegionConnectionData connectionData, EdgeData edge)
         {
-            if(edge == null)
+            if(edge == null || string.IsNullOrEmpty(connectionData.TypeName))
             {
                 LockDoor();
+                return;
             }
-            else if(connectionData != null)
+            
+            LocksDurringCombat = connectionData.IsLockedDurringCombat;
+
+            StartsLocked = connectionData.StartsLocked;
+            if ( StartsLocked && !Locked )
+                LockDoor();
+            else if( !StartsLocked && Locked )
+                UnlockDoor();
+
+            if (LocksDurringCombat)
             {
-                LocksDurringCombat = connectionData.IsLockedDurringCombat;
-
-                StartsLocked = connectionData.StartsLocked;
-                if ( StartsLocked && !Locked )
-                    LockDoor();
-                else if( !StartsLocked && Locked )
-                    UnlockDoor();
-
-                if (LocksDurringCombat)
+                NewEncounterManager encounterManager = GameManager.Instance.EncounterManager;
+                if (encounterManager != null)
                 {
-                    NewEncounterManager encounterManager = GameManager.Instance.EncounterManager;
-                    if (encounterManager != null)
-                    {
-                        encounterManager.OnEncounterStart.AddListener(OnEncounterStart);
-                        encounterManager.OnEncounterEnd.AddListener(OnEncounterEnd);
-                    }
+                    encounterManager.OnEncounterStart.AddListener(OnEncounterStart);
+                    encounterManager.OnEncounterEnd.AddListener(OnEncounterEnd);
                 }
-                
-                SetDestination(edge);
             }
+                
+            SetDestination(edge);
+            
         }
     }
         

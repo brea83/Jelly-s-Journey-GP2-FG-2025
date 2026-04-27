@@ -141,7 +141,7 @@ public class NewRoomNavigator : MonoBehaviour
         RegionConnectionData liveSceneData = exit.GetRegionConnectionData();
 
         EdgeData edge = m_Graph.CurrentExits.FirstOrDefault((EdgeData e) => e.SourcePortName == liveSceneData.Name);
-        RegionConnectionData graphConnectionData = m_Graph.CurrentRoom.SceneData.UniqueConnectionObjects.FirstOrDefault(
+        RegionConnectionData graphConnectionData = m_Graph.CurrentRoom.OverridenConnectionData.FirstOrDefault(
             (RegionConnectionData data) => data.Name == liveSceneData.Name);
 
         exit.InitializeFromGraphData(graphConnectionData, edge);

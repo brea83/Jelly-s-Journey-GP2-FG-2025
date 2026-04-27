@@ -1151,15 +1151,17 @@ namespace NGAME.Editor
                         Edge newEdge = sourcePort.ConnectTo(destinationPort);
                         m_RoomGraphView.AddElement(newEdge);
 
-                        RegionConnectionData sourceExit = null;
-                        RegionConnectionData destinationEntrance = null;
+                        RegionConnectionData sourceExit = new();
+                        RegionConnectionData destinationEntrance = new();
                         if (exits != null)
                             sourceExit = exits.FirstOrDefault((RegionConnectionData connection) => connection.Name == sourcePort.portName);
 
                         if(entrances != null)
                             destinationEntrance = entrances.FirstOrDefault((RegionConnectionData connection) => connection.Name == destinationPort.portName);
 
-                        bool error = sourceExit == null || destinationEntrance == null;
+                        bool sourceUninitialized = string.IsNullOrEmpty(sourceExit.TypeName);
+                        bool destinationUninitialized = string.IsNullOrEmpty(destinationEntrance.TypeName);
+                        bool error = sourceUninitialized || destinationUninitialized;
 
                         if (error)
                         {
@@ -1170,7 +1172,7 @@ namespace NGAME.Editor
                                 errorText.Append(", no longer valid because Node has no valid scene");
                                 MarkPortConnectionError(sourcePort, newEdge, errorText.ToString());
                             }
-                            else if (sourceExit == null)
+                            else if (sourceUninitialized)
                             {
                                 StringBuilder errorText = new();
                                 errorText.Append(sourcePort.portName);
@@ -1186,7 +1188,7 @@ namespace NGAME.Editor
                                 errorText.Append(", no longer valid because Node has no valid scene");
                                 MarkPortConnectionError(destinationPort, null, errorText.ToString());
                             }
-                            if (destinationEntrance == null)
+                            if (destinationUninitialized)
                             {
                                 StringBuilder errorText = new();
                                 errorText.Append(destinationPort.portName);

@@ -154,10 +154,15 @@ namespace NGAME
         public void UpdateRoomData(SceneData room)
         {
             SceneData = room;
-
+            OverridenConnectionData.Clear();
             if (room != null)
-                OverridenConnectionData = new List<RegionConnectionData>(room.UniqueConnectionObjects);
-
+            {
+                foreach(RegionConnectionData data in room.UniqueConnectionObjects)
+                {
+                    OverridenConnectionData.Add(data);
+                }
+            }
+                
             UpdateEdges();
         }
 

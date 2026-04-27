@@ -35,7 +35,7 @@ MonoBehaviour:
   Waves:
   - {fileID: 11400000, guid: 3e39ffcdb3a8614409ba2a251a694d8f, type: 2}
   m_Guid: 272932770eef6de45a37535ebaa79d4f
-  m_Position: {x: 1227.386, y: -10.000015}
+  m_Position: {x: 1226.1672, y: -9.999989}
   _isStartNode: 0
 --- !u!114 &-5005448368373161328
 MonoBehaviour:
@@ -55,21 +55,21 @@ MonoBehaviour:
     Name: Door South
     ConnectionType: 2
     IsLockable: 1
-    IsLockedDurringCombat: 1
+    IsLockedDurringCombat: 0
     StartsLocked: 0
     Position: {x: -8.25, y: 0, z: -20.5}
   - TypeName: RoomSystem.Door
     Name: Door West
     ConnectionType: 2
     IsLockable: 1
-    IsLockedDurringCombat: 1
+    IsLockedDurringCombat: 0
     StartsLocked: 0
     Position: {x: -25.239712, y: 0, z: -1.75}
   - TypeName: RoomSystem.Door
     Name: Door East
     ConnectionType: 2
     IsLockable: 1
-    IsLockedDurringCombat: 1
+    IsLockedDurringCombat: 0
     StartsLocked: 0
     Position: {x: 16.203, y: 0, z: 7.54}
   OutgoingEdges:
@@ -95,7 +95,7 @@ MonoBehaviour:
   Waves:
   - {fileID: 11400000, guid: db11945bdb46fb6488d5063ffffe68ea, type: 2}
   m_Guid: 1054876d2df8d40468fb28efd97ed6fb
-  m_Position: {x: 149.50504, y: 25.886665}
+  m_Position: {x: 148.16734, y: 25.333338}
   _isStartNode: 0
 --- !u!114 &-2616417663063570396
 MonoBehaviour:
@@ -115,7 +115,7 @@ MonoBehaviour:
     Name: Door North
     ConnectionType: 2
     IsLockable: 1
-    IsLockedDurringCombat: 1
+    IsLockedDurringCombat: 0
     StartsLocked: 0
     Position: {x: -28.000906, y: 0, z: 26.98}
   - TypeName: RoomSystem.Door
@@ -139,7 +139,7 @@ MonoBehaviour:
   Waves:
   - {fileID: 11400000, guid: 0a28601bacdd7dc41a36736438b7df58, type: 2}
   m_Guid: 12a949ba26042a74abf34edb089dd911
-  m_Position: {x: -408.6667, y: -10}
+  m_Position: {x: -408.6667, y: -11.165984}
   _isStartNode: 1
 --- !u!114 &-2498825706724796023
 MonoBehaviour:
@@ -190,7 +190,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bc3768443858dad479f2cbca8d56449d, type: 3}
-  m_Name: 'Graph2: Room 3: SampleScene 1'
+  m_Name: 'SampleScene 1'
   m_EditorClassIdentifier: NGAME_Runtime::NGAME.SceneData
   Guid: 7a3963fe7029e1540abdb3d88a000b52
   FilePath: Assets/Scenes/Final/FINAL TEST/SampleScene 1.unity
@@ -267,20 +267,20 @@ MonoBehaviour:
     Name: Door West
     ConnectionType: 2
     IsLockable: 1
-    IsLockedDurringCombat: 1
+    IsLockedDurringCombat: 0
     StartsLocked: 0
     Position: {x: -25.239712, y: 0, z: -1.75}
   - TypeName: RoomSystem.Door
     Name: Door East
     ConnectionType: 2
     IsLockable: 1
-    IsLockedDurringCombat: 1
+    IsLockedDurringCombat: 0
     StartsLocked: 0
     Position: {x: 16.203, y: 0, z: 7.54}
   OutgoingEdges:
   - SourceNodeGuid: 698460677e992524081c2b471b135283
     SourceSceneGuid: 7a3963fe7029e1540abdb3d88a000b52
-    SourceSceneName: 'Graph2: Room 3: SampleScene 1'
+    SourceSceneName: 'SampleScene 1'
     SourcePortName: Door East
     DestinationNodeGuid: 272932770eef6de45a37535ebaa79d4f
     DestinationSceneGuid: 7cb8c6b0027761a46b600f3b69174403
@@ -294,7 +294,7 @@ MonoBehaviour:
     SourcePortName: Door East
     DestinationNodeGuid: 698460677e992524081c2b471b135283
     DestinationSceneGuid: 7a3963fe7029e1540abdb3d88a000b52
-    DestinationSceneName: 'Graph2: Room 3: SampleScene 1'
+    DestinationSceneName: 'SampleScene 1'
     DestinationPortName: Door West
     m_bIsValid: 1
   Waves:
