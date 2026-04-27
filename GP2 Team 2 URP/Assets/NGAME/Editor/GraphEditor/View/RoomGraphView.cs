@@ -85,9 +85,11 @@ namespace NGAME.Editor
         
         
         private RoomGraph _graph;
-        private Blackboard m_Blackboard;
 
-        private NodeInspector m_Inspector;
+
+        private MiniMap m_MiniMap;
+
+        private NodeInspectorView m_Inspector;
 
         //public override bool supportsWindowedBlackboard => true;
         public RoomGraphView() : base()
@@ -104,9 +106,9 @@ namespace NGAME.Editor
             //var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI Toolkit/Styles/Editor/RoomGraphEditor.uss");
             //styleSheets.Add(styleSheet);
             Undo.undoRedoPerformed += OnUndoRedo;
-
-
         }
+        
+        
 
         protected void OnUndoRedo()
         {
@@ -117,37 +119,36 @@ namespace NGAME.Editor
 
         public override bool supportsWindowedBlackboard => true;
 
-        public NodeInspector GetOrCreateNodeInspector()
+        public MiniMap GetOrCreateMiniMap()
         {
-            if(m_Inspector == null)
+            if(m_MiniMap == null)
             {
-                m_Inspector = new NodeInspector(this);
+                m_MiniMap = new();
+                m_MiniMap.graphView = this;
+                m_MiniMap.AddToClassList("Minimap");
+                //miniMap.anchored = true;
+
+                Add(m_MiniMap);
+            }
+
+            return m_MiniMap;
+        }
+
+        public NodeInspectorView GetOrCreateNodeInspector()
+        {
+            if (m_Inspector == null)
+            {
+                m_Inspector = new NodeInspectorView(this);
+                Add(m_Inspector);
             }
             return m_Inspector;
         }
 
-        public void ReleaseNodeInspector(NodeInspector inspector)
+        public void ReleaseNodeInspector(NodeInspectorView inspector)
         {
-            if(m_Inspector == inspector)
+            if (m_Inspector == inspector)
             {
                 m_Inspector = null;
-            }
-        }
-
-        public override Blackboard GetBlackboard()
-        {
-            if(m_Blackboard == null)
-            {
-                m_Blackboard = new Blackboard(this);
-            }
-            return m_Blackboard;
-        }
-        public override void ReleaseBlackboard(Blackboard toRelease)
-        {
-            if(m_Blackboard == toRelease)
-            {
-                m_Blackboard = null;
-                //RemoveElement(toRelease);
             }
         }
 
@@ -159,7 +160,9 @@ namespace NGAME.Editor
             DeleteElements(graphElements);
             graphViewChanged += OnGraphViewChanged;
 
-            foreach(RoomNode node in _graph.nodes)
+            GetOrCreateMiniMap();
+
+            foreach (RoomNode node in _graph.nodes)
             {
                 if(node is RoomNode)
                 {

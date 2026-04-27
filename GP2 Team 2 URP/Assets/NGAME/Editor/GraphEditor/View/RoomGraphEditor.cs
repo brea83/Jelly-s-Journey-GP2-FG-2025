@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
+using UnityEditor.PackageManager.UI;
 using UnityEditor.SceneManagement;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -28,10 +29,11 @@ namespace NGAME.Editor
         private Dictionary<string, Texture2D> m_ScenePreviewLookup = new();
 
         private RoomGraphView _graphView;
-        private NodeInspectorWindow _inspectorView;
+        private NodeInspectorView _inspectorView;
+        private MiniMap _minimapWindow;
 
-        private GraphViewBlackboardWindow _blackboardWindow;
-        private GraphViewMinimapWindow _minimapWindow;
+        private VisualElement m_TopLeftPane;
+        private VisualElement m_BottomLeftPane;
 
         //toolbar buttons
         private UnityEditor.UIElements.ToolbarMenu m_FileMenu;
@@ -46,76 +48,49 @@ namespace NGAME.Editor
         [MenuItem("NGAME/Editor")]
         public static void OpenWindow()
         {
-            //RoomGraphEditor window = GetWindow<RoomGraphEditor>();
-            //window.titleContent = new GUIContent("RoomGraphEditor");
-            //window.saveChangesMessage = "This Graph has unsaved changes. Would you like to save?";
-            List<EditorWindow> windows = ShowGraphViewWindowWithTools<RoomGraphEditor>();
-            RoomGraphEditor editor = windows[0] as RoomGraphEditor;
-            editor._blackboardWindow = windows[1] as GraphViewBlackboardWindow;
-            editor._minimapWindow = windows[2] as GraphViewMinimapWindow;
-
-            System.Type[] dockNextToType = new System.Type[1] { typeof(GraphViewBlackboardWindow) };
-
-            editor._inspectorView = GetWindow<NodeInspectorWindow>("Node Inspector", dockNextToType);
-            
-            if(editor._graphView != null)
-            {
-                editor._inspectorView.SelectGraphViewFromWindow(editor, editor._graphView);
-            }
-            editor._inspectorView.ShowTab();
-
-            editor.saveChangesMessage = "This Window has unsaved changes. Would you like to save?";
-
-            
+            RoomGraphEditor window = GetWindow<RoomGraphEditor>();
+            window.titleContent = new GUIContent("RoomGraphEditor");
+            window.saveChangesMessage = "This Graph has unsaved changes. Would you like to save?";
         }
 
         private void OnEnable()
         {
-            Debug.Log("NGAME Window OnEnable");
-            EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
-            SceneManager.sceneLoaded -= OnSceneLoaded;
+            //Debug.Log("NGAME Window OnEnable");
+            //EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+            //SceneManager.sceneLoaded -= OnSceneLoaded;
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
 
-            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
-            SceneManager.sceneLoaded += OnSceneLoaded;
+            //EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+           // SceneManager.sceneLoaded += OnSceneLoaded;
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
-
-            //Debug.Log("NGAME Editor.m_PlaymodeEntranceRequest: " + m_PlaymodeEntranceRequest);
         }
+
         private void OnDisable()
         {
-            EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
-            SceneManager.sceneLoaded -= OnSceneLoaded;
+            //EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+            //SceneManager.sceneLoaded -= OnSceneLoaded;
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
-            //Debug.Log("NGAME Editor.m_PlaymodeEntranceRequest: " + m_PlaymodeEntranceRequest);
-            Debug.Log("NGAME Window OnDisable");
-        }
-
-        private void OnDestroy()
-        {
-            //Debug.Log("NGAME Editor.m_PlaymodeEntranceRequest: " + m_PlaymodeEntranceRequest);
-            Debug.Log("NGAME Window OnDestroy");
         }
 
         private void OnActiveSceneChanged(Scene currentScene, Scene nextScene)
         {
-            StringBuilder message = new();
-            message.Append("SceneManager.activeSceneChanged: curent scene (" + currentScene.name + "), ");
-            message.Append("next scene (" + nextScene.name + ")");
-            Debug.Log(message.ToString());
-           // Debug.Log("NGAME Editor.m_PlaymodeEntranceRequest: " + m_PlaymodeEntranceRequest);
+            //StringBuilder message = new();
+            //message.Append("SceneManager.activeSceneChanged: curent scene (" + currentScene.name + "), ");
+            //message.Append("next scene (" + nextScene.name + ")");
+            //Debug.Log(message.ToString());
+
             if(m_PlaymodeEntranceRequest != null && nextScene.name == m_PlaymodeEntranceRequest.DestinationSceneName)
                 InitRuntimeGraph(nextScene);
         }
-        private void OnSceneLoaded(Scene loadedScene, LoadSceneMode mode)
-        {
-            Debug.Log("SceneManager.sceneLoaded: " + loadedScene.name);
-        }
-        private void OnPlayModeStateChanged(PlayModeStateChange stateChange)
-        {
-            Debug.Log("PlayMode State Change: " + stateChange.ToString());
-            //Debug.Log("NGAME Editor.m_PlaymodeEntranceRequest: " + m_PlaymodeEntranceRequest);
-        }
+        //private void OnSceneLoaded(Scene loadedScene, LoadSceneMode mode)
+        //{
+        //    //Debug.Log("SceneManager.sceneLoaded: " + loadedScene.name);
+        //}
+        //private void OnPlayModeStateChanged(PlayModeStateChange stateChange)
+        //{
+        //    //Debug.Log("PlayMode State Change: " + stateChange.ToString());
+        //    //Debug.Log("NGAME Editor.m_PlaymodeEntranceRequest: " + m_PlaymodeEntranceRequest);
+        //}
 
         public void RegisterPlayModeRequest(SceneAsset requestedScene, EdgeData entrance)
         {
@@ -132,9 +107,6 @@ namespace NGAME.Editor
 
             EditorSceneManager.playModeStartScene = requestedScene;
 
-            //EditorSceneManager.sceneLoaded += OnPlaymodeSceneLoaded;
-            //SceneManager.sceneLoaded += OnPlaymodeSceneLoaded;
-
             EditorApplication.EnterPlaymode();
         }
 
@@ -142,18 +114,9 @@ namespace NGAME.Editor
         {
             GameObject[] rootObjects = loadedScene.GetRootGameObjects();
             MapGraphRuntime runtimeGraph = FindFirstObjectByType<MapGraphRuntime>();
-            //foreach (GameObject obj in rootObjects)
-            //{
-            //    runtimeGraph = obj.GetComponentInChildren<MapGraphRuntime>();
-            //    if (runtimeGraph != null)
-            //    {
-            //        break;
-            //    }
-            //}
 
             if (runtimeGraph == null || m_PlaymodeEntranceRequest == null)
                 return;
-
             
             if(!m_PlaymodeRequestSent)
             {
@@ -179,10 +142,6 @@ namespace NGAME.Editor
                 visualTree.CloneTree(root);
             }
 
-            //VisualTreeAsset visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI Toolkit/Panels/Editor/GraphView Tools/RoomGraphEditor.uxml");
-
-
-
             StyleSheet styleSheet;
             string[] guids = AssetDatabase.FindAssets("NGAMEEditorStyle  t:StyleSheet");
             if (guids.Length > 0)
@@ -191,9 +150,6 @@ namespace NGAME.Editor
                 root.styleSheets.Add(styleSheet);
                 m_Style = styleSheet;
             }
-            //StyleSheet styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI Toolkit/Styles/Editor/RoomGraphEditor.uss");
-
-            
             
             _graphView = root.Q<RoomGraphView>();
 
@@ -203,13 +159,17 @@ namespace NGAME.Editor
             _graphView.OnNodeValuesChanged = OnNodeValuesChanged;
             _graphView.RegisterPlayModeRequest = RegisterPlayModeRequest;
             _graphView.OnGraphChanged += OnGraphChanged;
+            
+            _inspectorView = _graphView.GetOrCreateNodeInspector();
+            _minimapWindow = _graphView.GetOrCreateMiniMap();
+
             _graphView.UpdateDataObjects( m_sceneData, m_ScenePreviewLookup);
+
             OnSelectionChange();
 
             if(m_Style != null)
             {
                 _graphView.styleSheets.Add(m_Style);
-                //_inspectorView.styleSheets.Add(m_Style);
             }
 
             m_FileMenu = root.Q<ToolbarMenu>("FileMenu");
@@ -224,8 +184,27 @@ namespace NGAME.Editor
             Button refreshButton = new();
             refreshButton.text = "Refresh Scene Data";
             refreshButton.clicked += OnRefreshScenes;
-            //_RefreshMenu.menu.AppendAction("Refresh Scene Data", (a) => { OnRefreshScenes(); });
             m_FileMenu.parent.Add(refreshButton);
+
+            Button toggleMinimapButton = new();
+            toggleMinimapButton.text = "MiniMap";
+            toggleMinimapButton.clicked += OnToggleMiniMap;
+            m_FileMenu.parent.Add(toggleMinimapButton);
+
+            Button toggleNodeInspector = new();
+            toggleNodeInspector.text = "Node Inspector";
+            toggleNodeInspector.clicked += OnToggleNodeInspector;
+            m_FileMenu.parent.Add(toggleNodeInspector);
+        }
+
+        private void OnToggleMiniMap()
+        {
+            _minimapWindow.visible = !_minimapWindow.visible;
+        }
+
+        private void OnToggleNodeInspector()
+        {
+            _inspectorView.visible = !_inspectorView.visible;
         }
 
         private void OnSelectionChange()
@@ -239,8 +218,8 @@ namespace NGAME.Editor
             if (_graph != null && hasUnsavedChanges)
             {
                 ShowSaveDialogue();
-                //AssetDatabase.SaveAssetIfDirty(_graph);
             }
+
             _graph = roomGraph;
             _graphView.PopulateView(roomGraph);
         }
@@ -428,20 +407,15 @@ namespace NGAME.Editor
             List<RegionConnectionData> conectionObjects = new();
             List<SpawnerData> spawners = new();
 
-            //bool bConnectionsFound = false;
-            //bool bSpawnersFound = false;
-
             GameObject[] rootObjects = aScene.GetRootGameObjects();
 
             foreach (GameObject obj in rootObjects)
             {
                 // connection data
                 IEncounterRegionConnector[] connectorComponent = obj.GetComponentsInChildren<IEncounterRegionConnector>();
-                //if (connectorComponent.Length > 0) bConnectionsFound = true;
 
                 foreach (IEncounterRegionConnector connection in connectorComponent)
                 {
-                    //connections.Add(component.GetRegionConnectionData());
                     RegionConnectionData data = connection.GetRegionConnectionData();
                     conectionObjects.Add(data);
                 }
@@ -449,7 +423,6 @@ namespace NGAME.Editor
                 // spawner data
 
                 ISpawnPoint[] spawnerComponents = obj.GetComponentsInChildren<ISpawnPoint>();
-                //if (spawnerComponents.Length > 0) bSpawnersFound = true;
 
                 foreach (ISpawnPoint spawner in spawnerComponents)
                 {
