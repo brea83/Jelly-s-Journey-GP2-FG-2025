@@ -152,3 +152,15 @@ GridBackground {
     bottom: 15px;
     right: 15px;
 }
+
+Button.visible
+{
+    background-color: rgb(40, 40, 40);
+    border-color: #2B573E;
+}
+
+Button.visible:hover
+{
+    background-color: rgb(20, 20, 20);
+    border-color: rgb(80, 80, 80);
+}

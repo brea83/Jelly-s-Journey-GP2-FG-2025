@@ -32,8 +32,8 @@ namespace NGAME.Editor
         private NodeInspectorView _inspectorView;
         private MiniMap _minimapWindow;
 
-        private VisualElement m_TopLeftPane;
-        private VisualElement m_BottomLeftPane;
+        private Button m_ToggleMinimapButton;
+        private Button m_ToggleInspectorButton;
 
         //toolbar buttons
         private UnityEditor.UIElements.ToolbarMenu m_FileMenu;
@@ -186,25 +186,41 @@ namespace NGAME.Editor
             refreshButton.clicked += OnRefreshScenes;
             m_FileMenu.parent.Add(refreshButton);
 
-            Button toggleMinimapButton = new();
-            toggleMinimapButton.text = "MiniMap";
-            toggleMinimapButton.clicked += OnToggleMiniMap;
-            m_FileMenu.parent.Add(toggleMinimapButton);
+            m_ToggleMinimapButton = new();
+            m_ToggleMinimapButton.text = "MiniMap";
+            m_ToggleMinimapButton.name = "ToggleMiniMap";
+            m_ToggleMinimapButton.clicked += OnToggleMiniMap;
+            m_FileMenu.parent.Add(m_ToggleMinimapButton);
+            SetClassOnVisiblity(_minimapWindow.visible, m_ToggleMinimapButton);
 
-            Button toggleNodeInspector = new();
-            toggleNodeInspector.text = "Node Inspector";
-            toggleNodeInspector.clicked += OnToggleNodeInspector;
-            m_FileMenu.parent.Add(toggleNodeInspector);
+            m_ToggleInspectorButton = new();
+            m_ToggleInspectorButton.text = "Node Inspector";
+            m_ToggleInspectorButton.name = "ToggleNodeInspector";
+            m_ToggleInspectorButton.clicked += OnToggleNodeInspector;
+            m_FileMenu.parent.Add(m_ToggleInspectorButton);
+            SetClassOnVisiblity(_inspectorView.visible, m_ToggleInspectorButton);
         }
 
         private void OnToggleMiniMap()
         {
             _minimapWindow.visible = !_minimapWindow.visible;
+            SetClassOnVisiblity(_minimapWindow.visible, m_ToggleMinimapButton);
+           
         }
 
         private void OnToggleNodeInspector()
         {
             _inspectorView.visible = !_inspectorView.visible;
+            SetClassOnVisiblity(_inspectorView.visible, m_ToggleInspectorButton);
+            
+        }
+
+        private void SetClassOnVisiblity(bool bIsVisible, VisualElement elementToStyle)
+        {
+            if (bIsVisible)
+                elementToStyle.AddToClassList("visible");
+            else
+                elementToStyle.RemoveFromClassList("visible");
         }
 
         private void OnSelectionChange()
