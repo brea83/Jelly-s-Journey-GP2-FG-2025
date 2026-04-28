@@ -1,9 +1,7 @@
 using NGAME;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Text;
-using System.Xml.Linq;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.SceneManagement;

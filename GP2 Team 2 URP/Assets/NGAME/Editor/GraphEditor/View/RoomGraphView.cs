@@ -85,7 +85,7 @@ namespace NGAME.Editor
         
         
         private RoomGraph _graph;
-
+        public bool HasRoomGraph { get => _graph != null; }
 
         private MiniMap m_MiniMap;
 

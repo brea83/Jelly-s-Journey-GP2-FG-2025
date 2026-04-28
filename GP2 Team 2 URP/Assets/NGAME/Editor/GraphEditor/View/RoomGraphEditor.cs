@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-using System.Text;
 using UnityEditor;
+using UnityEditor.Callbacks;
 using UnityEditor.Experimental.GraphView;
-using UnityEditor.PackageManager.UI;
 using UnityEditor.SceneManagement;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -53,6 +52,84 @@ namespace NGAME.Editor
             window.saveChangesMessage = "This Graph has unsaved changes. Would you like to save?";
         }
 
+        [OnOpenAssetAttribute(1)]
+        public static bool OpenEditorFromSO(UnityEngine.EntityId entityID, int line)
+        {
+            string filepath = AssetDatabase.GetAssetPath(entityID);
+            System.Type assetType = AssetDatabase.GetMainAssetTypeAtPath(filepath);
+            if (assetType == typeof(RoomGraph))
+            {
+                OpenWindow();
+                return false;
+            }
+            return false;
+        }
+        [OnOpenAssetAttribute(2)]
+        public static bool InitEditorFromSO(UnityEngine.EntityId entityID, int line)
+        {
+            string filepath = AssetDatabase.GetAssetPath(entityID);
+            System.Type assetType = AssetDatabase.GetMainAssetTypeAtPath(filepath);
+            if (assetType == typeof(RoomGraph))
+            {
+                RoomGraph graph = AssetDatabase.LoadAssetAtPath<RoomGraph>(filepath);
+                RoomGraphEditor window = GetWindow<RoomGraphEditor>();
+
+                bool askToDiscard = window._graph != null && filepath == AssetDatabase.GetAssetPath(window._graph);
+                if (askToDiscard)
+                {
+                    if (EditorUtility.DisplayDialog("Discard Changes", "Attempting to open the already open graph. Do you want to Discard Changes?", "Yes", "No"))
+                    {
+                        window.DiscardChanges();
+                        return true;
+                    }
+                }
+
+                if (graph != null)
+                {
+                    if (window._graph != null)
+                    {
+                        window.ShowSaveDialogue();
+                    }
+
+                    window.SwapGraph(graph);
+                    //window._graph = graph;
+                    window.titleContent.text = $"{graph.name} - Node Graph AdventureMapEditor";
+
+                    window._graphView.PopulateView(window._graph);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        //private static RoomGraphEditor GetMatchingWindow(RoomGraph graph)
+        //{
+        //    RoomGraphEditor[] windows = FindObjectsByType<RoomGraphEditor>(FindObjectsSortMode.None);
+        //    foreach (RoomGraphEditor window in windows)
+        //    {
+        //        if (window.titleContent.text == $"{graph.name} - Node Graph AdventureMapEditor")
+        //            return window;
+        //    }
+
+        //    return null;
+        //}
+
+        //private static bool PromptOpenInNewWindow(RoomGraph newGraph, RoomGraphEditor oldWindow)
+        //{
+        //    // EditorUtility.DisplayDialog returns true if ok/save is pressed
+            
+        //    if (EditorUtility.DisplayDialog($"Open {newGraph.name}?", $"Open {newGraph.name} in new window?", "Yes", "No"))
+        //    {
+        //        CreateWindow<RoomGraphEditor>($"{newGraph.name} - Node Graph AdventureMapEditor");
+        //        return false;
+        //    }
+        //    else
+        //    {
+        //        oldWindow.ShowSaveDialogue();
+        //        return false;
+        //    }
+        //}
+
         private void OnEnable()
         {
             //Debug.Log("NGAME Window OnEnable");
@@ -63,6 +140,8 @@ namespace NGAME.Editor
             //EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
            // SceneManager.sceneLoaded += OnSceneLoaded;
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
+
+            
         }
 
         private void OnDisable()
@@ -72,6 +151,27 @@ namespace NGAME.Editor
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
         }
 
+        private void SwapGraph(RoomGraph newGraph)
+        {
+            //newGraph.hideFlags = HideFlags.HideAndDontSave;
+            //DestroyImmediate(_graph);
+            //if(_graph != null)
+            //{
+            //    _graph.hideFlags = HideFlags.None;
+            //    EditorUtility.SetDirty(_graph);
+            //    AssetDatabase.SaveAssetIfDirty(_graph);
+            //}
+
+            _graph = newGraph;
+        }
+
+        private void OnDestroy()
+        {
+            //if(_graph != null)
+            //    _graph.hideFlags = HideFlags.None;
+            ClearCachedSceneData();
+            //DestroyImmediate(_graphView);
+        }
         private void OnActiveSceneChanged(Scene currentScene, Scene nextScene)
         {
             //StringBuilder message = new();
@@ -90,6 +190,14 @@ namespace NGAME.Editor
         //{
         //    //Debug.Log("PlayMode State Change: " + stateChange.ToString());
         //    //Debug.Log("NGAME Editor.m_PlaymodeEntranceRequest: " + m_PlaymodeEntranceRequest);
+        //    if(stateChange == PlayModeStateChange.EnteredEditMode && _graph != null)
+        //    {
+        //        if (_graphView != null)
+        //        {
+        //            _graphView.UpdateDataObjects(m_sceneData, m_ScenePreviewLookup);
+        //            _graphView.PopulateView(_graph);
+        //        }
+        //    }
         //}
 
         public void RegisterPlayModeRequest(SceneAsset requestedScene, EdgeData entrance)
@@ -164,6 +272,8 @@ namespace NGAME.Editor
             _minimapWindow = _graphView.GetOrCreateMiniMap();
 
             _graphView.UpdateDataObjects( m_sceneData, m_ScenePreviewLookup);
+            if (_graph != null)
+                _graphView.PopulateView(_graph);
 
             OnSelectionChange();
 
@@ -225,19 +335,19 @@ namespace NGAME.Editor
 
         private void OnSelectionChange()
         {
-            RoomGraph roomGraph = Selection.activeObject as RoomGraph;
-            if(roomGraph == null)
-            {
-                return;
-            }
+            //RoomGraph roomGraph = Selection.activeObject as RoomGraph;
+            //if (roomGraph == null)
+            //{
+            //    return;
+            //}
 
-            if (_graph != null && hasUnsavedChanges)
-            {
-                ShowSaveDialogue();
-            }
+            //if (_graph != null && hasUnsavedChanges)
+            //{
+            //    ShowSaveDialogue();
+            //}
 
-            _graph = roomGraph;
-            _graphView.PopulateView(roomGraph);
+            //_graph = roomGraph;
+            //_graphView.PopulateView(roomGraph);
         }
 
         private void OnNodeSelectionChanged(NodeView nodeView)
@@ -277,7 +387,8 @@ namespace NGAME.Editor
             "Please enter a file name");
             if (path.Length != 0)
             {
-                _graph = CreateInstance< RoomGraph>();
+                SwapGraph(CreateInstance<RoomGraph>());
+                //_graph = CreateInstance< RoomGraph>();
                 _graphView.PopulateView(_graph);
                 AssetDatabase.CreateAsset(_graph, path);
             }
@@ -343,7 +454,8 @@ namespace NGAME.Editor
                 return;
             }
 
-            _graph = AssetDatabase.LoadAssetAtPath<RoomGraph>(path);
+            SwapGraph(AssetDatabase.LoadAssetAtPath<RoomGraph>(path));
+            //_graph = AssetDatabase.LoadAssetAtPath<RoomGraph>(path);
             _graphView.PopulateView(_graph);
         }
 
@@ -355,6 +467,29 @@ namespace NGAME.Editor
         private Dictionary<string, Texture2D> OnScenePreviewsRequested() 
         {
             return m_ScenePreviewLookup;
+        }
+
+        private void ClearCachedSceneData()
+        {
+            if(m_sceneData != null)
+            {
+                foreach(SceneData data in m_sceneData)
+                {
+                    data.hideFlags = HideFlags.None;
+                }
+
+                m_sceneData.Clear();
+            }
+
+            if(m_ScenePreviewLookup != null)
+            {
+                foreach(string key in m_ScenePreviewLookup.Keys)
+                {
+                    m_ScenePreviewLookup[key].hideFlags = HideFlags.None;
+                }
+
+                m_ScenePreviewLookup.Clear();
+            }
         }
 
         private void ReadCurrentSceneData()
@@ -373,8 +508,7 @@ namespace NGAME.Editor
                 return;
             }
 
-            m_sceneData.Clear();
-            m_ScenePreviewLookup.Clear();
+            ClearCachedSceneData();
 
             for (int i = 0; i < settings.Scenes.Count; i++)
             {
@@ -396,9 +530,11 @@ namespace NGAME.Editor
                 string sceneGuid = settings.Guids[i];
 
                 SceneData sceneData = CreateSceneDataObject(aScene, sceneGuid, data.FilePath);
+                sceneData.hideFlags = HideFlags.HideAndDontSave;
 
                 Texture2D previewImage = ScenePreviewRenderer.WriteTexture(aScene, sceneData, 100);
                 previewImage.filterMode = FilterMode.Point;
+                previewImage.hideFlags = HideFlags.HideAndDontSave;
                 if (m_ScenePreviewLookup.ContainsKey(sceneGuid))
                 {
                     m_ScenePreviewLookup[sceneGuid] = previewImage;
