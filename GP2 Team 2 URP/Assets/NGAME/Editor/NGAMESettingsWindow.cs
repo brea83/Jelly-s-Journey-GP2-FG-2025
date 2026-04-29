@@ -16,13 +16,25 @@ namespace NGAME.Editor
     {
         private SO_Settings m_Settings;
 
-        [SerializeField] private int m_SelectedIndex = -1;
+        [SerializeField] private int m_CompatibleListSelectedIndex = -1;
+        private int m_IncompatibleListSelectedIndex = -1;
         private VisualElement m_RootScrollElement;
-        private VisualElement m_GraphPanel;
-        private ListView m_ScenesListView;
-        private VisualElement m_ScenesRightPane;
+        //private VisualElement m_GraphPanel;
 
-        private Dictionary<string, SceneInclusionData> m_GuidToSceneData;
+        private ListView m_CompatibleScenesListView;
+        private VisualElement m_CompatibleScenesRightPane;
+        
+        private ListView m_IncompatibleScenesListView;
+        private VisualElement m_IncompatibleScenesRightPane;
+
+        private ObjectField m_SettingsSelectorField;
+
+        private Dictionary<string, SceneInclusionData> m_GuidToSceneData = new();
+        private Dictionary<string, string> m_GuidToDescriptionInSettings = new();
+
+        private List<SceneInclusionData> m_CompatibleScenes = new();
+        private List<SceneInclusionData> m_UncompatibleScenes = new();
+        private List<string> m_SavedScenesNotInProject = new();
 
         private StyleSheet m_Styles;
 
@@ -37,7 +49,7 @@ namespace NGAME.Editor
 
             // Limit size of the window.
             wnd.minSize = new Vector2(450, 200);
-            wnd.maxSize = new Vector2(1920, 720);
+            //wnd.maxSize = new Vector2(1920, 720);
         }
 
         [OnOpenAssetAttribute(1)]
@@ -68,13 +80,24 @@ namespace NGAME.Editor
                     Debug.Log("NGAME SETTINGS is recieving initial settings values");
                     NGAMESettings wnd = GetWindow<NGAMESettings>();
                     wnd.m_Settings = settings;
-
+                    wnd.m_SettingsSelectorField.SetValueWithoutNotify(settings);
                     wnd.LoadSettingsObject();
-                    wnd.PopulateSceneList();
+                    wnd.PopulateSceneList(wnd.m_CompatibleScenesListView, wnd.m_CompatibleScenes);
+                    wnd.PopulateSceneList(wnd.m_IncompatibleScenesListView, wnd.m_UncompatibleScenes);
                     return true;
                 }
             }
             return false;
+        }
+
+        private void OnEnable()
+        {
+            if(m_Settings != null)
+            {
+                LoadSettingsObject();
+                PopulateSceneList(m_CompatibleScenesListView, m_CompatibleScenes);
+                PopulateSceneList(m_IncompatibleScenesListView, m_UncompatibleScenes);
+            }
         }
 
         private void OnDestroy()
@@ -90,6 +113,8 @@ namespace NGAME.Editor
         public void CreateGUI()
         {
             Debug.Log("NGAME SETTINGS . CreateGUI() called");
+            
+
             m_RootScrollElement = new ScrollView(ScrollViewMode.VerticalAndHorizontal);
             rootVisualElement.Add(m_RootScrollElement);
 
@@ -99,16 +124,17 @@ namespace NGAME.Editor
                 m_Styles = AssetDatabase.LoadAssetAtPath<StyleSheet>(AssetDatabase.GUIDToAssetPath(guids[0]));
             }
 
-                CreateGeneralSettingsPanel();
-            CreateScenesPanel();
+            m_RootScrollElement.Add(CreateGeneralSettingsPanel());
+            m_RootScrollElement.Add(CreateSceneSelectionPanel());
+            m_RootScrollElement.Add(CreateIncompatibleScenesPanel());
         }
 
-        private void OpenSettingsObject(VisualElement parent)
+        private ObjectField CreateSettingsObjectField()
         {
-            var objectField = new ObjectField();
+            var objectField = new ObjectField("Select a Settings File");
             objectField.objectType = typeof(SO_Settings);
-            objectField.label = "Select a Settings File";
-            objectField.value = m_Settings;
+
+            objectField.SetValueWithoutNotify(m_Settings);
 
             objectField.RegisterValueChangedCallback(evt =>
             {
@@ -116,12 +142,13 @@ namespace NGAME.Editor
                 {
                     m_Settings = evt.newValue as SO_Settings;
                     LoadSettingsObject();
-                    PopulateSceneList();
+                    PopulateSceneList(m_CompatibleScenesListView, m_CompatibleScenes);
+                    PopulateSceneList(m_IncompatibleScenesListView, m_UncompatibleScenes);
                 }
 
             });
 
-            parent.Add(objectField);
+            return objectField;
         }
 
         private void LoadSettingsObject()
@@ -131,13 +158,15 @@ namespace NGAME.Editor
                 return;
             }
 
-            if(m_GuidToSceneData == null)
+            if (m_GuidToSceneData == null)
             {
                 m_GuidToSceneData = new Dictionary<string, SceneInclusionData>();
                 Debug.Log("Settings Window's Guid To Scene Data dictionary was null so making a new one");
             }
+            else
+                m_GuidToSceneData.Clear();
 
-            if(m_Settings.Scenes == null)
+            if (m_Settings.Scenes == null)
             {
                 Debug.Log("Settings Object's SceneData list was null so making a new one");
                 m_Settings.Scenes = new List<SceneInclusionData>();
@@ -158,48 +187,25 @@ namespace NGAME.Editor
             {
                 string guidKey = m_Settings.Guids[i];
                 SceneInclusionData data = m_Settings.Scenes[i];
-                Debug.Log("Checking if " + data.Name + " is a valid scene");
 
                 string filePath = AssetDatabase.GUIDToAssetPath(guidKey);
-                Scene aScene;
-                if (filePath != data.FilePath)
-                {
-                    aScene = EditorSceneManager.OpenPreviewScene(filePath);
-                }
-                else
-                {
-                    aScene = EditorSceneManager.OpenPreviewScene(data.FilePath);
-                }
+                data.FilePath = filePath;
 
-                if (!aScene.IsValid())
-                {
-                    Debug.Log("Invalid scene found");
-                    data.Description = "Invalid Scene Marked for Deletion from Settings";
-                }
-
+                
                 m_GuidToSceneData.Add(guidKey, data);
-                EditorSceneManager.ClosePreviewScene(aScene);
             }
-
-            // check if any new scenes need to be added
-            // Get a list of all sprites in the project.
-           /* List<SceneData> allSceneData =*/ FindSceneData();
+            InitializeSceneDataLookups();
 
         }
 
         
 
-        private void CreateGeneralSettingsPanel()
+        private VisualElement CreateGeneralSettingsPanel()
         {
             VisualElement panel = new VisualElement();
-            // Find all Texture2Ds that have 'co' in their filename, that are labelled with 'architecture' and are placed in 'MyAwesomeProps' folder
             
             if(m_Styles != null)
-            {
                 panel.styleSheets.Add(m_Styles);
-            }
-            //panel.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>("../UIElements/Styles/NGAMESettingsWindow.uss"));
-            m_RootScrollElement.Add(panel);
 
             Label title = new Label();
             title.text = "NGAME Settings";
@@ -216,24 +222,26 @@ namespace NGAME.Editor
             header.AddToClassList("header1");
             panel.Add(header);
 
-            
-            OpenSettingsObject(panel);
+            m_SettingsSelectorField = CreateSettingsObjectField();
+            panel.Add(m_SettingsSelectorField);
 
             TextElement tempSetting = new TextElement();
             tempSetting.text = "This is where settings about what classes to look for in scenes will go. Current Default is to look for Door and Spawner interfaces.";
             panel.Add(tempSetting);
+
+            return panel;
         }
 
-        private void CreateScenesPanel()
+        private VisualElement CreateSceneSelectionPanel()
         {
 
-            VisualElement panel = new VisualElement();
+            ScrollView panel = new ScrollView(ScrollViewMode.VerticalAndHorizontal);
             if (m_Styles != null)
             {
                 panel.styleSheets.Add(m_Styles);
             }
-            //panel.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI Toolkit/Styles/Editor/NGAMESettingsWindow.uss"));
-            m_RootScrollElement.Add(panel);
+            panel.style.maxHeight = 300;
+            panel.verticalScrollerVisibility = ScrollerVisibility.AlwaysVisible;
 
             Label header = new Label();
             header.text = "Scene Selection";
@@ -249,14 +257,17 @@ namespace NGAME.Editor
             VisualElement leftPanel = new VisualElement();
             splitView.Add(leftPanel);
 
-            Label leftPanelLabel = new Label();
-            leftPanelLabel.text = "Scenes";
-            leftPanelLabel.AddToClassList("header2");
-            leftPanel.Add(leftPanelLabel);
+            Label CompatibleScenesLabel = new Label();
+            CompatibleScenesLabel.text = "Compatible Scenes";
+            CompatibleScenesLabel.AddToClassList("header2");
+            leftPanel.Add(CompatibleScenesLabel);
 
             // A TwoPaneSplitView always needs two child elements.
-            m_ScenesListView = new ListView();
-            leftPanel.Add(m_ScenesListView);
+            m_CompatibleScenesListView = new ListView();
+            //m_CompatibleScenesListView.style.minHeight = 300;
+            leftPanel.Add(m_CompatibleScenesListView);
+
+            
 
             VisualElement rightPanel = new VisualElement();
             splitView.Add(rightPanel);
@@ -266,44 +277,99 @@ namespace NGAME.Editor
             rightPanelLabel.AddToClassList("header2");
             rightPanel.Add(rightPanelLabel);
 
-            m_ScenesRightPane = new ScrollView(ScrollViewMode.VerticalAndHorizontal);
-            rightPanel.Add(m_ScenesRightPane);
+            m_CompatibleScenesRightPane = new ScrollView(ScrollViewMode.VerticalAndHorizontal);
+            rightPanel.Add(m_CompatibleScenesRightPane);
+            //m_ScenesRightPane.style.minHeight = 300;
 
-            PopulateSceneList();
+            PopulateSceneList(m_CompatibleScenesListView, m_CompatibleScenes);
             // React to the user's selection.
-            m_ScenesListView.selectionChanged += OnSceneSelectionChanged;
-
+            //m_CompatibleScenesListView.selectionChanged += OnSceneSelectionChanged;
             // Restore the selection index from before the hot reload.
-            m_ScenesListView.selectedIndex = m_SelectedIndex;
-
+            m_CompatibleScenesListView.selectedIndex = m_CompatibleListSelectedIndex;
             // Store the selection index when the selection changes.
-            m_ScenesListView.selectionChanged += (items) => { m_SelectedIndex = m_ScenesListView.selectedIndex; };
+            m_CompatibleScenesListView.selectionChanged += (items) => 
+            {
+                OnSceneSelectionChanged(items, m_CompatibleScenesRightPane);
+                m_CompatibleListSelectedIndex = m_CompatibleScenesListView.selectedIndex; 
+            };
+
+            
+
+            return panel;
         }
 
-        private void PopulateSceneList()
+        private void OverrideFoldoutStyling(Foldout panel, string ussHeaderClass)
+        {
+            Toggle foldoutLabel = panel.Q<Toggle>();
+            foldoutLabel.AddToClassList(ussHeaderClass);
+            foldoutLabel.style.marginLeft = 0;
+            foldoutLabel.style.marginBottom = 0;
+            foldoutLabel.style.marginRight = 0;
+
+            VisualElement toggleIcon = foldoutLabel.Q("unity-checkmark");
+            toggleIcon.style.marginLeft = 3;
+        }
+        private VisualElement CreateIncompatibleScenesPanel()
+        {
+            Foldout panel = new();
+            panel.text = "Incompatible Scenes";
+            if (m_Styles != null)
+            {
+                panel.styleSheets.Add(m_Styles);
+            }
+
+            OverrideFoldoutStyling(panel, "header1");
+            
+            // Create a two-pane view with the left pane being fixed.
+            var splitView = new TwoPaneSplitView(0, 250, TwoPaneSplitViewOrientation.Horizontal);
+            //splitView.RemoveFromClassList("foldoutHeader1");
+
+            // Add the panel to the visual tree by adding it as a child to the root element.
+            panel.Add(splitView);
+
+            VisualElement leftPanel = new VisualElement();
+            leftPanel.name = "Incompatible Scenes Left Pane";
+            m_IncompatibleScenesRightPane = new VisualElement();
+            m_IncompatibleScenesRightPane.name = "Incompatible Scenes Right Pane";
+            splitView.Add(leftPanel);
+            splitView.Add(m_IncompatibleScenesRightPane);
+
+            m_IncompatibleScenesListView = new ListView();
+            leftPanel.Add(m_IncompatibleScenesListView);
+
+            PopulateSceneList(m_IncompatibleScenesListView, m_UncompatibleScenes);
+            m_IncompatibleScenesListView.selectedIndex = m_IncompatibleListSelectedIndex;
+            m_IncompatibleScenesListView.selectionChanged += (items) =>
+            {
+                OnSceneSelectionChanged(items, m_IncompatibleScenesRightPane);
+                m_IncompatibleListSelectedIndex = m_IncompatibleScenesListView.selectedIndex;
+                
+            };
+
+            return panel;
+        }
+        private void PopulateSceneList(ListView listElement, List<SceneInclusionData> items)
         {
             if( m_Settings == null)
             {
                 return;
             }
 
-            if(m_ScenesListView.childCount != 0)
+            if(listElement.childCount != 0)
             {
-                m_ScenesListView.Clear();
+                listElement.Clear();
             }
-            // Get a list of all sprites in the project.
-            List<SceneInclusionData> allSceneData = m_GuidToSceneData.Values.ToList();//FindSceneData();
 
             // Initialize the list view with all sprites' names.
-            m_ScenesListView.makeItem = () => new Label();
-            m_ScenesListView.bindItem = (item, index) => { (item as Label).text = allSceneData[index].Name; };
-            m_ScenesListView.itemsSource = allSceneData;
+            listElement.makeItem = () => new Label();
+            listElement.bindItem = (item, index) => { (item as Label).text = items[index].Name; };
+            listElement.itemsSource = items;
         }
 
-        private void OnSceneSelectionChanged(IEnumerable<object> selectedItems)
+        private void OnSceneSelectionChanged(IEnumerable<object> selectedItems, VisualElement detailsPanel)
         {
             // Clear all previous content from the pane.
-            m_ScenesRightPane.Clear();
+            detailsPanel.Clear();
 
             var enumerator = selectedItems.GetEnumerator();
             if (enumerator.MoveNext())
@@ -311,16 +377,17 @@ namespace NGAME.Editor
                 var selectedScene = enumerator.Current as SceneInclusionData;
                 if (selectedScene != null)
                 {
-                    DisplaySceneSettings(selectedScene);
+                    DisplaySceneSettings(selectedScene, detailsPanel);
                 }
             }
         }
 
         // does not include a null check because intended use is after a null check
-        private void DisplaySceneSettings(SceneInclusionData sceneData)
+        private void DisplaySceneSettings(SceneInclusionData sceneData, VisualElement detailPanel)
         {
 
             VisualElement settingsPane = new VisualElement();
+            settingsPane.name = "Settings Panel";
             if (m_Styles != null)
             {
                 settingsPane.styleSheets.Add(m_Styles);
@@ -328,51 +395,53 @@ namespace NGAME.Editor
             //settingsPane.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI Toolkit/Styles/Editor/NGAMESettingsWindow.uss"));
 
             // toggle inclusion in graph tool
-            Toggle toggleIncludeInGraph = new Toggle();
-            toggleIncludeInGraph.name = "bIncludeInGraph";
-            toggleIncludeInGraph.label = "Include Scene in Graph Tool";
-            toggleIncludeInGraph.value = sceneData.IncludeInGraphTool;
-            settingsPane.Add(toggleIncludeInGraph);
+            if (m_CompatibleScenes.Contains(sceneData))
+            {
+                Toggle toggleIncludeInGraph = new Toggle();
+                toggleIncludeInGraph.name = "bIncludeInGraph";
+                toggleIncludeInGraph.label = "Include Scene in Graph Tool";
+                toggleIncludeInGraph.value = sceneData.IncludeInGraphTool;
+                settingsPane.Add(toggleIncludeInGraph);
 
+                toggleIncludeInGraph.RegisterValueChangedCallback(evt =>
+                {
+                    sceneData.IncludeInGraphTool = evt.newValue;
+                    string guid = sceneData.Guid;
+                    Debug.Log(sceneData.Name + ", has had its bool to include in graph set to: " + sceneData.IncludeInGraphTool.ToString());
+
+                    if (sceneData.IncludeInGraphTool && !m_Settings.Guids.Contains(guid))
+                    {
+                        m_Settings.Guids.Add(guid);
+                        m_Settings.Scenes.Add(sceneData);
+                    }
+                    else if (!sceneData.IncludeInGraphTool && m_Settings.Guids.Contains(guid))
+                    {
+                        int index = m_Settings.Guids.IndexOf(guid);
+                        m_Settings.Guids.Remove(guid);
+                        m_Settings.Scenes.RemoveAt(index);
+                    }
+
+                    EditorUtility.SetDirty(m_Settings);
+                    Debug.Log("EditorUtility.SetDirty(m_Settings), for toggling inclusion in graph tool for sceneData: " + sceneData.Name);
+                    //AssetDatabase.SaveAssets();
+                });
+            }
             // add description of found elements.
             TextElement descriptionElement = new TextElement();
-            //descriptionElement.text = sceneData.Description;
-            descriptionElement.visible = sceneData.IncludeInGraphTool;
+            descriptionElement.name = "Description Element";
+            if (m_GuidToDescriptionInSettings.ContainsKey(sceneData.Guid))
+                descriptionElement.text = m_GuidToDescriptionInSettings[sceneData.Guid];
+            else
+                descriptionElement.text = "description not found";
+                //descriptionElement.visible = sceneData.IncludeInGraphTool;
             settingsPane.Add(descriptionElement);
 
-            toggleIncludeInGraph.RegisterValueChangedCallback(evt =>
-            {
-                sceneData.IncludeInGraphTool = evt.newValue;
-                Debug.Log(sceneData.Name + ", has had its bool to include in graph set to: " + sceneData.IncludeInGraphTool.ToString());
-                if (sceneData.IncludeInGraphTool)
-                {
-                    descriptionElement.text = GetComponentDescription(sceneData.FilePath);
-                }
-                else
-                {
-                    descriptionElement.text = "";
-                }
-                    descriptionElement.visible = evt.newValue;
-                EditorUtility.SetDirty(m_Settings);
-                Debug.Log("EditorUtility.SetDirty(m_Settings), for toggling inclusion in graph tool for sceneData: " + sceneData.Name);
-                //AssetDatabase.SaveAssets();
-            });
-
-            if (sceneData.IncludeInGraphTool)
-            {
-                descriptionElement.text = GetComponentDescription(sceneData.FilePath);
-            }
-            else
-            {
-                descriptionElement.text = "";
-            }
-                // Add the settings panel to the right-hand pane.
-                m_ScenesRightPane.Add(settingsPane);
+            detailPanel.Add(settingsPane);
         }
 
 
-
-        private void /* List<SceneData>*/ FindSceneData()
+        
+        private void /* List<SceneData>*/ InitializeSceneDataLookups()
         {
             //List<SceneData> results = new List<SceneData>();
             string[] allObjectGuids = AssetDatabase.FindAssets("t:Scene");
@@ -386,29 +455,64 @@ namespace NGAME.Editor
                 if (!aScene.IsValid())
                 {
                     Debug.Log("Invalid scene found");
+
+                    if(m_GuidToSceneData.ContainsKey(guid))
+                    {
+                        m_GuidToSceneData[guid].Description = "Scene Not Found";
+                        if (!m_SavedScenesNotInProject.Contains(guid))
+                            m_SavedScenesNotInProject.Add(guid);
+                    }
+                    else
+                    {
+                        SceneInclusionData data = new();
+                        data.Guid = guid;
+                        data.FilePath = filePath;
+                        m_UncompatibleScenes.Add(data);
+                    }
+                    EditorSceneManager.ClosePreviewScene(aScene);
                     continue;
                 }
 
-                SceneInclusionData currentSceneData = new SceneInclusionData();
-                currentSceneData.Name = aScene.name;
-                currentSceneData.Guid = guid;
-                currentSceneData.FilePath = filePath;
 
+                SceneInclusionData currentSceneData = null;
                 //results.Add(currentSceneData);
                 if (!m_GuidToSceneData.ContainsKey(guid)) 
                 {
+                    currentSceneData = new SceneInclusionData();
+                    currentSceneData.Name = aScene.name;
+                    currentSceneData.Guid = guid;
+                    currentSceneData.FilePath = filePath;
+                    
                     m_GuidToSceneData.Add(guid, currentSceneData);
-                    m_Settings.Guids.Add(guid);
-                    m_Settings.Scenes.Add(currentSceneData);
-                    EditorUtility.SetDirty(m_Settings);
-                    Debug.Log("EditorUtility.SetDirty(m_Settings), for sceneData: " + currentSceneData.Name);
+                    //Debug.Log("EditorUtility.SetDirty(m_Settings), for sceneData: " + currentSceneData.Name);
+                }
+                else
+                {
+                    currentSceneData = m_GuidToSceneData[guid];
+                    m_GuidToSceneData[guid].Name = aScene.name;
+                    m_GuidToSceneData[guid].FilePath = filePath;
                 }
 
+                    string editorDescription = "";
+
+                if (EvaluateSceneForGraphUse(aScene, out editorDescription))
+                {
+                    
+                    m_CompatibleScenes.Add(currentSceneData);
+                }
+                else
+                {
+                    m_UncompatibleScenes.Add(currentSceneData);
+                }
+
+                if (m_GuidToDescriptionInSettings.ContainsKey(guid))
+                    m_GuidToDescriptionInSettings[guid] = editorDescription;
+                else
+                    m_GuidToDescriptionInSettings.Add(guid, editorDescription);
                 EditorSceneManager.ClosePreviewScene(aScene);
             }
 
-            //AssetDatabase.SaveAssets();
-            //return results;
+            EditorUtility.SetDirty(m_Settings);
         }
 
         private string GetComponentDescription(string filePath)
@@ -456,6 +560,55 @@ namespace NGAME.Editor
             {
                 EditorSceneManager.ClosePreviewScene(aScene);
                 return "No IEncounterRegionConnector components found in scene.";
+            }
+        }
+
+        private bool EvaluateSceneForGraphUse(Scene aScene, out string editorDescription)
+        {
+            if (!aScene.IsValid())
+            {
+                //Debug.Log("Invalid scene found");
+                EditorSceneManager.ClosePreviewScene(aScene);
+                editorDescription = "Invalid scene found";
+                return false;
+            }
+            StringBuilder description = new StringBuilder();
+            bool bComponentsFound = false;
+
+            GameObject[] rootObjects = aScene.GetRootGameObjects();
+
+            foreach (GameObject obj in rootObjects)
+            {
+                IEncounterRegionConnector[] components = obj.GetComponentsInChildren<IEncounterRegionConnector>();
+
+                if (components.Length > 0)
+                {
+                    bComponentsFound = true;
+                    foreach (IEncounterRegionConnector component in components)
+                    {
+                        RegionConnectionData data = component.GetRegionConnectionData();
+                        description.Append("Found " + data.TypeName + "\n");
+                        description.Append("Connection Type: " + data.ConnectionType.ToString() + "\n");
+                        description.Append("Is Lockable: " + data.IsLockable.ToString() + "\n");
+
+                        description.Append("Position: " + data.Position.ToString() + "\n");
+                        description.Append("-------------\n");
+                    }
+                }
+            }
+
+            if (bComponentsFound)
+            {
+                Debug.Log("Scene: " + aScene.name + " contains target data types \n" + description.ToString());
+                //EditorSceneManager.ClosePreviewScene(aScene);
+                editorDescription = description.ToString();
+                return true;
+            }
+            else
+            {
+                //EditorSceneManager.ClosePreviewScene(aScene);
+                editorDescription = "No IEncounterRegionConnector components found in scene.";
+                return false;
             }
         }
     }
