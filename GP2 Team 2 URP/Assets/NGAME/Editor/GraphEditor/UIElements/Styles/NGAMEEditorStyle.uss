@@ -29,6 +29,8 @@ GridBackground {
     font-size: 14.0px;
 }
 
+
+
 .header3, .unity-text-element.header3 {
     margin-bottom:  1%;
     background-color: rgb(46, 46, 46);
@@ -166,7 +168,3 @@ Button.visible:hover
     border-color: rgb(80, 80, 80);
 }
 
-.foldoutContent, #unity-content.unity-foldout__content
-{
-    background-color: rgb(56, 56, 56);
-}

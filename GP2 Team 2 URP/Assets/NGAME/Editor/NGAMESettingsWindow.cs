@@ -39,6 +39,14 @@ namespace NGAME.Editor
         private StyleSheet m_Styles;
 
         //private bool m_SettingsAreLoaded = false;
+        public static void ShowEditorFromSO()
+        {
+            NGAMESettings wnd = GetWindow<NGAMESettings>();
+            wnd.titleContent = new GUIContent("NGAME Settings");
+
+            // Limit size of the window.
+            wnd.minSize = new Vector2(450, 200);
+        }
 
         [MenuItem("NGAME/Settings")]
         public static void ShowMyEditor()
@@ -49,7 +57,16 @@ namespace NGAME.Editor
 
             // Limit size of the window.
             wnd.minSize = new Vector2(450, 200);
-            //wnd.maxSize = new Vector2(1920, 720);
+
+            string[] settingsGuid = AssetDatabase.FindAssets("t:SO_Settings");
+            if (settingsGuid.Length <= 0)
+                return;
+            SO_Settings settings = AssetDatabase.LoadAssetAtPath<SO_Settings>(AssetDatabase.GUIDToAssetPath(settingsGuid[0]));
+            wnd.m_Settings = settings;
+            wnd.m_SettingsSelectorField.SetValueWithoutNotify(settings);
+            wnd.LoadSettingsObject();
+            wnd.PopulateSceneList(wnd.m_CompatibleScenesListView, wnd.m_CompatibleScenes);
+            wnd.PopulateSceneList(wnd.m_IncompatibleScenesListView, wnd.m_UncompatibleScenes);
         }
 
         [OnOpenAssetAttribute(1)]
@@ -60,7 +77,7 @@ namespace NGAME.Editor
             System.Type assetType = AssetDatabase.GetMainAssetTypeAtPath(filepath);
             if (assetType == typeof(SO_Settings))
             {
-                ShowMyEditor();
+                ShowEditorFromSO();
                 return false;
             }
 
@@ -203,6 +220,7 @@ namespace NGAME.Editor
         private VisualElement CreateGeneralSettingsPanel()
         {
             VisualElement panel = new VisualElement();
+            panel.AddToClassList("settingsSubSection");
             
             if(m_Styles != null)
                 panel.styleSheets.Add(m_Styles);
@@ -223,10 +241,16 @@ namespace NGAME.Editor
             panel.Add(header);
 
             m_SettingsSelectorField = CreateSettingsObjectField();
+            m_SettingsSelectorField.SetEnabled(false);
             panel.Add(m_SettingsSelectorField);
 
             TextElement tempSetting = new TextElement();
-            tempSetting.text = "This is where settings about what classes to look for in scenes will go. Current Default is to look for Door and Spawner interfaces.";
+            //tempSetting.text = "This is where settings about what classes to look for in scenes will go. Current Default is to look for Door and Spawner interfaces.";
+            tempSetting.text = "Settings for which scenes the graph editor will include for use.";
+            tempSetting.text += " Also shows a list of scenes that do not have the required interfaces on any of their objects.";
+            tempSetting.text += " Currently the tool only requires the scene to have at least one IEncounterRegionConnector.";
+            tempSetting.AddToClassList("indentLevel1");
+            
             panel.Add(tempSetting);
 
             return panel;
@@ -234,40 +258,29 @@ namespace NGAME.Editor
 
         private VisualElement CreateSceneSelectionPanel()
         {
-
-            ScrollView panel = new ScrollView(ScrollViewMode.VerticalAndHorizontal);
+            Foldout panel = new ();
+            panel.text = "Scene Selection";
             if (m_Styles != null)
-            {
                 panel.styleSheets.Add(m_Styles);
-            }
-            panel.style.maxHeight = 300;
-            panel.verticalScrollerVisibility = ScrollerVisibility.AlwaysVisible;
-
-            Label header = new Label();
-            header.text = "Scene Selection";
-            header.AddToClassList("header1");
-            panel.Add(header);
+            panel.AddToClassList("header1");
 
             // Create a two-pane view with the left pane being fixed.
             var splitView = new TwoPaneSplitView(0, 250, TwoPaneSplitViewOrientation.Horizontal);
-
-            // Add the panel to the visual tree by adding it as a child to the root element.
             panel.Add(splitView);
 
             VisualElement leftPanel = new VisualElement();
+            leftPanel.name = "leftPane";
+            leftPanel.AddToClassList("leftPane");
             splitView.Add(leftPanel);
 
             Label CompatibleScenesLabel = new Label();
+            CompatibleScenesLabel.name = "CompatibleScenesHeader";
             CompatibleScenesLabel.text = "Compatible Scenes";
             CompatibleScenesLabel.AddToClassList("header2");
             leftPanel.Add(CompatibleScenesLabel);
 
-            // A TwoPaneSplitView always needs two child elements.
             m_CompatibleScenesListView = new ListView();
-            //m_CompatibleScenesListView.style.minHeight = 300;
             leftPanel.Add(m_CompatibleScenesListView);
-
-            
 
             VisualElement rightPanel = new VisualElement();
             splitView.Add(rightPanel);
@@ -282,11 +295,7 @@ namespace NGAME.Editor
             //m_ScenesRightPane.style.minHeight = 300;
 
             PopulateSceneList(m_CompatibleScenesListView, m_CompatibleScenes);
-            // React to the user's selection.
-            //m_CompatibleScenesListView.selectionChanged += OnSceneSelectionChanged;
-            // Restore the selection index from before the hot reload.
             m_CompatibleScenesListView.selectedIndex = m_CompatibleListSelectedIndex;
-            // Store the selection index when the selection changes.
             m_CompatibleScenesListView.selectionChanged += (items) => 
             {
                 OnSceneSelectionChanged(items, m_CompatibleScenesRightPane);
@@ -298,33 +307,16 @@ namespace NGAME.Editor
             return panel;
         }
 
-        private void OverrideFoldoutStyling(Foldout panel, string ussHeaderClass)
-        {
-            Toggle foldoutLabel = panel.Q<Toggle>();
-            foldoutLabel.AddToClassList(ussHeaderClass);
-            foldoutLabel.style.marginLeft = 0;
-            foldoutLabel.style.marginBottom = 0;
-            foldoutLabel.style.marginRight = 0;
-
-            VisualElement toggleIcon = foldoutLabel.Q("unity-checkmark");
-            toggleIcon.style.marginLeft = 3;
-        }
         private VisualElement CreateIncompatibleScenesPanel()
         {
             Foldout panel = new();
             panel.text = "Incompatible Scenes";
+            panel.AddToClassList("header1");
             if (m_Styles != null)
-            {
                 panel.styleSheets.Add(m_Styles);
-            }
 
-            OverrideFoldoutStyling(panel, "header1");
-            
             // Create a two-pane view with the left pane being fixed.
             var splitView = new TwoPaneSplitView(0, 250, TwoPaneSplitViewOrientation.Horizontal);
-            //splitView.RemoveFromClassList("foldoutHeader1");
-
-            // Add the panel to the visual tree by adding it as a child to the root element.
             panel.Add(splitView);
 
             VisualElement leftPanel = new VisualElement();
