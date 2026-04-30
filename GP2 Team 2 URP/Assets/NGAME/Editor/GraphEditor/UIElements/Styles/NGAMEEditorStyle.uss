@@ -168,3 +168,8 @@ Button.visible:hover
     border-color: rgb(80, 80, 80);
 }
 
+.unity-foldout .unity-label.unity-base-popup-field__label
+{
+    min-width: 100px;
+}
+

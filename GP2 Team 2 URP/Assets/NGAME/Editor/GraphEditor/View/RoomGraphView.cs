@@ -74,6 +74,9 @@ namespace NGAME.Editor
         public Action<SceneAsset, EdgeData> RegisterPlayModeRequest;
         public Action OnGraphChanged;
 
+        public Action ContextMenuNewGraphRequest;
+        public Action ContextMenuLoadGraphRequest;
+
         public List<SceneInclusionData> IncludedScenes = new List<SceneInclusionData>();
         public List<SceneConnectionsData> ValidScenes = new List<SceneConnectionsData>();
         public List<SceneSpawnData> SpawnersByScene = new List<SceneSpawnData>();
@@ -161,6 +164,8 @@ namespace NGAME.Editor
             graphViewChanged += OnGraphViewChanged;
 
             GetOrCreateMiniMap();
+            if (_graph == null)
+                return;
 
             foreach (RoomNode node in _graph.nodes)
             {
@@ -321,17 +326,43 @@ namespace NGAME.Editor
         }
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
-            base.BuildContextualMenu(evt);
+            if(_graph == null)
+            {
+                if (evt.target is GraphView)
+                {
+                    evt.menu.AppendAction("No Graph Loaded. Load a graph or Create a new one",
+                        (a) => { }, DropdownMenuAction.Status.Disabled);
+
+                    evt.menu.AppendSeparator();
+
+                    evt.menu.AppendAction("Create Graph", (a) =>
+                    {
+                        if (ContextMenuNewGraphRequest != null)
+                            ContextMenuNewGraphRequest.Invoke();
+                    });
+
+                    evt.menu.AppendAction("Load Graph", (a) =>
+                    {
+                        if (ContextMenuLoadGraphRequest != null)
+                            ContextMenuLoadGraphRequest.Invoke();
+                    });
+                }
+                return;
+            }
+            
+                base.BuildContextualMenu(evt);
 
             
             if(evt.target is GraphView)
             {
-
+                
                 var types = TypeCache.GetTypesDerivedFrom<IMapNode>();
                 Vector2 position = evt.mousePosition;
                 foreach(var type in types)
                 {
-                    evt.menu.AppendAction($"Add [{type.BaseType.Name}] {type.Name}", (a) => OnContextMenuCreateNode(a, type));
+                    evt.menu.AppendAction($"Add [{type.BaseType.Name}] {type.Name}", 
+                        (a) => OnContextMenuCreateNode(a, type),
+                        (DropdownMenuAction a) => _graph != null ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Disabled);
                 }
             }
 

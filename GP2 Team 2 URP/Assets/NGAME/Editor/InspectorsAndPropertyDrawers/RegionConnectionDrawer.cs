@@ -39,7 +39,9 @@ namespace NGAME.Editor
                 popup.Add(startsLocked);
 
                 PropertyField combatLocks = new(property.FindPropertyRelative("IsLockedDurringCombat"));
+                combatLocks.label = "Combat Locked";
                 combatLocks.Bind(property.serializedObject);
+                combatLocks.tooltip = "True if connection is meant to Lock durring combat";
                 popup.Add(combatLocks);
 
             }

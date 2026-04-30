@@ -11,6 +11,7 @@ GridBackground {
     width: 100%;
     font-size: 32px;
     margin-top: 0;
+    padding-left: 5px;
 }
 
 .subtitle1 {
@@ -19,6 +20,7 @@ GridBackground {
     width: 100%;
     font-size: 12px;
     margin-top: 0;
+    padding-left: 5px;
 }
 
 .header1 {
@@ -27,6 +29,11 @@ GridBackground {
     width: 100%;
     font-size: 18px;
     margin-top: 0;
+}
+
+.unity-label.header1
+{
+    padding-left: 15px;
 }
 
 .header2 {
@@ -41,6 +48,8 @@ GridBackground {
 .foldoutContent, .unity-foldout__content
 {
     background-color: rgb(56, 56, 56);
+    margin-left: 0px;
+    padding-left: 15px;
     font-size: 12px;
 }
 
@@ -53,9 +62,13 @@ GridBackground {
     background-color: rgb(56, 56, 56);
 }
 
-.unity-text-element.indentLevel1
+.indentLevel1
 {
     margin-left: 15px;
+}
+
+.unity-text-element.indentLevel1
+{
     max-width: 800px;
 }
 

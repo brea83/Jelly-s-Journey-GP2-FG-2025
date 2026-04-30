@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.SceneManagement;
+using UnityEditor.ShortcutManagement;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -31,6 +32,7 @@ namespace NGAME.Editor
         private NodeInspectorView _inspectorView;
         private MiniMap _minimapWindow;
 
+        private ObjectField m_GraphSelector;
         private Button m_ToggleMinimapButton;
         private Button m_ToggleInspectorButton;
 
@@ -153,24 +155,13 @@ namespace NGAME.Editor
 
         private void SwapGraph(RoomGraph newGraph)
         {
-            //newGraph.hideFlags = HideFlags.HideAndDontSave;
-            //DestroyImmediate(_graph);
-            //if(_graph != null)
-            //{
-            //    _graph.hideFlags = HideFlags.None;
-            //    EditorUtility.SetDirty(_graph);
-            //    AssetDatabase.SaveAssetIfDirty(_graph);
-            //}
-
             _graph = newGraph;
+            m_GraphSelector.SetValueWithoutNotify(_graph);
         }
 
         private void OnDestroy()
         {
-            //if(_graph != null)
-            //    _graph.hideFlags = HideFlags.None;
             ClearCachedSceneData();
-            //DestroyImmediate(_graphView);
         }
         private void OnActiveSceneChanged(Scene currentScene, Scene nextScene)
         {
@@ -182,23 +173,7 @@ namespace NGAME.Editor
             if(m_PlaymodeEntranceRequest != null && nextScene.name == m_PlaymodeEntranceRequest.DestinationSceneName)
                 InitRuntimeGraph(nextScene);
         }
-        //private void OnSceneLoaded(Scene loadedScene, LoadSceneMode mode)
-        //{
-        //    //Debug.Log("SceneManager.sceneLoaded: " + loadedScene.name);
-        //}
-        //private void OnPlayModeStateChanged(PlayModeStateChange stateChange)
-        //{
-        //    //Debug.Log("PlayMode State Change: " + stateChange.ToString());
-        //    //Debug.Log("NGAME Editor.m_PlaymodeEntranceRequest: " + m_PlaymodeEntranceRequest);
-        //    if(stateChange == PlayModeStateChange.EnteredEditMode && _graph != null)
-        //    {
-        //        if (_graphView != null)
-        //        {
-        //            _graphView.UpdateDataObjects(m_sceneData, m_ScenePreviewLookup);
-        //            _graphView.PopulateView(_graph);
-        //        }
-        //    }
-        //}
+        
 
         public void RegisterPlayModeRequest(SceneAsset requestedScene, EdgeData entrance)
         {
@@ -261,6 +236,8 @@ namespace NGAME.Editor
             
             _graphView = root.Q<RoomGraphView>();
 
+            _graphView.ContextMenuNewGraphRequest = OnNewGraphClicked;
+            _graphView.ContextMenuLoadGraphRequest = OnLoadGraph;
             _graphView.ScenePreviewsRequested = OnScenePreviewsRequested;
             _graphView.SceneDataRequested = OnSceneDataRequested;
             _graphView.OnNodeSelected = OnNodeSelectionChanged;
@@ -275,8 +252,6 @@ namespace NGAME.Editor
             if (_graph != null)
                 _graphView.PopulateView(_graph);
 
-            OnSelectionChange();
-
             if(m_Style != null)
             {
                 _graphView.styleSheets.Add(m_Style);
@@ -288,8 +263,16 @@ namespace NGAME.Editor
 
             m_FileMenu.menu.AppendSeparator();
 
-            m_FileMenu.menu.AppendAction("Save", (a) => OnSaveGraphClicked());
+            m_FileMenu.menu.AppendAction("Save (ctrl + alt + s)", (a) => OnSaveGraphClicked());
             m_FileMenu.menu.AppendAction("Discard Changes", (a) => { DiscardChanges(); });
+
+            m_GraphSelector = CreateSettingsObjectField();
+            m_FileMenu.parent.Add(m_GraphSelector);
+            Button newGraphButton = new();
+            newGraphButton.text = "+";
+            newGraphButton.clicked += OnNewGraphClicked;
+            newGraphButton.tooltip = "Create New Graph Asset";
+            m_FileMenu.parent.Add(newGraphButton);
 
             Button refreshButton = new();
             refreshButton.text = "Refresh Scene Data";
@@ -309,6 +292,43 @@ namespace NGAME.Editor
             m_ToggleInspectorButton.clicked += OnToggleNodeInspector;
             m_FileMenu.parent.Add(m_ToggleInspectorButton);
             SetClassOnVisiblity(_inspectorView.visible, m_ToggleInspectorButton);
+        }
+
+        private ObjectField CreateSettingsObjectField()
+        {
+            var objectField = new ObjectField();
+            objectField.objectType = typeof(RoomGraph);
+
+            objectField.SetValueWithoutNotify(_graph);
+
+            objectField.RegisterValueChangedCallback(evt =>
+            {
+                if (evt.newValue is RoomGraph)
+                {
+                    RoomGraph roomGraph = evt.newValue as RoomGraph;
+                    
+                    if ( hasUnsavedChanges)
+                    {
+                        ShowSaveDialogue();
+                    }
+
+                    _graph = roomGraph;
+                    _graphView.PopulateView(roomGraph);
+                }
+                else if(evt.newValue == null)
+                {
+                    if (hasUnsavedChanges)
+                    {
+                        ShowSaveDialogue();
+                    }
+
+                    _graph = null;
+                    _graphView.PopulateView(_graph);
+                }
+
+            });
+
+            return objectField;
         }
 
         private void OnToggleMiniMap()
@@ -331,23 +351,6 @@ namespace NGAME.Editor
                 elementToStyle.AddToClassList("visible");
             else
                 elementToStyle.RemoveFromClassList("visible");
-        }
-
-        private void OnSelectionChange()
-        {
-            //RoomGraph roomGraph = Selection.activeObject as RoomGraph;
-            //if (roomGraph == null)
-            //{
-            //    return;
-            //}
-
-            //if (_graph != null && hasUnsavedChanges)
-            //{
-            //    ShowSaveDialogue();
-            //}
-
-            //_graph = roomGraph;
-            //_graphView.PopulateView(roomGraph);
         }
 
         private void OnNodeSelectionChanged(NodeView nodeView)
@@ -410,9 +413,17 @@ namespace NGAME.Editor
             base.DiscardChanges();
         }
 
+        [Shortcut("Save NGAME Graph", KeyCode.S, ShortcutModifiers.Control | ShortcutModifiers.Alt)]
+        public static void SaveGraph()
+        {
+            if (HasOpenInstances<RoomGraphEditor>())
+            {
+                RoomGraphEditor window = GetWindow<RoomGraphEditor>();
+                window.SaveChanges();
+            }
+        }
         private void OnSaveGraphClicked()
         {
-            //AssetDatabase.SaveAssets();
             SaveChanges();
         }
 
@@ -427,13 +438,9 @@ namespace NGAME.Editor
         {
                 // EditorUtility.DisplayDialog returns true if ok/save is pressed
             if (EditorUtility.DisplayDialog("Unsaved Changes", this.saveChangesMessage, "Save", "Discard"))
-            {
                 SaveChanges();
-            }
             else
-            {
                 DiscardChanges();
-            }
         }
 
         private void OnLoadGraph()
@@ -441,18 +448,14 @@ namespace NGAME.Editor
             Debug.Log("Load graph clicked");
 
             if (hasUnsavedChanges)
-            {
                 ShowSaveDialogue();
-            }
 
             string path = EditorUtility.OpenFilePanelWithFilters("Open Graph", "Assets", new string[] { "Asset files", "asset" });
             path = path.Replace(Application.dataPath, "Assets");
             Debug.Log("Found path: " + path);
 
             if(path == "")
-            {
                 return;
-            }
 
             SwapGraph(AssetDatabase.LoadAssetAtPath<RoomGraph>(path));
             //_graph = AssetDatabase.LoadAssetAtPath<RoomGraph>(path);

@@ -94,7 +94,7 @@ namespace NGAME.Editor
                 SO_Settings settings = AssetDatabase.LoadAssetAtPath<SO_Settings>(filepath);
                 if(settings != null)
                 {
-                    Debug.Log("NGAME SETTINGS is recieving initial settings values");
+                    //Debug.Log("NGAME SETTINGS is recieving initial settings values");
                     NGAMESettings wnd = GetWindow<NGAMESettings>();
                     wnd.m_Settings = settings;
                     wnd.m_SettingsSelectorField.SetValueWithoutNotify(settings);
@@ -121,15 +121,15 @@ namespace NGAME.Editor
         {
             if(m_Settings != null)
             {
-                Debug.Log("SAVING SETTINGS ASSET");
+                //Debug.Log("SAVING SETTINGS ASSET");
                 AssetDatabase.SaveAssetIfDirty(m_Settings);
             }
-            Debug.Log("NGAME SETTINGS WINDOW ON DESTROY");
+            //Debug.Log("NGAME SETTINGS WINDOW ON DESTROY");
         }
 
         public void CreateGUI()
         {
-            Debug.Log("NGAME SETTINGS . CreateGUI() called");
+            //Debug.Log("NGAME SETTINGS . CreateGUI() called");
             
 
             m_RootScrollElement = new ScrollView(ScrollViewMode.VerticalAndHorizontal);
@@ -148,7 +148,7 @@ namespace NGAME.Editor
 
         private ObjectField CreateSettingsObjectField()
         {
-            var objectField = new ObjectField("Select a Settings File");
+            var objectField = new ObjectField("Settings File");
             objectField.objectType = typeof(SO_Settings);
 
             objectField.SetValueWithoutNotify(m_Settings);
@@ -178,19 +178,19 @@ namespace NGAME.Editor
             if (m_GuidToSceneData == null)
             {
                 m_GuidToSceneData = new Dictionary<string, SceneInclusionData>();
-                Debug.Log("Settings Window's Guid To Scene Data dictionary was null so making a new one");
+                //Debug.Log("Settings Window's Guid To Scene Data dictionary was null so making a new one");
             }
             else
                 m_GuidToSceneData.Clear();
 
             if (m_Settings.Scenes == null)
             {
-                Debug.Log("Settings Object's SceneData list was null so making a new one");
+                //Debug.Log("Settings Object's SceneData list was null so making a new one");
                 m_Settings.Scenes = new List<SceneInclusionData>();
             }
             if (m_Settings.Guids == null)
             {
-                Debug.Log("Settings Object's scene GUIDs list was null so making a new one");
+                //Debug.Log("Settings Object's scene GUIDs list was null so making a new one");
                 m_Settings.Guids = new List<string>();
             }
 
@@ -241,6 +241,7 @@ namespace NGAME.Editor
             panel.Add(header);
 
             m_SettingsSelectorField = CreateSettingsObjectField();
+            m_SettingsSelectorField.AddToClassList("indentLevel1");
             m_SettingsSelectorField.SetEnabled(false);
             panel.Add(m_SettingsSelectorField);
 
@@ -399,7 +400,7 @@ namespace NGAME.Editor
                 {
                     sceneData.IncludeInGraphTool = evt.newValue;
                     string guid = sceneData.Guid;
-                    Debug.Log(sceneData.Name + ", has had its bool to include in graph set to: " + sceneData.IncludeInGraphTool.ToString());
+                    //Debug.Log(sceneData.Name + ", has had its bool to include in graph set to: " + sceneData.IncludeInGraphTool.ToString());
 
                     if (sceneData.IncludeInGraphTool && !m_Settings.Guids.Contains(guid))
                     {
@@ -414,7 +415,7 @@ namespace NGAME.Editor
                     }
 
                     EditorUtility.SetDirty(m_Settings);
-                    Debug.Log("EditorUtility.SetDirty(m_Settings), for toggling inclusion in graph tool for sceneData: " + sceneData.Name);
+                    //Debug.Log("EditorUtility.SetDirty(m_Settings), for toggling inclusion in graph tool for sceneData: " + sceneData.Name);
                     //AssetDatabase.SaveAssets();
                 });
             }
@@ -446,7 +447,7 @@ namespace NGAME.Editor
                 Scene aScene = EditorSceneManager.OpenPreviewScene(filePath);
                 if (!aScene.IsValid())
                 {
-                    Debug.Log("Invalid scene found");
+                    //Debug.Log("Invalid scene found");
 
                     if(m_GuidToSceneData.ContainsKey(guid))
                     {
@@ -507,54 +508,6 @@ namespace NGAME.Editor
             EditorUtility.SetDirty(m_Settings);
         }
 
-        private string GetComponentDescription(string filePath)
-        {
-            Scene aScene = EditorSceneManager.OpenPreviewScene(filePath);
-            if (!aScene.IsValid())
-            {
-                Debug.Log("Invalid scene found");
-                EditorSceneManager.ClosePreviewScene(aScene);
-                return "Invalid Scene at path: " + filePath;
-            }
-            StringBuilder description = new StringBuilder();
-            bool bComponentsFound = false;
-
-            GameObject[] rootObjects = aScene.GetRootGameObjects();
-
-
-            foreach (GameObject obj in rootObjects)
-            {
-                IEncounterRegionConnector[] components = obj.GetComponentsInChildren<IEncounterRegionConnector>();
-
-                if (components.Length > 0)
-                {
-                    bComponentsFound = true;
-                    foreach (IEncounterRegionConnector component in components)
-                    {
-                        RegionConnectionData data = component.GetRegionConnectionData();
-                        description.Append("Found " + data.TypeName + "\n");
-                        description.Append("Connection Type: " + data.ConnectionType.ToString() + "\n");
-                        description.Append("Is Lockable: " + data.IsLockable.ToString() + "\n");
-
-                        description.Append("Position: " + data.Position.ToString() + "\n");
-                        description.Append("-------------\n");
-                    }
-                }
-            }
-
-            if (bComponentsFound)
-            {
-                Debug.Log("Scene: " + aScene.name + " contains target data types \n" + description.ToString());
-                EditorSceneManager.ClosePreviewScene(aScene);
-                return description.ToString();
-            }
-            else
-            {
-                EditorSceneManager.ClosePreviewScene(aScene);
-                return "No IEncounterRegionConnector components found in scene.";
-            }
-        }
-
         private bool EvaluateSceneForGraphUse(Scene aScene, out string editorDescription)
         {
             if (!aScene.IsValid())
@@ -591,7 +544,7 @@ namespace NGAME.Editor
 
             if (bComponentsFound)
             {
-                Debug.Log("Scene: " + aScene.name + " contains target data types \n" + description.ToString());
+                //Debug.Log("Scene: " + aScene.name + " contains target data types \n" + description.ToString());
                 //EditorSceneManager.ClosePreviewScene(aScene);
                 editorDescription = description.ToString();
                 return true;
