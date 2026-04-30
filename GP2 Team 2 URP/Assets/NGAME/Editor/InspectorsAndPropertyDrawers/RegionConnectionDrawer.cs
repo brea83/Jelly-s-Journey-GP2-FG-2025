@@ -31,19 +31,26 @@ namespace NGAME.Editor
             connectionType.Bind(property.serializedObject);
             popup.Add(connectionType);
 
-            SerializedProperty lockable = property.FindPropertyRelative("IsLockable");
-            if (lockable.boolValue)
+            //SerializedProperty lockable = property.FindPropertyRelative("IsLockable");
+            //if (lockable.boolValue)
+            //{
+            //    PropertyField startsLocked = new(property.FindPropertyRelative("StartsLocked"));
+            //    startsLocked.Bind(property.serializedObject);
+            //    popup.Add(startsLocked);
+
+            //    PropertyField combatLocks = new(property.FindPropertyRelative("IsLockedDurringCombat"));
+            //    combatLocks.label = "Combat Locked";
+            //    combatLocks.Bind(property.serializedObject);
+            //    combatLocks.tooltip = "True if connection is meant to Lock durring combat";
+            //    popup.Add(combatLocks);
+
+            //}
+            SerializedProperty entryconditionsproperty = property.FindPropertyRelative("EntranceConditions");
+            if(entryconditionsproperty != null)
             {
-                PropertyField startsLocked = new(property.FindPropertyRelative("StartsLocked"));
-                startsLocked.Bind(property.serializedObject);
-                popup.Add(startsLocked);
-
-                PropertyField combatLocks = new(property.FindPropertyRelative("IsLockedDurringCombat"));
-                combatLocks.label = "Combat Locked";
-                combatLocks.Bind(property.serializedObject);
-                combatLocks.tooltip = "True if connection is meant to Lock durring combat";
-                popup.Add(combatLocks);
-
+                PropertyField entryConditions = new(entryconditionsproperty);
+                entryConditions.Bind(property.serializedObject);
+                popup.Add(entryConditions);
             }
 
             return popup;

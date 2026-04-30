@@ -19,23 +19,14 @@ MonoBehaviour:
   - TypeName: RoomSystem.Door
     Name: Door South
     ConnectionType: 2
-    IsLockable: 1
-    IsLockedDurringCombat: 1
-    StartsLocked: 0
     Position: {x: -8.25, y: 0, z: -20.5}
   - TypeName: RoomSystem.Door
     Name: Door West
     ConnectionType: 2
-    IsLockable: 1
-    IsLockedDurringCombat: 1
-    StartsLocked: 0
     Position: {x: -25.239712, y: 0, z: -1.75}
   - TypeName: RoomSystem.Door
     Name: Door East
     ConnectionType: 2
-    IsLockable: 1
-    IsLockedDurringCombat: 1
-    StartsLocked: 0
     Position: {x: 16.203, y: 0, z: 7.54}
   SpawnPoints:
   - Name: RangedSpawnPoint
@@ -81,16 +72,10 @@ MonoBehaviour:
   - TypeName: RoomSystem.Door
     Name: Door North
     ConnectionType: 2
-    IsLockable: 1
-    IsLockedDurringCombat: 1
-    StartsLocked: 0
     Position: {x: -28.000906, y: 0, z: 26.98}
   - TypeName: RoomSystem.Door
     Name: Entrance Only
     ConnectionType: 0
-    IsLockable: 1
-    IsLockedDurringCombat: 0
-    StartsLocked: 0
     Position: {x: 9.329598, y: 0, z: 12.48}
   SpawnPoints:
   - Name: MeleeSpawnPoint
@@ -118,16 +103,10 @@ MonoBehaviour:
   - TypeName: RoomSystem.Door
     Name: Door North
     ConnectionType: 2
-    IsLockable: 1
-    IsLockedDurringCombat: 0
-    StartsLocked: 0
     Position: {x: -28.000906, y: 0, z: 26.98}
   - TypeName: RoomSystem.Door
     Name: Entrance Only
     ConnectionType: 0
-    IsLockable: 0
-    IsLockedDurringCombat: 0
-    StartsLocked: 0
     Position: {x: 9.329598, y: 0, z: 12.48}
   OutgoingEdges:
   - SourceNodeGuid: cd25f63b0da2fa145a28a5e2c7988529
@@ -143,7 +122,7 @@ MonoBehaviour:
   Waves:
   - {fileID: 11400000, guid: 0a28601bacdd7dc41a36736438b7df58, type: 2}
   m_Guid: cd25f63b0da2fa145a28a5e2c7988529
-  m_Position: {x: 229.33333, y: -12.000008}
+  m_Position: {x: 334, y: -5}
   _isStartNode: 1
 --- !u!114 &11400000
 MonoBehaviour:
@@ -180,16 +159,10 @@ MonoBehaviour:
   - TypeName: RoomSystem.Door
     Name: Door West
     ConnectionType: 2
-    IsLockable: 1
-    IsLockedDurringCombat: 1
-    StartsLocked: 0
     Position: {x: -9.32, y: 0.5000038, z: -49.78}
   - TypeName: RoomSystem.Door
     Name: Door East
     ConnectionType: 2
-    IsLockable: 1
-    IsLockedDurringCombat: 1
-    StartsLocked: 0
     Position: {x: 29.93, y: 0.5000038, z: -16.44}
   SpawnPoints:
   - Name: RangedSpawnPoint
@@ -235,16 +208,10 @@ MonoBehaviour:
   - TypeName: RoomSystem.Door
     Name: Door North
     ConnectionType: 2
-    IsLockable: 1
-    IsLockedDurringCombat: 1
-    StartsLocked: 0
     Position: {x: -28.000906, y: 0, z: 26.98}
   - TypeName: RoomSystem.Door
     Name: Entrance Only
     ConnectionType: 0
-    IsLockable: 0
-    IsLockedDurringCombat: 0
-    StartsLocked: 0
     Position: {x: 9.329598, y: 0, z: 12.48}
   SpawnPoints:
   - Name: MeleeSpawnPoint
@@ -272,16 +239,10 @@ MonoBehaviour:
   - TypeName: RoomSystem.Door
     Name: Door West
     ConnectionType: 2
-    IsLockable: 1
-    IsLockedDurringCombat: 1
-    StartsLocked: 0
     Position: {x: -9.32, y: 0.5000038, z: -49.78}
   - TypeName: RoomSystem.Door
     Name: Door East
     ConnectionType: 2
-    IsLockable: 1
-    IsLockedDurringCombat: 1
-    StartsLocked: 0
     Position: {x: 29.93, y: 0.5000038, z: -16.44}
   OutgoingEdges: []
   IncomingEdges:

@@ -18,9 +18,7 @@ namespace NGAME
         public string TypeName;// = "IEncounterRegionConnector";
         public string Name;//= "Object Name";
         public RegionConnectionType ConnectionType;
-        public bool IsLockable;
-        public bool IsLockedDurringCombat;
-        public bool StartsLocked;
+        public List<EntranceCondition> EntranceConditions;
         public Vector3 Position;
     }
     [Serializable]

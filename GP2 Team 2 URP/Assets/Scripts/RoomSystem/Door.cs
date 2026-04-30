@@ -18,6 +18,7 @@ namespace RoomSystem
         public UnityEvent<EdgeData> DoorUsed;
         public EdgeData OutgoingEdge;
 
+        private EntranceCondition m_EntryCondition = new EC_NoCombat();
         public bool IsLockable = true;
         public bool StartsLocked = false;
         public bool LocksDurringCombat = true;
@@ -65,7 +66,7 @@ namespace RoomSystem
             if (_hasDisabled)
             {
                 SubscribeToPlayState();
-                if (LocksDurringCombat)
+                if (m_EntryCondition != null && m_EntryCondition is EC_NoCombat)//LocksDurringCombat)
                 {
                     //SpawnManager spawnManager = FindFirstObjectByType<SpawnManager>();
                     //if (spawnManager != null)
@@ -140,7 +141,7 @@ namespace RoomSystem
 
         public void OnEncounterStart()
         {
-            if (LocksDurringCombat)
+            if (m_EntryCondition != null && m_EntryCondition is EC_NoCombat)//LocksDurringCombat)
             {
                 LockDoor();
             }
@@ -148,7 +149,7 @@ namespace RoomSystem
 
         public void OnEncounterEnd()
         {
-            if (LocksDurringCombat)
+            if (m_EntryCondition != null && m_EntryCondition is EC_NoCombat)//LocksDurringCombat)
             {
                 UnlockDoor();
             }
@@ -251,10 +252,10 @@ namespace RoomSystem
             data.TypeName = this.GetType().FullName;
             data.Name = name;
             data.ConnectionType = _data.Type;
-
-            data.IsLockable = IsLockable;
-            data.StartsLocked = StartsLocked;
-            data.IsLockedDurringCombat = LocksDurringCombat;
+            data.EntranceConditions = new() { m_EntryCondition };
+            //data.IsLockable = IsLockable;
+            //data.StartsLocked = StartsLocked;
+            //data.IsLockedDurringCombat = LocksDurringCombat;
             
             data.Position = transform.position;
             return data;
@@ -276,21 +277,26 @@ namespace RoomSystem
                 return;
             }
             
-            LocksDurringCombat = connectionData.IsLockedDurringCombat;
+            //LocksDurringCombat = connectionData.IsLockedDurringCombat;
 
-            StartsLocked = connectionData.StartsLocked;
-            if ( StartsLocked && !Locked )
-                LockDoor();
-            else if( !StartsLocked && Locked )
-                UnlockDoor();
+            //StartsLocked = connectionData.StartsLocked;
+            //if ( StartsLocked && !Locked )
+            //    LockDoor();
+            //else if( !StartsLocked && Locked )
+            //    UnlockDoor();
 
-            if (LocksDurringCombat)
+            foreach(EntranceCondition condition in connectionData.EntranceConditions)
             {
-                NewEncounterManager encounterManager = GameManager.Instance.EncounterManager;
-                if (encounterManager != null)
+
+                if (condition is EC_NoCombat)//LocksDurringCombat)
                 {
-                    encounterManager.OnEncounterStart.AddListener(OnEncounterStart);
-                    encounterManager.OnEncounterEnd.AddListener(OnEncounterEnd);
+                    m_EntryCondition = condition;
+                    NewEncounterManager encounterManager = GameManager.Instance.EncounterManager;
+                    if (encounterManager != null)
+                    {
+                        encounterManager.OnEncounterStart.AddListener(OnEncounterStart);
+                        encounterManager.OnEncounterEnd.AddListener(OnEncounterEnd);
+                    }
                 }
             }
                 

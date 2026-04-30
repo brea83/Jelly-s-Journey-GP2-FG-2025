@@ -23,6 +23,7 @@ public class NewEncounterManager : MonoBehaviour, IGameStateMachineListener
     private float m_SecondsBeforeEncounterStart = 0.0f;
     private float m_SecondsSinceLoadComplete = 0.0f;
 
+    private bool m_HasInitializedWaves = false;
     private bool m_IsBacktracking = false;
     private List<SOWaveData> m_CurrentEncounter = new();
     private List<Dictionary<SO_SpawnTypeTag, int>> m_ListOfSpawnsPerTypeLookup = new();
@@ -37,6 +38,14 @@ public class NewEncounterManager : MonoBehaviour, IGameStateMachineListener
 
     private bool m_EncounterStarted = false;
     private bool m_EncounterComplete = false;
+
+    public bool IsEncounterActive() 
+    {
+        if (m_HasInitializedWaves)
+            return m_EncounterStarted && !m_EncounterComplete;
+        else
+            return false;
+    }
 
     private EnemyPool m_CurrentEnemyPool;
 
@@ -233,6 +242,7 @@ public class NewEncounterManager : MonoBehaviour, IGameStateMachineListener
         m_CurrentEncounter.Clear();
         m_CurrentWaveData = null;
         m_CurrentEnemyPool.ResetPool();
+        m_HasInitializedWaves = false;
     }
 
     public void OnRoomLoadComplete (IEncounterRegionConnector connector)
@@ -271,7 +281,7 @@ public class NewEncounterManager : MonoBehaviour, IGameStateMachineListener
         {
             m_CurrentEnemyPool.InitializePool(prefabsNeededByEncounter.Values.ToList());
         }
-
+        m_HasInitializedWaves = true;
     }
 
     private IEnumerator SpawnWave()

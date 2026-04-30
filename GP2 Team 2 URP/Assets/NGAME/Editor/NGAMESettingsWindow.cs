@@ -534,7 +534,7 @@ namespace NGAME.Editor
                         RegionConnectionData data = component.GetRegionConnectionData();
                         description.Append("Found " + data.TypeName + "\n");
                         description.Append("Connection Type: " + data.ConnectionType.ToString() + "\n");
-                        description.Append("Is Lockable: " + data.IsLockable.ToString() + "\n");
+                        //description.Append("Is Lockable: " + data.IsLockable.ToString() + "\n");
 
                         description.Append("Position: " + data.Position.ToString() + "\n");
                         description.Append("-------------\n");
