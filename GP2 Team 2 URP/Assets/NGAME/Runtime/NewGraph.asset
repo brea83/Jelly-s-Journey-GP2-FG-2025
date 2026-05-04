@@ -1,5 +1,71 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7364427862325255320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc3768443858dad479f2cbca8d56449d, type: 3}
+  m_Name: SampleScene 2
+  m_EditorClassIdentifier: NGAME_Runtime::NGAME.SceneData
+  Guid: f2f2e1e0a80c29c49b3c899b1eb9478a
+  FilePath: Assets/Scenes/Final/FINAL TEST/SampleScene 2.unity
+  Description: 
+  UniqueConnectionObjects:
+  - TypeName: RoomSystem.Door
+    Name: Door West
+    ConnectionType: 2
+    EntranceConditions:
+    - rid: 1952596408396153242
+    Position: {x: -9.32, y: 0.5000038, z: -49.78}
+  - TypeName: RoomSystem.Door
+    Name: Door East
+    ConnectionType: 2
+    EntranceConditions:
+    - rid: 1952596408396153243
+    Position: {x: 29.93, y: 0.5000038, z: -16.44}
+  SpawnPoints:
+  - Name: RangedSpawnPoint
+    ValidTypes:
+    - {fileID: 11400000, guid: 2609c893ef4e26a478f3354078db2cf0, type: 2}
+    Position: {x: 3.15, y: 0.0000019073486, z: -39.579998}
+  - Name: RangedSpawnPoint (2)
+    ValidTypes:
+    - {fileID: 11400000, guid: 2609c893ef4e26a478f3354078db2cf0, type: 2}
+    Position: {x: -2.7300005, y: 0.0000019073486, z: -33.19}
+  - Name: RangedSpawnPoint (1)
+    ValidTypes:
+    - {fileID: 11400000, guid: 2609c893ef4e26a478f3354078db2cf0, type: 2}
+    Position: {x: 12.08, y: 0.0000019073486, z: -40.12}
+  - Name: MeleeSpawnPoint
+    ValidTypes:
+    - {fileID: 11400000, guid: 9ee823ae691a5554b9b7ffbee152cead, type: 2}
+    Position: {x: 1.2799997, y: 0.0000019073486, z: -31.829998}
+  - Name: MeleeSpawnPoint (1)
+    ValidTypes:
+    - {fileID: 11400000, guid: 9ee823ae691a5554b9b7ffbee152cead, type: 2}
+    Position: {x: 6.4399996, y: 0.0000019073486, z: -31.829998}
+  - Name: MeleeSpawnPoint (2)
+    ValidTypes:
+    - {fileID: 11400000, guid: 9ee823ae691a5554b9b7ffbee152cead, type: 2}
+    Position: {x: 10.7699995, y: 0.0000019073486, z: -28.5}
+  references:
+    version: 2
+    RefIds:
+    - rid: 1952596408396153242
+      type: {class: EC_NoCombat, ns: , asm: JellysJourneyAssembly}
+      data:
+        Name: No Combat
+        Description: Entrance requires there to be no ongoing combat to be traversable
+    - rid: 1952596408396153243
+      type: {class: EC_NoCombat, ns: , asm: JellysJourneyAssembly}
+      data:
+        Name: No Combat
+        Description: Entrance requires there to be no ongoing combat to be traversable
 --- !u!114 &-7205378822548495711
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19,14 +85,17 @@ MonoBehaviour:
   - TypeName: RoomSystem.Door
     Name: Door South
     ConnectionType: 2
+    EntranceConditions: []
     Position: {x: -8.25, y: 0, z: -20.5}
   - TypeName: RoomSystem.Door
     Name: Door West
     ConnectionType: 2
+    EntranceConditions: []
     Position: {x: -25.239712, y: 0, z: -1.75}
   - TypeName: RoomSystem.Door
     Name: Door East
     ConnectionType: 2
+    EntranceConditions: []
     Position: {x: 16.203, y: 0, z: 7.54}
   SpawnPoints:
   - Name: RangedSpawnPoint
@@ -53,6 +122,9 @@ MonoBehaviour:
     ValidTypes:
     - {fileID: 11400000, guid: 9ee823ae691a5554b9b7ffbee152cead, type: 2}
     Position: {x: -7.670001, y: 0.0000019073486, z: -1.0300007}
+  references:
+    version: 2
+    RefIds: []
 --- !u!114 &-6399066526613139203
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -72,10 +144,12 @@ MonoBehaviour:
   - TypeName: RoomSystem.Door
     Name: Door North
     ConnectionType: 2
+    EntranceConditions: []
     Position: {x: -28.000906, y: 0, z: 26.98}
   - TypeName: RoomSystem.Door
     Name: Entrance Only
     ConnectionType: 0
+    EntranceConditions: []
     Position: {x: 9.329598, y: 0, z: 12.48}
   SpawnPoints:
   - Name: MeleeSpawnPoint
@@ -86,6 +160,9 @@ MonoBehaviour:
     ValidTypes:
     - {fileID: 11400000, guid: e2d35a20315884a4b852513d92e5e482, type: 2}
     Position: {x: -33.66, y: 0.6560161, z: 0.97999954}
+  references:
+    version: 2
+    RefIds: []
 --- !u!114 &-2698876279662383425
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -98,15 +175,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
   m_Name: 'NewGraph: Room 1'
   m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
-  SceneData: {fileID: 6489105456201871027}
+  SceneData: {fileID: 8976431739347378273}
   OverridenConnectionData:
   - TypeName: RoomSystem.Door
     Name: Door North
     ConnectionType: 2
+    EntranceConditions:
+    - rid: 1952596408396153246
     Position: {x: -28.000906, y: 0, z: 26.98}
   - TypeName: RoomSystem.Door
     Name: Entrance Only
     ConnectionType: 0
+    EntranceConditions:
+    - rid: 1952596408396153247
+    - rid: 1952596414725357648
     Position: {x: 9.329598, y: 0, z: 12.48}
   OutgoingEdges:
   - SourceNodeGuid: cd25f63b0da2fa145a28a5e2c7988529
@@ -122,8 +204,27 @@ MonoBehaviour:
   Waves:
   - {fileID: 11400000, guid: 0a28601bacdd7dc41a36736438b7df58, type: 2}
   m_Guid: cd25f63b0da2fa145a28a5e2c7988529
-  m_Position: {x: 334, y: -5}
+  m_Position: {x: 333.3333, y: 2.666668}
   _isStartNode: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 1952596408396153246
+      type: {class: EC_NoCombat, ns: , asm: JellysJourneyAssembly}
+      data:
+        Name: No Combat
+        Description: Entrance requires there to be no ongoing combat to be traversable
+    - rid: 1952596408396153247
+      type: {class: EC_NoCombat, ns: , asm: JellysJourneyAssembly}
+      data:
+        Name: No Combat
+        Description: Entrance requires there to be no ongoing combat to be traversable
+    - rid: 1952596414725357648
+      type: {class: EC_Test, ns: NGAME, asm: NGAME_Runtime}
+      data:
+        Name: EC_Test
+        Description: This is just a test to make sure we don't add duplicate conditions
+          in the editor
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -159,10 +260,12 @@ MonoBehaviour:
   - TypeName: RoomSystem.Door
     Name: Door West
     ConnectionType: 2
+    EntranceConditions: []
     Position: {x: -9.32, y: 0.5000038, z: -49.78}
   - TypeName: RoomSystem.Door
     Name: Door East
     ConnectionType: 2
+    EntranceConditions: []
     Position: {x: 29.93, y: 0.5000038, z: -16.44}
   SpawnPoints:
   - Name: RangedSpawnPoint
@@ -189,6 +292,9 @@ MonoBehaviour:
     ValidTypes:
     - {fileID: 11400000, guid: 9ee823ae691a5554b9b7ffbee152cead, type: 2}
     Position: {x: 10.7699995, y: 0.0000019073486, z: -28.5}
+  references:
+    version: 2
+    RefIds: []
 --- !u!114 &6489105456201871027
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -208,10 +314,12 @@ MonoBehaviour:
   - TypeName: RoomSystem.Door
     Name: Door North
     ConnectionType: 2
+    EntranceConditions: []
     Position: {x: -28.000906, y: 0, z: 26.98}
   - TypeName: RoomSystem.Door
     Name: Entrance Only
     ConnectionType: 0
+    EntranceConditions: []
     Position: {x: 9.329598, y: 0, z: 12.48}
   SpawnPoints:
   - Name: MeleeSpawnPoint
@@ -222,6 +330,9 @@ MonoBehaviour:
     ValidTypes:
     - {fileID: 11400000, guid: e2d35a20315884a4b852513d92e5e482, type: 2}
     Position: {x: -33.66, y: 0.6560161, z: 0.97999954}
+  references:
+    version: 2
+    RefIds: []
 --- !u!114 &8317342436460908751
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -234,15 +345,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
   m_Name: 'NewGraph: Room 2'
   m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
-  SceneData: {fileID: 5450242140163077793}
+  SceneData: {fileID: -7364427862325255320}
   OverridenConnectionData:
   - TypeName: RoomSystem.Door
     Name: Door West
     ConnectionType: 2
+    EntranceConditions:
+    - rid: 1952596408396153248
     Position: {x: -9.32, y: 0.5000038, z: -49.78}
   - TypeName: RoomSystem.Door
     Name: Door East
     ConnectionType: 2
+    EntranceConditions:
+    - rid: 1952596408396153249
     Position: {x: 29.93, y: 0.5000038, z: -16.44}
   OutgoingEdges: []
   IncomingEdges:
@@ -257,5 +372,68 @@ MonoBehaviour:
     m_bIsValid: 1
   Waves: []
   m_Guid: 79308391f986876448b24dc53daf07c8
-  m_Position: {x: 857.3119, y: -45.52666}
+  m_Position: {x: 856.6667, y: -45.333313}
   _isStartNode: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 1952596408396153248
+      type: {class: EC_NoCombat, ns: , asm: JellysJourneyAssembly}
+      data:
+        Name: No Combat
+        Description: Entrance requires there to be no ongoing combat to be traversable
+    - rid: 1952596408396153249
+      type: {class: EC_NoCombat, ns: , asm: JellysJourneyAssembly}
+      data:
+        Name: No Combat
+        Description: Entrance requires there to be no ongoing combat to be traversable
+--- !u!114 &8976431739347378273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc3768443858dad479f2cbca8d56449d, type: 3}
+  m_Name: SampleScene
+  m_EditorClassIdentifier: NGAME_Runtime::NGAME.SceneData
+  Guid: 99c9720ab356a0642a771bea13969a05
+  FilePath: Assets/Scenes/Final/FINAL TEST/SampleScene.unity
+  Description: 
+  UniqueConnectionObjects:
+  - TypeName: RoomSystem.Door
+    Name: Door North
+    ConnectionType: 2
+    EntranceConditions:
+    - rid: 1952596408396153244
+    Position: {x: -28.000906, y: 0, z: 26.98}
+  - TypeName: RoomSystem.Door
+    Name: Entrance Only
+    ConnectionType: 0
+    EntranceConditions:
+    - rid: 1952596408396153245
+    Position: {x: 9.329598, y: 0, z: 12.48}
+  SpawnPoints:
+  - Name: MeleeSpawnPoint
+    ValidTypes:
+    - {fileID: 11400000, guid: e2d35a20315884a4b852513d92e5e482, type: 2}
+    Position: {x: -16.689999, y: 0.6560161, z: 1.0799999}
+  - Name: MeleeSpawnPoint (1)
+    ValidTypes:
+    - {fileID: 11400000, guid: e2d35a20315884a4b852513d92e5e482, type: 2}
+    Position: {x: -33.66, y: 0.6560161, z: 0.97999954}
+  references:
+    version: 2
+    RefIds:
+    - rid: 1952596408396153244
+      type: {class: EC_NoCombat, ns: , asm: JellysJourneyAssembly}
+      data:
+        Name: No Combat
+        Description: Entrance requires there to be no ongoing combat to be traversable
+    - rid: 1952596408396153245
+      type: {class: EC_NoCombat, ns: , asm: JellysJourneyAssembly}
+      data:
+        Name: No Combat
+        Description: Entrance requires there to be no ongoing combat to be traversable

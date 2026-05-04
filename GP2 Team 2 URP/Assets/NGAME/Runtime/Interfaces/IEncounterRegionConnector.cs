@@ -18,6 +18,7 @@ namespace NGAME
         public string TypeName;// = "IEncounterRegionConnector";
         public string Name;//= "Object Name";
         public RegionConnectionType ConnectionType;
+        [SerializeReference]
         public List<EntranceCondition> EntranceConditions;
         public Vector3 Position;
     }

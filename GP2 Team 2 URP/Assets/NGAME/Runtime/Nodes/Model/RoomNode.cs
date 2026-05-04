@@ -11,6 +11,7 @@ namespace NGAME
         public string Guid { get => m_Guid; set => m_Guid = value; }
         public Vector2 Position { get => m_Position; set => m_Position = value; }
 
+        [SerializeReference]
         public SceneData SceneData;
         public List<RegionConnectionData> OverridenConnectionData = new();
 

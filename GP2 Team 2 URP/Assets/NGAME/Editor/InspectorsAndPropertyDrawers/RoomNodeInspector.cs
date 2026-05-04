@@ -1,7 +1,8 @@
 using System.Collections.Generic;
-using UnityEngine;
+using System.Runtime.Remoting.Messaging;
 using UnityEditor;
 using UnityEditor.UIElements;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace NGAME.Editor
@@ -9,11 +10,7 @@ namespace NGAME.Editor
     [CustomEditor(typeof(RoomNode))]
     public class RoomNodeInspector : UnityEditor.Editor
     {
-        //public override void OnInspectorGUI()
-        //{
-        //    serializedObject.Update();
-        //    serializedObject.ApplyModifiedProperties();
-        //}
+
         public override VisualElement CreateInspectorGUI()
         {
             serializedObject.Update();
@@ -29,9 +26,19 @@ namespace NGAME.Editor
             title.bindingPath = serializedObject.FindProperty("m_Name").propertyPath;
             inspector.Add(title);
 
-            PropertyField connectionOverrides = new(serializedObject.FindProperty("OverridenConnectionData"));
-            connectionOverrides.Bind(serializedObject);
-            connectionOverrides.name = "ConnectionOverridesList";
+            VisualElement connectionOverrides = new();
+
+            SerializedProperty connections = serializedObject.FindProperty("OverridenConnectionData");
+            Foldout overridesHeader = new();
+            overridesHeader.text = connections.displayName;
+            connectionOverrides.Add(overridesHeader);
+
+            for (int i = 0; i < connections.arraySize; i++)
+            {
+                PropertyField connection = new PropertyField(connections.GetArrayElementAtIndex(i));
+                connection.Bind(serializedObject);
+                overridesHeader.Add(connection);
+            }
             inspector.Add(connectionOverrides);
 
 
