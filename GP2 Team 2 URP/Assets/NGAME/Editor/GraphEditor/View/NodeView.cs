@@ -325,7 +325,7 @@ namespace NGAME.Editor
             if (change.newValue == change.previousValue) return;
 
             m_LastDropDownIndex = m_RoomSelectDropdown.index;
-            
+            string oldGuid = CurrentSceneGuid;
             SceneData selectedRoom = null;
             foreach (SceneConnectionsData room in m_RoomGraphView.ValidScenes )
             {
@@ -347,6 +347,7 @@ namespace NGAME.Editor
                 EditSceneButton.SetEnabled(false);
                 m_CurrentSceneData = null;
             }
+            m_RoomGraphView.UpdateSceneDataRefrenceCounts(oldGuid, selectedRoom);
             
             UpdatePorts();
             MarkMissingSceneError("", false);

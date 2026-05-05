@@ -19,9 +19,42 @@ namespace NGAME.Editor
         private List<RoomNode> m_UnsavedNodes = new();
         private List<RoomNode> m_NodesToDelete = new();
 
+        private List<SceneData> m_SceneData;
+        private List<int> m_SceneDataRefCount;
         public static  UndoableGraphChanges CreateNew() 
         {
             return ScriptableObject.CreateInstance<UndoableGraphChanges>();
+        }
+
+        public void AddSceneDataRef(SceneData data)
+        {
+            Undo.RegisterCompleteObjectUndo(this, $"A Node is adding a refrence to {data.name}");
+            if (m_SceneData.Contains(data))
+            {
+                int index = m_SceneData.IndexOf(data);
+                m_SceneDataRefCount[index]++;
+            }
+            else
+            {
+                m_SceneData.Add(data);
+                m_SceneDataRefCount.Add(1);
+            }
+        }
+
+        public void RemoveSceneDataRef(SceneData data)
+        {
+            if (!m_SceneData.Contains(data))
+                return;
+            Undo.RegisterCompleteObjectUndo(this, $"A Node is removing its refrence to {data.name}");
+            int index = m_SceneData.IndexOf(data);
+            m_SceneDataRefCount[index]--;
+
+            if (m_SceneDataRefCount[index] <= 0)
+            {
+                m_SceneData.Remove(data);
+                m_SceneDataRefCount.RemoveAt(index);
+            }
+
         }
 
         public void AddNode(RoomNode node)
@@ -57,6 +90,8 @@ namespace NGAME.Editor
         {
             m_UnsavedNodes.Clear();
             m_NodesToDelete.Clear();
+            m_SceneData.Clear();
+            m_SceneDataRefCount.Clear();
         }
     }
 
@@ -155,6 +190,22 @@ namespace NGAME.Editor
             }
         }
 
+        public void UpdateSceneDataRefrenceCounts(string oldSceneGuid, SceneData newData)
+        {
+            if (!string.IsNullOrEmpty(oldSceneGuid))
+            {
+                SceneData oldData;
+                SceneLookup.TryGetValue(oldSceneGuid, out oldData);
+                if (oldData != null)
+                    m_UndoableGraphChanges.RemoveSceneDataRef(oldData);
+            }
+
+            if (newData == null)
+                return;
+
+            m_UndoableGraphChanges.AddSceneDataRef(newData);
+        }
+
         internal void PopulateView(RoomGraph roomGraph)
         {
             this._graph = roomGraph;
@@ -214,6 +265,8 @@ namespace NGAME.Editor
                 EditorUtility.SetDirty(_graph);
                 EditorUtility.SetDirty(nodeToDelete);
             }
+
+            foreach(SceneData data in m_UndoableGraphChanges.)
 
             m_UndoableGraphChanges.Reset();
 
