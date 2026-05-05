@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.brianalana.nodegraphadventuremapeditor": "file:C:/Users/BrianaNicholeDempsey/Desktop/UnityProjects/com.brianalana.nodegraphadventuremapeditor",
+    "com.brianalana.nodegraphadventuremapeditor": "file:C:/NGAME/com.brianalana.nodegraphadventuremapeditor",
     "com.unity.ai.navigation": "2.0.11",
     "com.unity.cinemachine": "3.1.2",
     "com.unity.ide.rider": "3.0.39",

@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.brianalana.nodegraphadventuremapeditor": {
-      "version": "file:C:/Users/BrianaNicholeDempsey/Desktop/UnityProjects/com.brianalana.nodegraphadventuremapeditor",
+      "version": "file:C:/NGAME/com.brianalana.nodegraphadventuremapeditor",
       "depth": 0,
       "source": "local",
       "dependencies": {
