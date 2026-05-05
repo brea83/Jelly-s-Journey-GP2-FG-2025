@@ -88,7 +88,7 @@ namespace NGAME.Editor
 
                 if (graph != null)
                 {
-                    if (window._graph != null)
+                    if (window._graph != null && window.hasUnsavedChanges)
                     {
                         window.ShowSaveDialogue();
                     }

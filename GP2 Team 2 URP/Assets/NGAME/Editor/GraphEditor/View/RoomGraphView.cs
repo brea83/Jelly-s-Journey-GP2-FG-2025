@@ -16,11 +16,24 @@ namespace NGAME.Editor
         public List<RoomNode> UnsavedNodes {get => m_UnsavedNodes;}
         public List<RoomNode> NodesToDelete { get => m_NodesToDelete; }
 
+        public Dictionary<SceneData, int> SceneDataRefs
+        {
+            get
+            {
+                Dictionary<SceneData, int> result = new();
+                foreach(SceneData data in m_SceneData)
+                {
+                    result.Add(data, m_SceneDataRefCount[m_SceneData.IndexOf(data)]);
+                }
+                return result;
+            }
+        }
+
         private List<RoomNode> m_UnsavedNodes = new();
         private List<RoomNode> m_NodesToDelete = new();
 
-        private List<SceneData> m_SceneData;
-        private List<int> m_SceneDataRefCount;
+        private List<SceneData> m_SceneData = new();
+        private List<int> m_SceneDataRefCount = new();
         public static  UndoableGraphChanges CreateNew() 
         {
             return ScriptableObject.CreateInstance<UndoableGraphChanges>();
@@ -43,18 +56,17 @@ namespace NGAME.Editor
 
         public void RemoveSceneDataRef(SceneData data)
         {
-            if (!m_SceneData.Contains(data))
-                return;
             Undo.RegisterCompleteObjectUndo(this, $"A Node is removing its refrence to {data.name}");
-            int index = m_SceneData.IndexOf(data);
-            m_SceneDataRefCount[index]--;
-
-            if (m_SceneDataRefCount[index] <= 0)
+            if (m_SceneData.Contains(data))
             {
-                m_SceneData.Remove(data);
-                m_SceneDataRefCount.RemoveAt(index);
+                int index = m_SceneData.IndexOf(data);
+                m_SceneDataRefCount[index]--;
             }
-
+            else
+            {
+                m_SceneData.Add(data);
+                m_SceneDataRefCount.Add(-1);
+            }
         }
 
         public void AddNode(RoomNode node)
@@ -245,15 +257,20 @@ namespace NGAME.Editor
             if (_graph == null)
                 return;
             
+            Dictionary<SceneData, int> sceneDataRefs = m_UndoableGraphChanges.SceneDataRefs;
             foreach(RoomNode node in _graph.nodes)
             {
                 string path = AssetDatabase.GetAssetPath(node);
                 if (!path.Contains(_graph.name + ".asset"))
                     AssetDatabase.AddObjectToAsset(node, _graph);
 
-                string sceneDataPath = AssetDatabase.GetAssetPath(node.SceneData);
-                if (!sceneDataPath.Contains(_graph.name + ".asset") && !AssetDatabase.Contains(node.SceneData)) 
-                    AssetDatabase.AddObjectToAsset(node.SceneData, _graph);
+                if(node.SceneData != null)
+                {
+                    if (sceneDataRefs.ContainsKey(node.SceneData))
+                        sceneDataRefs[node.SceneData]++;
+                    else
+                        sceneDataRefs.Add(node.SceneData, 1);
+                }
 
                 EditorUtility.SetDirty(_graph);
                 EditorUtility.SetDirty(node);
@@ -266,7 +283,45 @@ namespace NGAME.Editor
                 EditorUtility.SetDirty(nodeToDelete);
             }
 
-            foreach(SceneData data in m_UndoableGraphChanges.)
+            UnityEngine.Object[] graphAssets = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(_graph));
+
+            foreach(UnityEngine.Object asset in graphAssets)
+            {
+                if(asset is SceneData scene)
+                {
+                    bool bInRefCount = sceneDataRefs.ContainsKey(scene);
+                    int refCount = bInRefCount ? sceneDataRefs[scene] : 0;
+                    if (refCount  <= 0)
+                    {
+                        AssetDatabase.RemoveObjectFromAsset(scene);
+                    }
+                    else
+                    {
+                        sceneDataRefs.Remove(scene);
+                    }
+                }
+            }
+            foreach (SceneData key in sceneDataRefs.Keys)
+            {
+                if (sceneDataRefs[key] <= 0)
+                {
+                    // scene was removed from a node but never saved to the graph so we don't need to remove any assets
+                    continue;
+                }
+                else
+                {
+                    // this is a workaround for needing to make the scenedata hideanddontsave so that the data persists across scene loads.
+                    HideFlags oldFlags = HideFlags.None;
+                    if (key.hideFlags != HideFlags.None)
+                    {
+                         oldFlags = key.hideFlags;
+                    }
+                    key.hideFlags = HideFlags.None;
+                    AssetDatabase.AddObjectToAsset(key, _graph);
+                    key.hideFlags = oldFlags;
+                }
+            }
+            EditorUtility.SetDirty(_graph);
 
             m_UndoableGraphChanges.Reset();
 
