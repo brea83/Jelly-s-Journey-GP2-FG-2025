@@ -81,10 +81,19 @@ MonoBehaviour:
     DestinationSceneName: SampleScene 3
     DestinationPortName: Door South
     m_bIsValid: 1
+  - SourceNodeGuid: 76221849a54a06b478c60557974517ec
+    SourceSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
+    SourceSceneName: SampleScene 2
+    SourcePortName: Door West
+    DestinationNodeGuid: 272932770eef6de45a37535ebaa79d4f
+    DestinationSceneGuid: 7cb8c6b0027761a46b600f3b69174403
+    DestinationSceneName: SampleScene 3
+    DestinationPortName: Door South
+    m_bIsValid: 1
   Waves:
   - {fileID: 11400000, guid: 3e39ffcdb3a8614409ba2a251a694d8f, type: 2}
   m_Guid: 272932770eef6de45a37535ebaa79d4f
-  m_Position: {x: 1226.1672, y: -9.999989}
+  m_Position: {x: 1255.733, y: 201.62976}
   _isStartNode: 0
   references:
     version: 2
@@ -194,6 +203,24 @@ MonoBehaviour:
     DestinationSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
     DestinationSceneName: SampleScene 2
     DestinationPortName: Door West
+    m_bIsValid: 1
+  - SourceNodeGuid: 1054876d2df8d40468fb28efd97ed6fb
+    SourceSceneGuid: 7a3963fe7029e1540abdb3d88a000b52
+    SourceSceneName: SampleScene 1
+    SourcePortName: Door West
+    DestinationNodeGuid: 76221849a54a06b478c60557974517ec
+    DestinationSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
+    DestinationSceneName: SampleScene 2
+    DestinationPortName: Door North
+    m_bIsValid: 1
+  - SourceNodeGuid: 1054876d2df8d40468fb28efd97ed6fb
+    SourceSceneGuid: 7a3963fe7029e1540abdb3d88a000b52
+    SourceSceneName: SampleScene 1
+    SourcePortName: Door West
+    DestinationNodeGuid: 76221849a54a06b478c60557974517ec
+    DestinationSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
+    DestinationSceneName: SampleScene 2
+    DestinationPortName: Door East
     m_bIsValid: 1
   IncomingEdges:
   - SourceNodeGuid: 12a949ba26042a74abf34edb089dd911
@@ -416,7 +443,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3e39ffcdb3a8614409ba2a251a694d8f, type: 2}
   - {fileID: 11400000, guid: db11945bdb46fb6488d5063ffffe68ea, type: 2}
   m_Guid: 698460677e992524081c2b471b135283
-  m_Position: {x: 694.5209, y: -11}
+  m_Position: {x: 693.251, y: 109.68145}
   _isStartNode: 0
   references:
     version: 2
@@ -454,3 +481,142 @@ MonoBehaviour:
   - {fileID: -5005448368373161328}
   - {fileID: -522332987697937984}
   - {fileID: -7615667067686235058}
+  - {fileID: 8223579858823494944}
+--- !u!114 &8168157283288866668
+MonoBehaviour:
+  m_ObjectHideFlags: 61
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc3768443858dad479f2cbca8d56449d, type: 3}
+  m_Name: SampleScene 2
+  m_EditorClassIdentifier: NGAME_Runtime::NGAME.SceneData
+  Guid: f2f2e1e0a80c29c49b3c899b1eb9478a
+  FilePath: Assets/Scenes/Final/FINAL TEST/SampleScene 2.unity
+  Description: 
+  UniqueConnectionObjects:
+  - TypeName: RoomSystem.Door
+    Name: Door West
+    ConnectionType: 2
+    EntranceConditions:
+    - rid: 5935912703913099274
+    Position: {x: -9.32, y: 0.5000038, z: -49.78}
+  - TypeName: RoomSystem.Door
+    Name: Door East
+    ConnectionType: 2
+    EntranceConditions:
+    - rid: 5935912703913099275
+    Position: {x: 29.93, y: 0.5000038, z: -16.44}
+  SpawnPoints:
+  - Name: RangedSpawnPoint
+    ValidTypes:
+    - {fileID: 11400000, guid: 2609c893ef4e26a478f3354078db2cf0, type: 2}
+    Position: {x: 3.15, y: 0.0000019073486, z: -39.579998}
+  - Name: RangedSpawnPoint (2)
+    ValidTypes:
+    - {fileID: 11400000, guid: 2609c893ef4e26a478f3354078db2cf0, type: 2}
+    Position: {x: -2.7300005, y: 0.0000019073486, z: -33.19}
+  - Name: RangedSpawnPoint (1)
+    ValidTypes:
+    - {fileID: 11400000, guid: 2609c893ef4e26a478f3354078db2cf0, type: 2}
+    Position: {x: 12.08, y: 0.0000019073486, z: -40.12}
+  - Name: MeleeSpawnPoint
+    ValidTypes:
+    - {fileID: 11400000, guid: 9ee823ae691a5554b9b7ffbee152cead, type: 2}
+    Position: {x: 1.2799997, y: 0.0000019073486, z: -31.829998}
+  - Name: MeleeSpawnPoint (1)
+    ValidTypes:
+    - {fileID: 11400000, guid: 9ee823ae691a5554b9b7ffbee152cead, type: 2}
+    Position: {x: 6.4399996, y: 0.0000019073486, z: -31.829998}
+  - Name: MeleeSpawnPoint (2)
+    ValidTypes:
+    - {fileID: 11400000, guid: 9ee823ae691a5554b9b7ffbee152cead, type: 2}
+    Position: {x: 10.7699995, y: 0.0000019073486, z: -28.5}
+  references:
+    version: 2
+    RefIds:
+    - rid: 5935912703913099274
+      type: {class: EC_NoCombat, ns: , asm: JellysJourneyAssembly}
+      data:
+        Name: No Combat
+        Description: Entrance requires there to be no ongoing combat to be traversable
+    - rid: 5935912703913099275
+      type: {class: EC_NoCombat, ns: , asm: JellysJourneyAssembly}
+      data:
+        Name: No Combat
+        Description: Entrance requires there to be no ongoing combat to be traversable
+--- !u!114 &8223579858823494944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
+  m_Name: 'Graph2: Room 5'
+  m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
+  SceneData: {fileID: 8168157283288866668}
+  OverridenConnectionData:
+  - TypeName: RoomSystem.Door
+    Name: Door West
+    ConnectionType: 2
+    EntranceConditions:
+    - rid: 5935912703913099272
+    Position: {x: -9.32, y: 0.5000038, z: -49.78}
+  - TypeName: RoomSystem.Door
+    Name: Door East
+    ConnectionType: 2
+    EntranceConditions:
+    - rid: 5935912703913099273
+    Position: {x: 29.93, y: 0.5000038, z: -16.44}
+  OutgoingEdges:
+  - SourceNodeGuid: 76221849a54a06b478c60557974517ec
+    SourceSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
+    SourceSceneName: SampleScene 2
+    SourcePortName: Door West
+    DestinationNodeGuid: 272932770eef6de45a37535ebaa79d4f
+    DestinationSceneGuid: 7cb8c6b0027761a46b600f3b69174403
+    DestinationSceneName: SampleScene 3
+    DestinationPortName: Door South
+    m_bIsValid: 1
+  IncomingEdges:
+  - SourceNodeGuid: 1054876d2df8d40468fb28efd97ed6fb
+    SourceSceneGuid: 7a3963fe7029e1540abdb3d88a000b52
+    SourceSceneName: SampleScene 1
+    SourcePortName: Door West
+    DestinationNodeGuid: 76221849a54a06b478c60557974517ec
+    DestinationSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
+    DestinationSceneName: SampleScene 2
+    DestinationPortName: Door North
+    m_bIsValid: 1
+  - SourceNodeGuid: 1054876d2df8d40468fb28efd97ed6fb
+    SourceSceneGuid: 7a3963fe7029e1540abdb3d88a000b52
+    SourceSceneName: SampleScene 1
+    SourcePortName: Door West
+    DestinationNodeGuid: 76221849a54a06b478c60557974517ec
+    DestinationSceneGuid: f2f2e1e0a80c29c49b3c899b1eb9478a
+    DestinationSceneName: SampleScene 2
+    DestinationPortName: Door East
+    m_bIsValid: 1
+  Waves: []
+  m_Guid: 76221849a54a06b478c60557974517ec
+  m_Position: {x: 693.00006, y: -351.44937}
+  _isStartNode: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 5935912703913099272
+      type: {class: EC_NoCombat, ns: , asm: JellysJourneyAssembly}
+      data:
+        Name: No Combat
+        Description: Entrance requires there to be no ongoing combat to be traversable
+    - rid: 5935912703913099273
+      type: {class: EC_NoCombat, ns: , asm: JellysJourneyAssembly}
+      data:
+        Name: No Combat
+        Description: Entrance requires there to be no ongoing combat to be traversable
