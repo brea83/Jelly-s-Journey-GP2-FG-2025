@@ -12,6 +12,10 @@ public class GameManager : StateMachine
     [SerializeField]
     private UiController _uiController;
 
+    [SerializeField]
+    private NewEncounterManager _newEncounterManager;
+    public NewEncounterManager EncounterManager { get { return _newEncounterManager; } }
+
 
     // Turner added this 2/11/2025
     // Adding for BGM mangement
@@ -27,6 +31,7 @@ public class GameManager : StateMachine
     public UiController UiController { get { return _uiController; } }
 
     // EVENTS
+    public UnityEvent<GameManager> StateMachineInitialized;
     public UnityEvent<GameState> StateEnter;
     public UnityEvent<GameState> StateExit;
 
@@ -45,6 +50,7 @@ public class GameManager : StateMachine
         }
 
         _states = GetComponentsInChildren<State>().ToList();
+        if (StateMachineInitialized != null) StateMachineInitialized.Invoke(this);
     }
     public override void SwitchState<T>()
     {

@@ -95,7 +95,7 @@ public class UiMenuController : MonoBehaviour
 
     public void StartGameLevelOne()
     {
-        GameManager.Instance.GetComponent<RoomNavigator>().Initialize();
+        //GameManager.Instance.GetComponent<RoomNavigator>().Initialize();
         GameManager.Instance.player.GetComponent<PlayerController>().Initialize();
         GameManager.Instance.player.GetComponent<PlayerInventory>().Initialize();
         GameManager.Instance.player.GetComponent<PlayerHealth>().Initialize();

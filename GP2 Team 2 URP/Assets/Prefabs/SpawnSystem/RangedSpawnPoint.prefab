@@ -45,3 +45,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _allowedEnemyType: 2
+  m_AllowedSpawnableTypes:
+  - {fileID: 11400000, guid: 2609c893ef4e26a478f3354078db2cf0, type: 2}

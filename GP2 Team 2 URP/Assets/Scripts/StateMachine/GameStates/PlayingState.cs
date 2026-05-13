@@ -23,17 +23,24 @@ public class PlayingState : GameState
                 || previousState.GetType() == typeof(RestartState)) 
         {
 
-
-            RoomNavigator navigator = myStateMachine.GetComponent<RoomNavigator>();
+            NewRoomNavigator navigator = myStateMachine.GetComponent<NewRoomNavigator>();
+            //RoomNavigator navigator = myStateMachine.GetComponent<RoomNavigator>();
             
             if (navigator == null )
-            { 
-                Scene gameplayScene = SceneManager.GetSceneByName(myStateMachine.GameplaySceneName);
-                if (gameplayScene != null)
-                {
-                    SceneManager.LoadScene(myStateMachine.GameplaySceneName);
-                    //SceneManager.LoadScene("BDsTestPlayerOnly", LoadSceneMode.Additive);
-                }
+            {
+                //Scene gameplayScene = SceneManager.GetSceneByName(myStateMachine.GameplaySceneName);
+                //if (gameplayScene != null)
+                //{
+                //    SceneManager.LoadScene(myStateMachine.GameplaySceneName);
+                //    //SceneManager.LoadScene("BDsTestPlayerOnly", LoadSceneMode.Additive);
+                //}
+
+                return;
+            }
+
+            if (navigator.NavigationEnabled)
+            {
+                navigator.EnterFirstRoom();
             }
         }
 

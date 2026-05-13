@@ -96,6 +96,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 389223929294870192, guid: 21348ff32ebd9934c80630beddf5eb25, type: 3}
+      propertyPath: _spawnTypeTag
+      value: 
+      objectReference: {fileID: 11400000, guid: dbbabfda2eac6424db2ed97e93de216e, type: 2}
+    - target: {fileID: 389223929294870192, guid: 21348ff32ebd9934c80630beddf5eb25, type: 3}
       propertyPath: AttackCoolDown
       value: 5
       objectReference: {fileID: 0}
@@ -366,8 +370,8 @@ MonoBehaviour:
   enemyRangedAttackSoundEffect: event:/sfx/characters/enemy/RangedAttack
   enemyDeathSoundEffect: event:/sfx/characters/enemy/Die
   enemyGetHitSoundEffect: event:/sfx/characters/enemy/GetHit
-  enemyGetStunnedSoundEffect: event:/sfx/characters/enemy/GetStunned
   enemyTransform: {fileID: 3010040851197266733}
+  enemyRigidbody: {fileID: 0}
 --- !u!114 &4477800640382194272
 MonoBehaviour:
   m_ObjectHideFlags: 0

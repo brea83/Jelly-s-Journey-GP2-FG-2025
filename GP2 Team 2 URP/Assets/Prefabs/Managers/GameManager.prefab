@@ -130,6 +130,81 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   playerUI: {fileID: 0}
+--- !u!1 &2787744069243251001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1181648640666970618}
+  - component: {fileID: 3612553898179625533}
+  - component: {fileID: 8704456879166295923}
+  m_Layer: 0
+  m_Name: NewEncounterManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1181648640666970618
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2787744069243251001}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.47317, y: -29.64231, z: 49.76826}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4378512605328189340}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3612553898179625533
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2787744069243251001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b477368510e0be74e84c536fdb5ba1e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: JellysJourneyAssembly::EncounterSystem.EnemyPool
+  PrintDebugLogText: 0
+--- !u!114 &8704456879166295923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2787744069243251001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f90554ccdf11e414d86db780b9202e4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: JellysJourneyAssembly::NewEncounterManager
+  OnEncounterStart:
+    m_PersistentCalls:
+      m_Calls: []
+  OnWaveStart:
+    m_PersistentCalls:
+      m_Calls: []
+  OnWaveEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  OnEncounterEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Graph: {fileID: 1961440702122331174}
+  m_SecondsBeforeEncounterStart: 0
+  PrintDebugLogText: 1
+  m_KillAll: 0
+  m_ResetWaves: 0
 --- !u!1 &3039605845377546709
 GameObject:
   m_ObjectHideFlags: 0
@@ -191,6 +266,9 @@ GameObject:
   - component: {fileID: 4378512605328189340}
   - component: {fileID: 8566594163567588980}
   - component: {fileID: 7658237208301658122}
+  - component: {fileID: 8096219509772182816}
+  - component: {fileID: 1961440702122331174}
+  - component: {fileID: 1895494467854487898}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -211,6 +289,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1181648640666970618}
   - {fileID: 2849534896159370048}
   - {fileID: 9137189654461925161}
   - {fileID: 1615199031665495904}
@@ -241,8 +320,60 @@ MonoBehaviour:
   _gameplaySceneName: Main Menu
   _titleSceneName: Main Menu
   _uiController: {fileID: 0}
+  _newEncounterManager: {fileID: 8704456879166295923}
   _bgmManager: {fileID: 7905742511550077077}
   player: {fileID: 1118150892074528535}
+  StateMachineInitialized:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4175970590855718612}
+        m_TargetAssemblyTypeName: PlayerPickUp, JellysJourneyAssembly
+        m_MethodName: OnGameStateMachineInitialized
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 31392521383547879}
+        m_TargetAssemblyTypeName: PlayerAttack, JellysJourneyAssembly
+        m_MethodName: OnGameStateMachineInitialized
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 6664450471617466029}
+        m_TargetAssemblyTypeName: PlayerHealth, JellysJourneyAssembly
+        m_MethodName: OnGameStateMachineInitialized
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 8704456879166295923}
+        m_TargetAssemblyTypeName: NewEncounterManager, JellysJourneyAssembly
+        m_MethodName: OnGameStateMachineInitialized
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   StateEnter:
     m_PersistentCalls:
       m_Calls: []
@@ -256,7 +387,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3822644222006879002}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4ad3b445bee3a144891f7c555ba5e2b, type: 3}
   m_Name: 
@@ -283,8 +414,99 @@ MonoBehaviour:
     Visited: 0
   IsCurrentRoomBacktracking: 0
   CircleWipe: {fileID: 0}
+  EnableNavigation: 0
+  PrintDebugLogs: 0
+--- !u!114 &8096219509772182816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3822644222006879002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3daedc5033aea424d836e66660b0a450, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: JellysJourneyAssembly::NewRoomNavigator
+  RoomLoadStart:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1895494467854487898}
+        m_TargetAssemblyTypeName: PlayerLoader, JellysJourneyAssembly
+        m_MethodName: OnSceneLoadStart
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  RoomLoadComplete:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1895494467854487898}
+        m_TargetAssemblyTypeName: PlayerLoader, JellysJourneyAssembly
+        m_MethodName: OnSceneLoadComplete
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  m_Graph: {fileID: 1961440702122331174}
+  m_CircleWipe: {fileID: 1204225482734662771}
+  m_RoomTransitionFmodEvent: event:/sfx/RoomTransition
+  NavigationEnabled: 1
+  PrintDebugLogs: 0
+--- !u!114 &1961440702122331174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3822644222006879002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c35dcec4aca538409c90e3434e576fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: NGAME_Runtime::NGAME.MapGraphRuntime
+  PlaymodeStartedFromGraph:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8096219509772182816}
+        m_TargetAssemblyTypeName: NewRoomNavigator, JellysJourneyAssembly
+        m_MethodName: OnGraphInitiatedPlaymode
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   EnableNavigation: 1
   PrintDebugLogs: 0
+  m_Graph: {fileID: 11400000, guid: 12c12fac449533b41b2fca23443d0968, type: 2}
+--- !u!114 &1895494467854487898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3822644222006879002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c61481bf9519f447ace3ea3a3918724, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: JellysJourneyAssembly::PlayerLoader
+  NoDoorsFallbackEntrance: {x: 0, y: 0.5, z: 0}
+  PrintDebugLogs: 1
 --- !u!1 &4928497564531094416
 GameObject:
   m_ObjectHideFlags: 0
@@ -335,6 +557,97 @@ MonoBehaviour:
   StateFixedUpdate:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &5526193694882725269
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2755667438879561904}
+  - component: {fileID: 3900771528575975437}
+  - component: {fileID: 7535945310306900143}
+  - component: {fileID: 1204225482734662771}
+  m_Layer: 5
+  m_Name: CircleWipe
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2755667438879561904
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5526193694882725269}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2423339346730625312}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 1920, y: 1080}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &3900771528575975437
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5526193694882725269}
+  m_CullTransparentMesh: 1
+--- !u!114 &7535945310306900143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5526193694882725269}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: -876546973899608171, guid: d081b7fc2809edf4b9f7d2f05b9f66bb, type: 3}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1204225482734662771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5526193694882725269}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98608ce7b74a1cd48b7e8c4398bd0f7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: JellysJourneyAssembly::CircleWipeControler
+  DoingFadeOut: 0
+  DoingFadeIn: 0
+  _fadeSeconds: 1
 --- !u!1 &8140899056778419334
 GameObject:
   m_ObjectHideFlags: 0
@@ -460,7 +773,7 @@ Transform:
   m_GameObject: {fileID: 9156376453303422739}
   serializedVersion: 2
   m_LocalRotation: {x: 0.5371753, y: -0, z: -0, w: 0.84347063}
-  m_LocalPosition: {x: 9.26, y: 15, z: 4.3999996}
+  m_LocalPosition: {x: 0, y: 15, z: -7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -475,8 +788,8 @@ Camera:
   m_GameObject: {fileID: 9156376453303422739}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -553,7 +866,6 @@ MonoBehaviour:
   m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
-  m_Version: 2
   m_TaaSettings:
     m_Quality: 3
     m_FrameInfluence: 0.1
@@ -561,6 +873,7 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
 --- !u!114 &471627093795689674
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -705,6 +1018,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4401270420275064915, guid: 06517a360d459524e92bf566c9212593, type: 3}
   m_PrefabInstance: {fileID: 1918499095014890259}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4175970590855718612 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2552388578800549319, guid: 06517a360d459524e92bf566c9212593, type: 3}
+  m_PrefabInstance: {fileID: 1918499095014890259}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1118150892074528535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21b002b6cd3a3b8468e5db885ac67e01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &4357564788141768469 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2803155233494393862, guid: 06517a360d459524e92bf566c9212593, type: 3}
@@ -714,6 +1038,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c14c171ebae42f1439677155ef97836f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6664450471617466029 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5107929321934476734, guid: 06517a360d459524e92bf566c9212593, type: 3}
+  m_PrefabInstance: {fileID: 1918499095014890259}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1118150892074528535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bc9c25bb981ed242a70ea3c3893a87f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &2963527584317968978
@@ -1166,7 +1501,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 613051301336660850, guid: 38e03fbef1c04a74ab29807a303ce069, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2755667438879561904}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 38e03fbef1c04a74ab29807a303ce069, type: 3}
 --- !u!114 &360710782388866970 stripped

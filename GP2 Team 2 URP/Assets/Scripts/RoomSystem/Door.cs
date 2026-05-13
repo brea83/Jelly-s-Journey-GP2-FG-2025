@@ -1,21 +1,26 @@
 using EncounterSystem;
 using System;
-using System.Collections;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
-using static Unity.Cinemachine.CinemachineSplineRoll;
+using NGAME;
+using System.Xml.Serialization;
+
 namespace RoomSystem
 {
     public enum RoomConnectionDirection { North, East, South, West }
     public enum ConnectionType { Entrance, Exit, ExitAndEntrance }
     
 
-    public class Door : MonoBehaviour
+    public class Door : MonoBehaviour, IEncounterRegionConnector
     {
         public UnityEvent DoorUnlocked;
         public UnityEvent DoorLocked;
+        public UnityEvent<EdgeData> DoorUsed;
+        public EdgeData OutgoingEdge;
 
+        private EntranceCondition m_EntryCondition = new EC_NoCombat();
+        public bool IsLockable = true;
+        public bool StartsLocked = false;
         public bool LocksDurringCombat = true;
         public bool isDefaultEntrance = false;
         public bool UseOldBarrierAnimation = true;
@@ -24,12 +29,15 @@ namespace RoomSystem
         [SerializeField] private DoorData _data = new DoorData();//GUID.Generate().ToString(), ConnectionType.Exit, transform.position);
         //private RoomDoorData _connectedRoomEntrance = null;
         public RoomConnectionDirection Direction {  get { return _data.Direction; } }
-        public string Destination {  get { return _data.Destination; } }
+        public string Destination {  get { return _data.DestinationSceneName; } }
         public bool Locked { get { return _data.Locked; } }
         //public bool useRealDirectionFlow = true;
         public bool UsedState { get { return _data.UsedOnce; } }
         private bool _inUse = false;
         public DoorData Data { get { return _data; } }
+
+        public UnityEvent<EdgeData> ConnectorActivated => DoorUsed;
+
 
         private GameObject _barrier;
 
@@ -54,19 +62,29 @@ namespace RoomSystem
                 _data.EntranceRotation = entrance.transform.rotation;
             }
             _data.Name = name;
-
-            if (LocksDurringCombat)
+            
+            if (_hasDisabled)
             {
-                SpawnManager spawnManager = FindFirstObjectByType<SpawnManager>();
-                if (spawnManager != null)
+                SubscribeToPlayState();
+                if (m_EntryCondition != null && m_EntryCondition is EC_NoCombat)//LocksDurringCombat)
                 {
-                    spawnManager.OnEncounterStart.AddListener(OnEncounterStart);
-                    spawnManager.OnEncounterEnd.AddListener(OnEncounterEnd);
+                    //SpawnManager spawnManager = FindFirstObjectByType<SpawnManager>();
+                    //if (spawnManager != null)
+                    //{
+                    //    spawnManager.OnEncounterStart.AddListener(OnEncounterStart);
+                    //    spawnManager.OnEncounterEnd.AddListener(OnEncounterEnd);
+                    //}
+
+                    NewEncounterManager encounterManager = GameManager.Instance.EncounterManager;
+                    if( encounterManager != null )
+                    {
+                        encounterManager.OnEncounterStart.AddListener(OnEncounterStart);
+                        encounterManager.OnEncounterEnd.AddListener(OnEncounterEnd);
+                    }
                 }
             }
-            if (_hasDisabled) SubscribeToPlayState();
-            
         }
+            
         private void Start()
         {
             Transform childTransform = this.gameObject.FindComponentInChildWithTag<Transform>("Barrier");//this.transform.Find("Barrier");
@@ -89,11 +107,18 @@ namespace RoomSystem
             UnsubscribeToPlayState();
             if(LocksDurringCombat)
             {
-                SpawnManager spawnManager = FindFirstObjectByType<SpawnManager>();
-                if (spawnManager != null)
+                //SpawnManager spawnManager = FindFirstObjectByType<SpawnManager>();
+                //if (spawnManager != null)
+                //{
+                //    spawnManager.OnEncounterStart.RemoveListener(OnEncounterStart);
+                //    spawnManager.OnEncounterEnd.RemoveListener(OnEncounterEnd);
+                //}
+
+                NewEncounterManager encounterManager = GameManager.Instance.EncounterManager;
+                if (encounterManager != null)
                 {
-                    spawnManager.OnEncounterStart.RemoveListener(OnEncounterStart);
-                    spawnManager.OnEncounterEnd.RemoveListener(OnEncounterEnd);
+                    encounterManager.OnEncounterStart.RemoveListener(OnEncounterStart);
+                    encounterManager.OnEncounterEnd.RemoveListener(OnEncounterEnd);
                 }
             }
             _hasDisabled = true;
@@ -107,14 +132,16 @@ namespace RoomSystem
             {
                 //player stepped into the exit
                 _inUse = true;
-                
-                RoomNavigator.Instance.TravelThroughDoor(this, other.gameObject);
+
+                //RoomNavigator.Instance.TravelThroughDoor(this, other.gameObject);
+
+                if (DoorUsed != null) DoorUsed.Invoke(OutgoingEdge);
             }
         }
 
         public void OnEncounterStart()
         {
-            if (LocksDurringCombat)
+            if (m_EntryCondition != null && m_EntryCondition is EC_NoCombat)//LocksDurringCombat)
             {
                 LockDoor();
             }
@@ -122,7 +149,7 @@ namespace RoomSystem
 
         public void OnEncounterEnd()
         {
-            if (LocksDurringCombat)
+            if (m_EntryCondition != null && m_EntryCondition is EC_NoCombat)//LocksDurringCombat)
             {
                 UnlockDoor();
             }
@@ -218,20 +245,80 @@ namespace RoomSystem
                 Debug.Log("tried to remove listeners but myUpdateState == null");
             }
         }
+
+        public RegionConnectionData GetRegionConnectionData() 
+        {
+            RegionConnectionData data = new RegionConnectionData();
+            data.TypeName = this.GetType().FullName;
+            data.Name = name;
+            data.ConnectionType = _data.Type;
+            data.EntranceConditions = new() { m_EntryCondition };
+            //data.IsLockable = IsLockable;
+            //data.StartsLocked = StartsLocked;
+            //data.IsLockedDurringCombat = LocksDurringCombat;
+            
+            data.Position = transform.position;
+            return data;
+        }
+
+        public void SetDestination(EdgeData edge)
+        {
+            _data.DestinationSceneName = edge.DestinationSceneName;
+            _data.DestinationPointName = edge.DestinationPortName;
+
+            OutgoingEdge = edge;
+        }
+
+        public void InitializeFromGraphData(RegionConnectionData connectionData, EdgeData edge)
+        {
+            if(edge == null || string.IsNullOrEmpty(connectionData.TypeName))
+            {
+                LockDoor();
+                return;
+            }
+            
+            //LocksDurringCombat = connectionData.IsLockedDurringCombat;
+
+            //StartsLocked = connectionData.StartsLocked;
+            //if ( StartsLocked && !Locked )
+            //    LockDoor();
+            //else if( !StartsLocked && Locked )
+            //    UnlockDoor();
+
+            foreach(EntranceCondition condition in connectionData.EntranceConditions)
+            {
+
+                if (condition is EC_NoCombat)//LocksDurringCombat)
+                {
+                    m_EntryCondition = condition;
+                    NewEncounterManager encounterManager = GameManager.Instance.EncounterManager;
+                    if (encounterManager != null)
+                    {
+                        encounterManager.OnEncounterStart.AddListener(OnEncounterStart);
+                        encounterManager.OnEncounterEnd.AddListener(OnEncounterEnd);
+                    }
+                }
+            }
+                
+            SetDestination(edge);
+            
+        }
     }
         
     [Serializable]
-    public class DoorData
+    public class DoorData 
     {
         [HideInInspector] public string Name;
         public RoomConnectionDirection Direction;
         //[HideInInspector] 
         public string ParentRoom;
-        public string Destination;
+        public string DestinationSceneName;
+        public string DestinationPointName;
         [HideInInspector] public bool UsedOnce = false;
         public bool Locked = false;
         public bool UseRealDirectionFlow = true;
-        public ConnectionType Type;
+        //public ConnectionType Type;
+        public RegionConnectionType Type;
         [HideInInspector] public Vector3 ExitPosition;
         [HideInInspector] public Vector3 EntrancePosition;
         [HideInInspector] public Quaternion EntranceRotation;
@@ -259,9 +346,9 @@ namespace RoomSystem
         public bool IsArrivalFlowValid(Door arrivalDoor)
         {
             DoorData exitDoor = this;
-            ConnectionType arrivalType = arrivalDoor.Data.Type;
-            if ((exitDoor.Type == ConnectionType.ExitAndEntrance || exitDoor.Type == ConnectionType.Exit)
-                && (arrivalType == ConnectionType.ExitAndEntrance || arrivalType == ConnectionType.Entrance))
+            RegionConnectionType arrivalType = arrivalDoor.Data.Type;
+            if ((exitDoor.Type == RegionConnectionType.ExitAndEntrance || exitDoor.Type == RegionConnectionType.ExitOnly)
+                && (arrivalType == RegionConnectionType.ExitAndEntrance || arrivalType == RegionConnectionType.EntranceOnly))
             {
                 if (UseRealDirectionFlow)// || arrivalDoor.Data.UseRealDirectionFlow)
                 {

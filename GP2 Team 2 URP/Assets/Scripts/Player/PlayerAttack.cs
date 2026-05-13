@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class PlayerAttack : MonoBehaviour
+public class PlayerAttack : MonoBehaviour, IGameStateMachineListener
 {
     [SerializeField] private PlayerController _PC;
 
@@ -29,10 +29,18 @@ public class PlayerAttack : MonoBehaviour
     //float timer = 1.5f;
     [Header("Debug Settings")]
     public bool PrintDebugLogs = false;
+    [SerializeField]
+    private bool _MaxDamage = false;
+
+    public void ToggleGodmode(bool value)
+    {
+        _MaxDamage = value;
+    }
 
     private void Start()
     {
-        _updateState = GameManager.Instance.GetState<PlayingState>();
+        // moved to the interface IGameStateMAchineListener func OnGameStateMachineInitialized which is called from the GameManager's events
+        //_updateState = GameManager.Instance.GetState<PlayingState>();
     }
 
     protected void OnDisable()
@@ -51,12 +59,13 @@ public class PlayerAttack : MonoBehaviour
         }
         else
         {
-            Debug.Log("tried to add listener but myUpdateState == null");
+            if (PrintDebugLogs) Debug.Log("tried to add listener but myUpdateState == null");
         }
     }
     protected void ManagedUpdate()
     {
         //RemoveCollisionTimer();
+        if(PrintDebugLogs) Debug.Log("Player Attack script Reached Managed Update");
     }
 
 
@@ -174,13 +183,33 @@ public class PlayerAttack : MonoBehaviour
 
     public int CalculateDamage()
     {
-        if (_PC.handPositions[0].childCount <= 0)
-            return unarmedDamage;
+        if (_MaxDamage) 
+        {
+            return 999;
+        }
+        else
+        {
+            if (_PC.handPositions[0].childCount <= 0)
+                return unarmedDamage;
 
-        _currentWeaponAttack = _PC.handPositions[comboStep].GetChild(0).gameObject;
-        Weapon weapon = _currentWeaponAttack.GetComponent<Weapon>();
-        return (int)(weapon.damage * slotMultiplier[comboStep]);
+            _currentWeaponAttack = _PC.handPositions[comboStep].GetChild(0).gameObject;
+            Weapon weapon = _currentWeaponAttack.GetComponent<Weapon>();
+
+            return (int)(weapon.damage * slotMultiplier[comboStep]);
+        }
     }
 
+    public void OnGameStateMachineInitialized(GameManager manager)
+    {
+        _updateState = manager.GetState<PlayingState>();
+        if (_updateState != null)
+        {
+            _updateState.StateUpdate.AddListener(ManagedUpdate);
+        }
+        else
+        {
+            Debug.Log("tried to add PlayerPickUp's listener but myUpdateState == null");
+        }
+    }
 }
 

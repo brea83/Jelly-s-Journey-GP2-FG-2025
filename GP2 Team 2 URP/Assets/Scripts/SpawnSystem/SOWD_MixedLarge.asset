@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5361e459e0aef01458b1f5678e4b9158, type: 3}
+  m_Name: SOWD_MixedLarge
+  m_EditorClassIdentifier: NGAME_Runtime::NGAME.SOWaveData
+  m_RespawnsOnBacktrack: 0
+  m_PossibleEnemies:
+  - {fileID: 2883558245128991901, guid: 43a976dad99da8d4ca11499726fe70f8, type: 3}
+  - {fileID: 5807435856107287583, guid: c33f612499e7a184a835c4bde73958c4, type: 3}
+  m_SecBtwnSpawns: 0.5
+  m_NumToSpawn: 6
+  m_UseSpawnByType: 0
+  m_MinSecondsBeforeNextWave: 2
+  m_EnemiesReamainingTrigger: 0

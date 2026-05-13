@@ -26,6 +26,7 @@ public class ObjectPool : MonoBehaviour
     }
     public virtual void InitializePool(List<GameObject> prefabs, int poolSize = 20)
     {
+        DestroyInactiveSpawns();
         _activePool.Clear();
         _inactivePool.Clear();
         PoolSize = poolSize;
@@ -52,7 +53,14 @@ public class ObjectPool : MonoBehaviour
                 instance.gameObject.SetActive(false);
             }
         }
+    }
         
+    protected virtual void DestroyInactiveSpawns()
+    {
+        foreach(PooledObject prefab in _inactivePool)
+        {
+            Destroy(prefab);
+        }
     }
 
     public virtual void ReturnToPool(PooledObject instance)

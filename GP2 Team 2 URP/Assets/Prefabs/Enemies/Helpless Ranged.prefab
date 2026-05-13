@@ -85,6 +85,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3aa1278cd79fa0946aa8f61a1c263bf4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _spawnTypeTag: {fileID: 11400000, guid: dbbabfda2eac6424db2ed97e93de216e, type: 2}
   _moveSpeed: 1
   _currentHealth: 1
   _damage: 0
@@ -96,12 +97,14 @@ MonoBehaviour:
   _animator: {fileID: 0}
   _isStunned: 0
   _agent: {fileID: 0}
+  PrintDebugLogs: 0
   _projectileVelocity: 5
   _projectilesPerShot: 5
   projectile: {fileID: 7914820223570290143, guid: 3a62220b1f3eadb41b19dff6fcc7ee96, type: 3}
   projectileSpawnPoint: {fileID: 4019291138214108722}
   _projectileLifeSpan: 0
   _trajection: 0
+  timer: 0
 --- !u!114 &5802110077288252392
 MonoBehaviour:
   m_ObjectHideFlags: 0

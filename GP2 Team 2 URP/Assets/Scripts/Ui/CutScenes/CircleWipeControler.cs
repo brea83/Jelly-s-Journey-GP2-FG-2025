@@ -1,3 +1,4 @@
+using NGAME;
 using RoomSystem;
 using System;
 using UnityEngine;
@@ -13,7 +14,7 @@ public class CircleWipeControler : MonoBehaviour
     //private int _shaderFadeIn = Shader.PropertyToID("_FadeIn");
     //private int _shaderFadeOut = Shader.PropertyToID("_FadeOut");
     //private int _shaderPrevFade = Shader.PropertyToID("_PrevFadeIn");
-    private bool _previousFadeWasIn = false;
+    //private bool _previousFadeWasIn = false;
     public bool DoingFadeOut = false;
     public bool DoingFadeIn = false;
     private bool _firstFadeFrame = true;
@@ -24,18 +25,18 @@ public class CircleWipeControler : MonoBehaviour
     {
         _canvasImage = GetComponent<Image>();
 
-        RoomNavigator navigator = RoomNavigator.Instance;
-        navigator.RoomLoadStart.AddListener(OnRoomLoadStart);
-        navigator.RoomLoadComplete.AddListener(OnRoomLoadComplete);
+        //RoomNavigator navigator = RoomNavigator.Instance;
+        //navigator.RoomLoadStart.AddListener(OnRoomLoadStart);
+        //navigator.RoomLoadComplete.AddListener(OnRoomLoadComplete);
     }
 
-    private void OnRoomLoadComplete(Room arg0)
+    public void OnRoomLoadComplete(IEncounterRegionConnector connector)
     {
         DoingFadeIn = true;
         Debug.Log($"DOING FADE IN. timescale is {Time.timeScale} and time is {Time.time}");
     }
 
-    private void OnRoomLoadStart()
+    public void OnRoomLoadStart()
     {
         DoingFadeOut = true;
         Debug.Log($"DOING FADE OUT. timescale is {Time.timeScale} and time is {Time.time}");
@@ -112,7 +113,7 @@ public class CircleWipeControler : MonoBehaviour
         if (_firstFadeFrame)
         {
             DoingFadeIn = false;
-            _previousFadeWasIn = false;
+            //_previousFadeWasIn = false;
             _fadeTimer = 0.0f;
             //_canvasImage.material.SetInt(_shaderPrevFade, _previousFadeWasIn ? 1 : 0);
             //_canvasImage.material.SetInt(_shaderFadeOut, 1);
@@ -126,7 +127,7 @@ public class CircleWipeControler : MonoBehaviour
         if (_firstFadeFrame)
         {
             DoingFadeOut = false;
-            _previousFadeWasIn = true;
+            //_previousFadeWasIn = true;
             _fadeTimer = _fadeSeconds;
             //_canvasImage.material.SetInt(_shaderPrevFade, _previousFadeWasIn ? 1 : 0); 
             //_canvasImage.material.SetInt(_shaderFadeIn, 1);
